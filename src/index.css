@@ -1,0 +1,104 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-display: "Antonio", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-accent-light: #5E67E6;
+  --color-accent-dark: #D0FF71;
+  --color-ink-light: #303030;
+  --color-ink-muted: #5C5C5C;
+  --color-surface-light: #F5F5F5;
+  --color-surface-dark: #2C2C2D;
+  --color-canvas-dark: #1A1A1B;
+  --color-available: #0BDE66;
+}
+
+@layer base {
+  html {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    color: #303030;
+    background-color: #FFFFFF;
+    overflow-x: clip;
+  }
+
+  html.dark {
+    color: #FFFFFF;
+    background-color: #1A1A1B;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    overflow-x: clip;
+    background-color: #FFFFFF;
+    color: #303030;
+    transition: background-color 0.35s ease, color 0.35s ease;
+  }
+
+  html.dark body {
+    background-color: #1A1A1B;
+    color: #FFFFFF;
+  }
+}
+
+/* Subtle film-grain noise texture active in dark mode (matching Portavia dark theme) */
+.dark-grain-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 220px 220px;
+}
+
+html.dark .dark-grain-overlay {
+  opacity: 0.72;
+}
+
+/* 3D card flip helpers for the hero->services->about sticky portrait */
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Pulsing availability dot ring */
+@keyframes availablePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 0.12;
+  }
+}
+
+.animate-available-pulse {
+  animation: availablePulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-available-pulse {
+    animation: none;
+  }
+}
