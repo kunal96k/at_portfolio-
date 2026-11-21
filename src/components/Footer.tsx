@@ -186,10 +186,38 @@ export function Footer({ onNavigate, onContactClick }: FooterProps) {
         {/* Hairline Divider */}
         <div className="h-px w-full bg-white/30 dark:bg-[#1A1A1B]/20" />
 
-        {/* Bottom Copyright & Location Strip */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-6 text-[13.5px] font-light opacity-90">
-          <p>© Copyright 2026 {PROFILE.name}. All Rights Reserved.</p>
-          <p>IT Trainer &amp; IT Infrastructure Professional · Live Labs &amp; Corporate Training</p>
+        {/* Bottom Copyright & Developed By Strip */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pt-6 text-[13.5px] font-light">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 opacity-90">
+            <p>© Copyright 2026 {PROFILE.name}. All Rights Reserved.</p>
+            <span className="hidden sm:inline opacity-40">·</span>
+            <p className="opacity-80">IT Trainer &amp; IT Infrastructure Professional</p>
+          </div>
+
+          <a
+            href="https://www.technokraftservices.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Developed by TechnoKraft Services LLP (opens in a new tab)"
+            className="group inline-flex items-center gap-2.5 self-start md:self-auto rounded-full border border-white/30 dark:border-[#1A1A1B]/25 bg-white/12 dark:bg-[#1A1A1B]/12 hover:bg-white/22 dark:hover:bg-[#1A1A1B]/20 pl-3.5 pr-3 py-1.5 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] shadow-sm hover:shadow"
+          >
+            <span className="text-[12px] font-medium uppercase tracking-wider opacity-80">
+              Developed by
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex items-center bg-white rounded-md px-1.5 py-0.5 shadow-xs">
+                <img
+                  src="/assets/technokraft-logo.png"
+                  alt="TechnoKraft Services LLP"
+                  className="h-3.5 w-auto object-contain"
+                />
+              </span>
+              <span className="font-semibold text-[13px] text-white dark:text-[#1A1A1B] underline-offset-4 group-hover:underline">
+                TechnoKraft Services LLP
+              </span>
+              <ArrowUpRight className="w-3.5 h-3.5 opacity-75 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200" />
+            </span>
+          </a>
         </div>
       </div>
     </footer>
