@@ -1,4 +1,10 @@
 import {
+  SITE_URL,
+  SITE_NAME,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_OG_IMAGE_ALT,
+} from '../config/site';
+import {
   BLOGS,
   FAQS,
   GALLERY_ITEMS,
@@ -8,11 +14,11 @@ import {
   PROJECTS,
   STUDY_RESOURCES,
 } from '../data/portfolioData';
+import { TRAINING_COURSES, getCourseBySlug } from '../data/coursesData';
 import type { AppRoute } from './scrollMath';
 
-export const DEFAULT_SITE_ORIGIN = 'https://arvindthevar.vercel.app';
-export const DEFAULT_OG_IMAGE = '/assets/optimized/og-share.jpg';
-export const SITE_NAME = 'Arvind Thevar';
+export { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_ALT };
+export const DEFAULT_SITE_ORIGIN = SITE_URL;
 
 export interface RouteSeoMetadata {
   title: string;
@@ -533,13 +539,143 @@ export function buildRouteSeo(
       };
     }
 
+    case 'training-course': {
+      const course = getCourseBySlug(route.slug) ?? TRAINING_COURSES[0];
+      const pathname = `/training/${course.slug}`;
+      const title = `${course.shortTitle} Training in Nashik & Online | Arvind Thevar`;
+      const description = `${course.summary.slice(0, 145)}... Practical lab-driven training in Nashik.`;
+
+      return {
+        title,
+        description,
+        canonicalUrl: toAbsoluteUrl(cleanOrigin, pathname),
+        pathname,
+        ogType: 'website',
+        ogImage: toAbsoluteUrl(cleanOrigin, DEFAULT_OG_IMAGE),
+        ogImageAlt: `${course.title} by Arvind Thevar`,
+        keywords: `${course.shortTitle}, ${course.badge}, ${course.certification}, IT training Nashik, Arvind Thevar`,
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@graph': [
+            ...baseEntities,
+            {
+              '@type': 'Course',
+              '@id': `${toAbsoluteUrl(cleanOrigin, pathname)}#course`,
+              name: course.title,
+              description: course.summary,
+              provider: orgRef,
+              educationalCredentialAwarded: course.certification,
+              hasCourseInstance: {
+                '@type': 'CourseInstance',
+                courseMode: 'Blended',
+                location: {
+                  '@type': 'Place',
+                  name: 'Arvind Thevar Training Center',
+                  address: {
+                    '@type': 'PostalAddress',
+                    streetAddress:
+                      'Office No-2, First Floor, Kanchawala Avenue, College Rd, near BYK College',
+                    addressLocality: 'Nashik',
+                    addressRegion: 'Maharashtra',
+                    postalCode: '422005',
+                    addressCountry: 'IN',
+                  },
+                },
+              },
+            },
+            buildBreadcrumbList(cleanOrigin, [
+              { name: 'Home', path: '/' },
+              { name: 'Upcoming Training', path: '/upcoming-training' },
+              { name: course.shortTitle, path: pathname },
+            ]),
+          ],
+        },
+      };
+    }
+
+    case 'contact': {
+      const pathname = '/contact';
+      return {
+        title: 'Contact Arvind Thevar | IT Infrastructure Training Nashik',
+        description:
+          'Get in touch with Arvind Thevar for upcoming Red Hat Linux, Cisco CCNA/CCNP, and AWS batch schedules in Nashik or live online. Call +91 88888 29652.',
+        canonicalUrl: toAbsoluteUrl(cleanOrigin, pathname),
+        pathname,
+        ogType: 'website',
+        ogImage: toAbsoluteUrl(cleanOrigin, DEFAULT_OG_IMAGE),
+        ogImageAlt: 'Contact Arvind Thevar IT Infrastructure Training Nashik',
+        keywords:
+          'Contact Arvind Thevar, IT training Nashik contact number, Linux batch inquiries Nashik, Cisco CCNA classes Nashik',
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@graph': [
+            ...baseEntities,
+            {
+              '@type': 'ContactPage',
+              url: toAbsoluteUrl(cleanOrigin, pathname),
+              name: 'Contact Arvind Thevar',
+              mainEntity: personRef,
+            },
+            buildBreadcrumbList(cleanOrigin, [
+              { name: 'Home', path: '/' },
+              { name: 'Contact', path: pathname },
+            ]),
+          ],
+        },
+      };
+    }
+
+    case 'privacy-policy': {
+      const pathname = '/privacy-policy';
+      return {
+        title: 'Privacy Policy | Arvind Thevar IT Infrastructure Training',
+        description:
+          'Privacy Policy and data transparency practices for Arvind Thevar IT infrastructure training inquiries and student consultation.',
+        canonicalUrl: toAbsoluteUrl(cleanOrigin, pathname),
+        pathname,
+        ogType: 'website',
+        ogImage: toAbsoluteUrl(cleanOrigin, DEFAULT_OG_IMAGE),
+        ogImageAlt: 'Privacy Policy — Arvind Thevar',
+        keywords: 'Privacy Policy, Arvind Thevar, IT Training Nashik data policy',
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@graph': [
+            ...baseEntities,
+            buildBreadcrumbList(cleanOrigin, [
+              { name: 'Home', path: '/' },
+              { name: 'Privacy Policy', path: pathname },
+            ]),
+          ],
+        },
+      };
+    }
+
+    case 'not-found': {
+      const pathname = '/404';
+      return {
+        title: '404 — Page Not Found | Arvind Thevar',
+        description:
+          'The page you requested could not be found. Explore hands-on Red Hat Linux, Cisco CCNA, and AWS cloud training tracks with Arvind Thevar.',
+        canonicalUrl: toAbsoluteUrl(cleanOrigin, pathname),
+        pathname,
+        ogType: 'website',
+        ogImage: toAbsoluteUrl(cleanOrigin, DEFAULT_OG_IMAGE),
+        ogImageAlt: '404 Page Not Found — Arvind Thevar',
+        keywords: '404, Page Not Found, Arvind Thevar',
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@graph': [...baseEntities],
+        },
+      };
+    }
+
     case 'home':
     default: {
       const pathname = '/';
       return {
-        title: 'Arvind Thevar — IT Trainer & IT Infrastructure Professional',
+        title: 'Arvind Thevar | RHEL, CCNA & AWS Trainer in Nashik',
         description:
-          'Hands-on IT infrastructure training by Arvind Thevar (15+ yrs): Red Hat Linux (RHEL), Cisco CCNA/CCNP, Windows Server & AWS labs in Nashik & online.',
+          'Hands-on IT infrastructure training in Nashik & online by Arvind Thevar (15+ yrs). Master Red Hat Linux (RHEL), Cisco CCNA/CCNP, and AWS Cloud labs.',
         canonicalUrl: siteUrl,
         pathname,
         ogType: 'website',
@@ -585,14 +721,14 @@ export function getAllPublicSitemapPaths(): string[] {
     '/',
     '/about',
     '/upcoming-training',
-    '/it-services',
+    ...TRAINING_COURSES.map((c) => `/training/${c.slug}`),
     '/resources',
     '/testimonials',
-    '/projects',
-    ...PROJECTS.map((p) => `/projects/${p.slug}`),
     '/blogs',
     ...BLOGS.map((b) => `/blogs/${b.slug}`),
     '/gallery',
+    '/contact',
+    '/privacy-policy',
   ];
 }
 
@@ -649,12 +785,23 @@ export function applyRouteSeoToDocument(route: AppRoute): RouteSeoMetadata {
     upsertMetaTag('property', 'og:url', seo.canonicalUrl);
     upsertMetaTag('property', 'og:image', seo.ogImage);
     upsertMetaTag('property', 'og:image:alt', seo.ogImageAlt);
+    upsertMetaTag('property', 'og:image:width', '1200');
+    upsertMetaTag('property', 'og:image:height', '630');
     upsertMetaTag('property', 'og:site_name', SITE_NAME);
     upsertMetaTag('name', 'twitter:card', 'summary_large_image');
     upsertMetaTag('name', 'twitter:title', seo.title);
     upsertMetaTag('name', 'twitter:description', seo.description);
     upsertMetaTag('name', 'twitter:image', seo.ogImage);
     upsertMetaTag('name', 'twitter:image:alt', seo.ogImageAlt);
+    if (route.page === 'not-found') {
+      upsertMetaTag('name', 'robots', 'noindex, nofollow');
+    } else {
+      upsertMetaTag(
+        'name',
+        'robots',
+        'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+      );
+    }
     upsertCanonicalLink(seo.canonicalUrl);
     upsertJsonLd(seo.jsonLd);
   }

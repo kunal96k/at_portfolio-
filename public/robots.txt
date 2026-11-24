@@ -1,7 +1,5 @@
-# robots.txt for Arvind Thevar — IT Trainer & IT Infrastructure Professional
 User-agent: *
 Allow: /
 Disallow: /admin-dashboard/
-Disallow: /admin-dashboard
 
-Sitemap: https://ais-pre-a42rcztlt42slsnbbfpj3e-3362827001.asia-southeast1.run.app/sitemap.xml
+Sitemap: https://arvindthevar.vercel.app/sitemap.xml

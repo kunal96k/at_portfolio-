@@ -41,11 +41,26 @@ const TestimonialsPage = lazy(() =>
 const UpcomingTrainingPage = lazy(() =>
   import('./pages/UpcomingTrainingPage').then((m) => ({ default: m.UpcomingTrainingPage }))
 );
+const CourseDetailPage = lazy(() =>
+  import('./pages/CourseDetailPage').then((m) => ({ default: m.CourseDetailPage }))
+);
+const ContactPage = lazy(() =>
+  import('./pages/ContactPage').then((m) => ({ default: m.ContactPage }))
+);
+const PrivacyPolicyPage = lazy(() =>
+  import('./pages/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage }))
+);
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
+);
 
 const PAGES_WITH_CONTACT_SECTION: ReadonlySet<AppRoute['page']> = new Set([
   'home',
   'about',
   'upcoming-training',
+  'training-course',
+  'contact',
+  'privacy-policy',
   'it-services',
   'resources',
   'testimonials',
@@ -66,9 +81,9 @@ function RouteFallback() {
   );
 }
 
-export default function App() {
+export default function App({ initialRoute }: { initialRoute?: AppRoute } = {}) {
   const [route, setRoute] = useState<AppRoute>(() =>
-    typeof window !== 'undefined' ? parseRoute(window.location.pathname) : { page: 'home' }
+    initialRoute || (typeof window !== 'undefined' ? parseRoute(window.location.pathname) : { page: 'home' })
   );
   const [isDark, setIsDark] = useState(false);
 
@@ -164,6 +179,16 @@ export default function App() {
           {route.page === 'upcoming-training' && (
             <UpcomingTrainingPage onContactClick={scrollToContact} />
           )}
+          {route.page === 'training-course' && (
+            <CourseDetailPage
+              slug={route.slug}
+              onNavigate={navigate}
+              onContactClick={scrollToContact}
+            />
+          )}
+          {route.page === 'contact' && <ContactPage onNavigate={navigate} />}
+          {route.page === 'privacy-policy' && <PrivacyPolicyPage onNavigate={navigate} />}
+          {route.page === 'not-found' && <NotFoundPage onNavigate={navigate} />}
           {route.page === 'it-services' && <ItServicesPage onNavigate={navigate} />}
           {route.page === 'resources' && <ResourcesPage onNavigate={navigate} />}
           {route.page === 'testimonials' && <TestimonialsPage onNavigate={navigate} />}

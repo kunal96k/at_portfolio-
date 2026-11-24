@@ -29,6 +29,7 @@ export type AppRoute =
   | { page: 'home' }
   | { page: 'about' }
   | { page: 'upcoming-training' }
+  | { page: 'training-course'; slug: string }
   | { page: 'it-services' }
   | { page: 'resources' }
   | { page: 'testimonials' }
@@ -36,7 +37,10 @@ export type AppRoute =
   | { page: 'projects' }
   | { page: 'project-detail'; slug: string }
   | { page: 'blogs' }
-  | { page: 'blog-detail'; slug: string };
+  | { page: 'blog-detail'; slug: string }
+  | { page: 'contact' }
+  | { page: 'privacy-policy' }
+  | { page: 'not-found' };
 
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -337,6 +341,16 @@ export function parseRoute(pathname: string): AppRoute {
   if (clean === '/upcoming-training') {
     return { page: 'upcoming-training' };
   }
+  if (clean.startsWith('/training/')) {
+    const slug = clean.slice('/training/'.length);
+    if (slug) return { page: 'training-course', slug };
+  }
+  if (clean === '/contact') {
+    return { page: 'contact' };
+  }
+  if (clean === '/privacy-policy') {
+    return { page: 'privacy-policy' };
+  }
   if (clean === '/it-services') {
     return { page: 'it-services' };
   }
@@ -356,14 +370,21 @@ export function parseRoute(pathname: string): AppRoute {
     const slug = clean.slice('/projects/'.length);
     if (slug) return { page: 'project-detail', slug };
   }
-  if (clean === '/blogs') {
+  if (clean === '/blogs' || clean === '/blog') {
     return { page: 'blogs' };
   }
   if (clean.startsWith('/blogs/')) {
     const slug = clean.slice('/blogs/'.length);
     if (slug) return { page: 'blog-detail', slug };
   }
-  return { page: 'home' };
+  if (clean.startsWith('/blog/')) {
+    const slug = clean.slice('/blog/'.length);
+    if (slug) return { page: 'blog-detail', slug };
+  }
+  if (clean === '/404') {
+    return { page: 'not-found' };
+  }
+  return { page: 'not-found' };
 }
 
 export function formatCounterValue(current: number, target: number, suffix: string): string {
