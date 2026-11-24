@@ -1,0 +1,17 @@
+{
+  "name": "Arvind Thevar — IT Trainer & IT Infrastructure Professional",
+  "short_name": "Arvind Thevar",
+  "description": "Real infrastructure. Real labs. Real careers. Hands-on IT training in RHEL, CCNA, AWS, Windows Server & more.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#5E67E6",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
