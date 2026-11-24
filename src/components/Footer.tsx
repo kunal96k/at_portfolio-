@@ -12,7 +12,6 @@ const QUICK_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'About Us', path: '/about' },
   { label: 'Upcoming Training', path: '/upcoming-training' },
-  { label: 'IT Services', path: '/it-services' },
   { label: 'Notes & Resources', path: '/resources' },
   { label: 'Student Testimonials', path: '/testimonials' },
   { label: 'Blogs', path: '/blogs' },
@@ -23,8 +22,7 @@ const CORE_TRACKS = [
   { label: 'Red Hat Linux (RHEL)', path: '/upcoming-training' },
   { label: 'Cisco CCNA & CCNP', path: '/upcoming-training' },
   { label: 'AWS Solutions Architect', path: '/upcoming-training' },
-  { label: 'Windows Server & Virtualization', path: '/it-services' },
-  { label: 'Corporate & Institutional Labs', path: '/it-services' },
+  { label: 'Windows Server & Virtualization', path: '/upcoming-training' },
 ];
 
 export function Footer({ onNavigate, onContactClick }: FooterProps) {
