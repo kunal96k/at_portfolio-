@@ -14,6 +14,7 @@ import { OutlineButton } from '../components/OutlineButton';
 import { PortraitShowcaseSection } from '../components/PortraitShowcaseSection';
 import { SafeImage } from '../components/SafeImage';
 import { TestimonialsSection } from '../components/TestimonialsSection';
+import { useResponsiveReveal } from '../hooks/useResponsiveReveal';
 
 interface HomePageProps {
   onNavigate: (path: string) => void;
@@ -21,21 +22,24 @@ interface HomePageProps {
 }
 
 export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
+  const headerReveal = useResponsiveReveal(0.2, 0.6);
+  const cardReveal = useResponsiveReveal(0.15, 0.45);
+
   return (
     <main>
       <PortraitShowcaseSection onNavigate={onNavigate} onContactClick={onContactClick} />
 
-      {/* Ten Core Domains + Upcoming Training Overview */}
+      {/* Ten Core Domains + Upcoming Batches Overview */}
       <section
         aria-label="Ten Core Training Domains"
         className="relative z-10 w-full px-5 sm:px-8 py-16 sm:py-24"
       >
         <div className="mx-auto max-w-[1120px]">
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            viewport={headerReveal.viewport}
+            transition={{ duration: headerReveal.duration, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-[660px]"
           >
             <h2 className="font-display text-[44px] sm:text-[56px] lg:text-[60px] font-bold leading-[1.12] uppercase text-[#303030] dark:text-white">
@@ -53,10 +57,13 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
             {EXPERTISE_DOMAINS.map((domain, idx) => (
               <motion.article
                 key={domain.number}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.45, delay: idx * 0.03 }}
+                viewport={cardReveal.viewport}
+                transition={{
+                  duration: cardReveal.duration,
+                  delay: cardReveal.isCompactViewport ? 0 : idx * 0.03,
+                }}
                 className="rounded-[20px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-5 flex flex-col justify-between"
               >
                 <div>
@@ -74,7 +81,7 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
             ))}
           </div>
 
-          {/* Upcoming Training Preview Strip */}
+          {/* Upcoming Batches Preview Strip */}
           <div className="mt-16 pt-14 border-t border-[#E5E5E5] dark:border-[#333335]">
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div>

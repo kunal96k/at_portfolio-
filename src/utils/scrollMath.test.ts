@@ -2,6 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   computePortraitChoreography,
+  computeTabletChoreography,
+  shouldSwapTabletFrontToAbout,
+  computeStageHorizontalShift,
+  computeMobileHeroPortraitTransform,
+  computeMobileFlipTransform,
+  getScrollRevealConfig,
   computeStackedCardTransform,
   validateContactForm,
   validateNewsletterEmail,
@@ -58,6 +64,69 @@ test('portrait choreography flips 360deg back to front view in About Me phase', 
   assert.equal(state.hiOpacity, 0);
 });
 
+test('tablet md choreography completes shifts and flips earlier and swaps front face away from Hero portrait for About Me', () => {
+  const start = computeTabletChoreography(0);
+  assert.equal(start.rotateY, 0);
+  assert.equal(shouldSwapTabletFrontToAbout(0), false);
+
+  // Already fully shifted and flipped to 180deg by progress 0.36
+  const expertise = computeTabletChoreography(0.36);
+  assert.equal(expertise.translateXPercent, 100);
+  assert.equal(expertise.rotateY, 180);
+  assert.equal(expertise.hiOpacity, 0);
+
+  // Swaps hidden front face once safely flipped to back face
+  assert.equal(shouldSwapTabletFrontToAbout(0.48), true);
+
+  // Completes second flip cleanly by progress 0.80
+  const about = computeTabletChoreography(0.8);
+  assert.equal(about.rotateY, 360);
+});
+
+test('stage horizontal shift adapts cleanly across mobile, md tablet, and lg desktop widths', () => {
+  assert.equal(computeStageHorizontalShift(390), 0);
+  const tabletShift = computeStageHorizontalShift(768);
+  assert.ok(tabletShift >= 195 && tabletShift <= 215);
+  const desktopShift = computeStageHorizontalShift(1440);
+  assert.equal(desktopShift, Math.round(1120 * 0.275));
+});
+
+test('mobile scroll flip transforms rotate smoothly and complete early while visibly in viewport', () => {
+  const expStart = computeMobileFlipTransform(0, 'front-to-back');
+  assert.equal(expStart.rotateY, 0);
+  const expMid = computeMobileFlipTransform(0.25, 'front-to-back');
+  assert.ok(expMid.rotateY > 70 && expMid.rotateY < 110);
+  assert.ok(expMid.scale < 1);
+  // Completes 180deg flip cleanly by mid-viewport (0.45) rather than lagging off-screen
+  const expDone = computeMobileFlipTransform(0.45, 'front-to-back');
+  assert.equal(expDone.rotateY, 180);
+
+  const aboutStart = computeMobileFlipTransform(0, 'back-to-front');
+  assert.equal(aboutStart.rotateY, 180);
+  const aboutDone = computeMobileFlipTransform(0.45, 'back-to-front');
+  assert.equal(aboutDone.rotateY, 360);
+
+  const heroTilt = computeMobileHeroPortraitTransform(0.6);
+  assert.ok(heroTilt.rotateY > 10 && heroTilt.hiOpacity === 0);
+});
+
+test('responsive scroll reveal config triggers early on sm/md and preserves lg desktop defaults', () => {
+  const smConfig = getScrollRevealConfig(390, 0.25, 0.6);
+  assert.equal(smConfig.isCompactViewport, true);
+  assert.equal(smConfig.viewport.amount, 0.02);
+  assert.equal(smConfig.viewport.margin, '80px 0px 80px 0px');
+  assert.ok(smConfig.duration <= 0.4);
+
+  const mdConfig = getScrollRevealConfig(768, 0.25, 0.6);
+  assert.equal(mdConfig.isCompactViewport, true);
+
+  const lgConfig = getScrollRevealConfig(1280, 0.25, 0.6);
+  assert.equal(lgConfig.isCompactViewport, false);
+  assert.equal(lgConfig.viewport.amount, 0.25);
+  assert.equal(lgConfig.viewport.margin, undefined);
+  assert.equal(lgConfig.duration, 0.6);
+});
+
 test('contact form validation catches empty and invalid fields', () => {
   const emptyErrors = validateContactForm({
     name: '',
@@ -89,6 +158,7 @@ test('route parser resolves all Portavia routes cleanly', () => {
   assert.deepEqual(parseRoute('/'), { page: 'home' });
   assert.deepEqual(parseRoute('/about/'), { page: 'about' });
   assert.deepEqual(parseRoute('/upcoming-training'), { page: 'upcoming-training' });
+  assert.deepEqual(parseRoute('/upcoming-batches'), { page: 'upcoming-training' });
   assert.deepEqual(parseRoute('/it-services'), { page: 'it-services' });
   assert.deepEqual(parseRoute('/resources'), { page: 'resources' });
   assert.deepEqual(parseRoute('/testimonials'), { page: 'testimonials' });

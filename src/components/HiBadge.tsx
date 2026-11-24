@@ -24,8 +24,8 @@ export function HiBadge({ size = 'lg', initialMode = 'hi', className = '' }: HiB
     <motion.div
       whileHover={{ scale: 1.07 }}
       transition={{ type: 'spring', stiffness: 320, damping: 20 }}
-      className={`${dims} rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B] flex items-center justify-center shadow-[0_12px_32px_rgba(94,103,230,0.28)] dark:shadow-[0_12px_32px_rgba(208,255,113,0.22)] select-none ${className}`}
-      aria-label="Greeting badge"
+      className={`${dims} rounded-full bg-[#4F58DF] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B] flex items-center justify-center shadow-[0_12px_32px_rgba(79,88,223,0.28)] dark:shadow-[0_12px_32px_rgba(208,255,113,0.22)] select-none ${className}`}
+      aria-hidden="true"
     >
       <AnimatePresence mode="wait">
         {showWave ? (

@@ -1,7 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /dashboard/
-Disallow: /auth/
+Disallow: /admin-dashboard/
 
 Sitemap: https://arvindthevar.vercel.app/sitemap.xml

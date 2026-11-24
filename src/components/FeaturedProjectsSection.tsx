@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from 'motion/react';
 import { PROJECTS, type ProjectItem } from '../data/portfolioData';
 import { computeStackedCardTransform } from '../utils/scrollMath';
+import { useResponsiveReveal } from '../hooks/useResponsiveReveal';
 import { OutlineButton } from './OutlineButton';
 import { SafeImage } from './SafeImage';
 
@@ -109,6 +110,7 @@ export function FeaturedProjectsSection({
   const featured = PROJECTS.filter((p) => p.featured);
   const HeadingTag = asMainHeading ? 'h1' : 'h2';
   const stackRef = useRef<HTMLDivElement | null>(null);
+  const reveal = useResponsiveReveal(0.25, 0.6);
 
   const { scrollYProgress } = useScroll({
     target: stackRef,
@@ -129,10 +131,10 @@ export function FeaturedProjectsSection({
       <div className="mx-auto max-w-[1120px]">
         {/* Section Heading */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          viewport={reveal.viewport}
+          transition={{ duration: reveal.duration, ease: [0.16, 1, 0.3, 1] }}
           className="max-w-[620px]"
         >
           <HeadingTag

@@ -122,16 +122,16 @@ export interface GalleryPhoto {
 export const ASSETS = {
   avatar: '/assets/aistudio/image_e26475f0.png',
   portraitFront: '/assets/aistudio/image_e26475f0.png',
-  portraitBackWorkspace: '/src/assets/images/infra_workspace_vertical_1795164486330.jpg',
+  portraitBackWorkspace: '/assets/images/infra_workspace_vertical_1795164486330.jpg',
   creatorLogo: '/assets/aistudio/image_e26475f0.png',
-  aboutStudio1: '/src/assets/images/hands_on_troubleshooting_1795164485759.jpg',
-  aboutStudio2: '/src/assets/images/infra_workspace_vertical_1795164486330.jpg',
-  aboutStudio3: '/src/assets/images/corporate_it_workshop_1795164484663.jpg',
-  courseLinux: '/src/assets/images/linux_rhel_lab_1795164484674.jpg',
-  courseCisco: '/src/assets/images/cisco_network_lab_1795164486189.jpg',
-  courseAws: '/src/assets/images/aws_cloud_infra_1795164482369.jpg',
-  courseCorporate: '/src/assets/images/corporate_it_workshop_1795164484663.jpg',
-  courseTroubleshooting: '/src/assets/images/hands_on_troubleshooting_1795164485759.jpg',
+  aboutStudio1: '/assets/images/hands_on_troubleshooting_1795164485759.jpg',
+  aboutStudio2: '/assets/images/infra_workspace_vertical_1795164486330.jpg',
+  aboutStudio3: '/assets/images/corporate_it_workshop_1795164484663.jpg',
+  courseLinux: '/assets/images/linux_rhel_lab_1795164484674.jpg',
+  courseCisco: '/assets/images/cisco_network_lab_1795164486189.jpg',
+  courseAws: '/assets/images/aws_cloud_infra_1795164482369.jpg',
+  courseCorporate: '/assets/images/corporate_it_workshop_1795164484663.jpg',
+  courseTroubleshooting: '/assets/images/hands_on_troubleshooting_1795164485759.jpg',
 };
 
 export const PROFILE = {
@@ -448,7 +448,7 @@ export const PROJECTS: ProjectItem[] = [
     category: 'Linux & Server Admin',
     shortDescription:
       'Hands-on RHEL administration covering installation, storage, users, permissions, systemd services, shell scripting and RHCSA / RHCE exam preparation.',
-    coverImage: '/src/assets/images/linux_rhel_lab_1795164484674.jpg',
+    coverImage: '/assets/images/linux_rhel_lab_1795164484674.jpg',
     featured: true,
     year: 'Active Track',
     industry: 'Enterprise Linux Infrastructure',
@@ -469,8 +469,8 @@ export const PROJECTS: ProjectItem[] = [
       'Builds complete day-one confidence in Red Hat Enterprise Linux administration, daily operations and structured troubleshooting.',
     ],
     galleryImages: [
-      '/src/assets/images/linux_rhel_lab_1795164484674.jpg',
-      '/src/assets/images/hands_on_troubleshooting_1795164485759.jpg',
+      '/assets/images/linux_rhel_lab_1795164484674.jpg',
+      '/assets/images/hands_on_troubleshooting_1795164485759.jpg',
     ],
   },
   {
@@ -479,7 +479,7 @@ export const PROJECTS: ProjectItem[] = [
     category: 'Cisco Networking',
     shortDescription:
       'From IP addressing, subnetting and Cisco IOS switching/routing to advanced OSPF, EIGRP, BGP, redundancy and enterprise network security.',
-    coverImage: '/src/assets/images/cisco_network_lab_1795164486189.jpg',
+    coverImage: '/assets/images/cisco_network_lab_1795164486189.jpg',
     featured: true,
     year: 'Active Track',
     industry: 'Enterprise Routing & Switching',
@@ -499,8 +499,8 @@ export const PROJECTS: ProjectItem[] = [
       'Equips networking aspirants and working engineers with practical Cisco IOS fluency, certification readiness and real troubleshooting discipline.',
     ],
     galleryImages: [
-      '/src/assets/images/cisco_network_lab_1795164486189.jpg',
-      '/src/assets/images/hands_on_troubleshooting_1795164485759.jpg',
+      '/assets/images/cisco_network_lab_1795164486189.jpg',
+      '/assets/images/hands_on_troubleshooting_1795164485759.jpg',
     ],
   },
   {
@@ -509,7 +509,7 @@ export const PROJECTS: ProjectItem[] = [
     category: 'Cloud Computing',
     shortDescription:
       'Practical training in cloud concepts, service models, deploying and managing AWS workloads, and migrating on-premises infrastructure to the cloud.',
-    coverImage: '/src/assets/images/aws_cloud_infra_1795164482369.jpg',
+    coverImage: '/assets/images/aws_cloud_infra_1795164482369.jpg',
     featured: true,
     year: 'Active Track',
     industry: 'Cloud & Hybrid Infrastructure',
@@ -528,8 +528,8 @@ export const PROJECTS: ProjectItem[] = [
       'Prepares learners to architect, deploy and troubleshoot resilient AWS and hybrid cloud environments.',
     ],
     galleryImages: [
-      '/src/assets/images/aws_cloud_infra_1795164482369.jpg',
-      '/src/assets/images/linux_rhel_lab_1795164484674.jpg',
+      '/assets/images/aws_cloud_infra_1795164482369.jpg',
+      '/assets/images/linux_rhel_lab_1795164484674.jpg',
     ],
   },
   {
@@ -538,7 +538,7 @@ export const PROJECTS: ProjectItem[] = [
     category: 'Corporate & Institutional',
     shortDescription:
       'Specialised CCNA, CCNP Voice/Security, Cyber Security and Microsoft (MCSE) training delivered for government bodies, enterprises and colleges.',
-    coverImage: '/src/assets/images/corporate_it_workshop_1795164484663.jpg',
+    coverImage: '/assets/images/corporate_it_workshop_1795164484663.jpg',
     featured: true,
     year: 'Verified Programs',
     industry: 'Government, Corporate & Education',
@@ -557,8 +557,8 @@ export const PROJECTS: ProjectItem[] = [
       'Proven classroom and institutional delivery focused on practical skills, device hardening and operational confidence.',
     ],
     galleryImages: [
-      '/src/assets/images/corporate_it_workshop_1795164484663.jpg',
-      '/src/assets/images/cisco_network_lab_1795164486189.jpg',
+      '/assets/images/corporate_it_workshop_1795164484663.jpg',
+      '/assets/images/cisco_network_lab_1795164486189.jpg',
     ],
   },
 ];
@@ -598,7 +598,7 @@ export const FAQS: FaqItem[] = [
     number: '6.',
     question: 'HOW CAN I BOOK A FREE CONSULTATION OR CHECK UPCOMING BATCHES?',
     answer:
-      'You can explore upcoming batches on the Upcoming Training page, reach out through the contact form below, email arvindthaver@gmail.com, or call / WhatsApp directly at +91 88888 29652.',
+      'You can explore upcoming batches on the Upcoming Batches page, reach out through the contact form below, email arvindthaver@gmail.com, or call / WhatsApp directly at +91 88888 29652.',
   },
 ];
 
@@ -610,7 +610,7 @@ export const BLOGS: BlogPost[] = [
     date: 'Infrastructure Guide',
     excerpt:
       'Why theory alone never prepares engineers for production outages—and how live fault-injection labs turn IT learners into confident professionals.',
-    coverImage: '/src/assets/images/hands_on_troubleshooting_1795164485759.jpg',
+    coverImage: '/assets/images/hands_on_troubleshooting_1795164485759.jpg',
     mostViewed: true,
     sections: [
       {
@@ -620,7 +620,7 @@ export const BLOGS: BlogPost[] = [
       {
         heading: '2. Step-by-Step Live Lab Implementation',
         body: 'Knowing what a routing protocol does is useful; configuring it in a live lab, watching how interfaces and tables behave, and validating every change step by step is where practical skill begins.',
-        images: ['/src/assets/images/corporate_it_workshop_1795164484663.jpg'],
+        images: ['/assets/images/corporate_it_workshop_1795164484663.jpg'],
       },
       {
         heading: '3. Live Faults & Structured Troubleshooting',
@@ -635,7 +635,7 @@ export const BLOGS: BlogPost[] = [
     date: 'Study Guide',
     excerpt:
       'Core skills every aspiring Linux administrator must master: users, permissions, storage, systemd services, shell scripting and structured recovery.',
-    coverImage: '/src/assets/images/linux_rhel_lab_1795164484674.jpg',
+    coverImage: '/assets/images/linux_rhel_lab_1795164484674.jpg',
     sections: [
       {
         heading: '1. Core RHEL System Administration',
@@ -654,7 +654,7 @@ export const BLOGS: BlogPost[] = [
     date: 'Networking Guide',
     excerpt:
       'How IP addressing, subnetting and Cisco IOS switching lay the foundation for OSPF, EIGRP, BGP, redundancy and secure network design.',
-    coverImage: '/src/assets/images/cisco_network_lab_1795164486189.jpg',
+    coverImage: '/assets/images/cisco_network_lab_1795164486189.jpg',
     sections: [
       {
         heading: '1. Mastering Subnetting & Switching',
@@ -673,7 +673,7 @@ export const BLOGS: BlogPost[] = [
     date: 'Cloud Guide',
     excerpt:
       'Why hands-on experience with Linux, Windows Server, networking and hypervisors gives you a decisive advantage when architecting AWS workloads.',
-    coverImage: '/src/assets/images/aws_cloud_infra_1795164482369.jpg',
+    coverImage: '/assets/images/aws_cloud_infra_1795164482369.jpg',
     sections: [
       {
         heading: '1. Infrastructure Fundamentals Power the Cloud',
@@ -690,79 +690,54 @@ export const BLOGS: BlogPost[] = [
 export const INITIAL_UPCOMING_BATCHES: TrainingBatch[] = [
   {
     id: 'redhat-linux-batch',
-    title: 'Red Hat Enterprise Linux (RHEL 9 / RHCSA & RHCE)',
+    title: 'Red Hat Linux (RHEL)',
     category: 'Linux',
-    batchDate: 'Starting Dec 08, 2026 · Weekday & Weekend Slots',
-    batchTime: 'Evening: 7:30 PM – 9:30 PM IST (Mon–Thu) | Weekend: 10:00 AM – 2:00 PM IST',
-    mode: 'Live Interactive Online Labs + Dedicated Cloud VM Terminal',
+    batchDate: 'Date to be announced (Editable below)',
+    batchTime: 'Weekday / Weekend Slots',
+    mode: 'Live Lab-Driven Training',
     summary:
-      'Master Red Hat Enterprise Linux system administration through 100% hands-on terminal practice. Configure storage, systemd services, SELinux, shell automation, and complete focused prep for RHCSA (EX200) and RHCE (EX294) certifications.',
+      'Install, configure and manage Red Hat Enterprise Linux systems with practical Linux System Administration and focused preparation for RHCSA and RHCE certification.',
     modules: [
-      'RHEL 9 Architecture, User/Group Permissions & ACLs',
-      'LVM Partitioning, Stratis, VDO Storage & Systemd Services',
-      'Network Configuration, Firewalld, SSH Hardening & SELinux',
-      'Bash Shell Automation, Cron Jobs & Real-Time Log Analysis',
-      'Boot Recovery, Kernel Tuning & Live Production Fault Scenarios',
-      'RHCSA & RHCE Exam Drills, Mock Practical Labs & Interview Q&A',
+      'RHEL Installation, Users, Groups & Permissions',
+      'Storage Management, Services & System Administration',
+      'Shell Scripting & Live Troubleshooting Labs',
+      'RHCSA & RHCE Exam-Focused Practical Preparation',
     ],
-    coverImage: '/src/assets/images/linux_rhel_lab_1795164484674.jpg',
+    coverImage: '/assets/images/linux_rhel_lab_1795164484674.jpg',
   },
   {
     id: 'cisco-ccna-batch',
-    title: 'Cisco Certified Network Associate (CCNA 200-301 v1.1)',
+    title: 'Cisco Certified Network Associate (CCNA)',
     category: 'Networking',
-    batchDate: 'Starting Dec 12, 2026 · Weekend & Morning Slots',
-    batchTime: 'Morning: 8:00 AM – 10:00 AM IST (Mon–Thu) | Weekend: 2:00 PM – 6:00 PM IST',
-    mode: 'Live Cisco IOS Packet Tracer, GNS3 & Real Rack-Hardware Topology',
+    batchDate: 'Date to be announced (Editable below)',
+    batchTime: 'Weekday / Weekend Slots',
+    mode: 'Live Lab-Driven Training',
     summary:
-      'Build deep enterprise networking fluency from IPv4/IPv6 subnetting to advanced switching and multi-area OSPF routing. Practice live troubleshooting of link flaps, VLAN misconfigurations, ACL leaks, and prepare thoroughly for the CCNA 200-301 certification.',
+      'Master networking fundamentals, IP addressing, subnetting, switching, routing, Cisco IOS configuration and practical fault troubleshooting.',
     modules: [
-      'Network Fundamentals, IPv4/IPv6 Subnetting & Packet Flow',
-      'Enterprise Switching, VLANs, 802.1Q Trunks, STP, RSTP & EtherChannel',
-      'IP Routing, Static Routes, Floating Routes & Single/Multi-Area OSPF',
-      'First Hop Redundancy (HSRP), DHCP Snooping & Dynamic ARP Inspection',
-      'Standard & Extended ACLs, NAT/PAT, Device Hardening & VPN Concepts',
-      'Network Automation Basics (REST APIs, JSON, Ansible) & CCNA Exam Practice',
+      'Networking Fundamentals, IP Addressing & Subnetting',
+      'Enterprise Switching, VLANs & Cisco IOS CLI',
+      'Routing Protocols, ACLs & Network Security Basics',
+      'Live Network Troubleshooting, CCNA Prep & Mock Interviews',
     ],
-    coverImage: '/src/assets/images/cisco_network_lab_1795164486189.jpg',
+    coverImage: '/assets/images/cisco_network_lab_1795164486189.jpg',
   },
   {
     id: 'aws-saa-batch',
-    title: 'AWS Certified Solutions Architect – Associate (SAA-C03)',
+    title: 'Amazon Web Services Solutions Architect Associate (AWS)',
     category: 'Cloud',
-    batchDate: 'Starting Dec 15, 2026 · Weekend Intensive Batch',
-    batchTime: 'Saturday & Sunday: 9:30 AM – 1:30 PM IST (4 Hours / Day)',
-    mode: 'Live AWS Free-Tier Console + Real Architecture Deployment Labs',
+    batchDate: 'Date to be announced (Editable below)',
+    batchTime: 'Weekday / Weekend Slots',
+    mode: 'Live Lab-Driven Training',
     summary:
-      'Architect resilient, highly available, fault-tolerant enterprise infrastructure on Amazon Web Services. Hands-on deployment of VPCs, multi-tier EC2/ALB setups, S3 security policies, RDS multi-AZ databases, and hybrid cloud connectivity.',
+      'Learn cloud concepts, service models, deploying and managing AWS workloads, and migrating enterprise infrastructure to the cloud with hands-on labs.',
     modules: [
-      'Cloud Architecture Fundamentals & IAM Least-Privilege Policies',
-      'Custom VPC Design, Public/Private Subnets, NAT Gateways & Route Tables',
-      'EC2 Auto Scaling, Application Load Balancers & S3 Storage Tiers',
-      'RDS Multi-AZ, Aurora Read Replicas, DynamoDB & ElastiCache Caching',
-      'Route 53 DNS, CloudFront CDN, CloudWatch Telemetry & AWS CloudTrail',
-      'Cost Optimization, Disaster Recovery Scenarios & SAA-C03 Practice Tests',
+      'Cloud Concepts, IAM & Core AWS Networking (VPC)',
+      'Compute, Storage & Resilient Workload Deployment',
+      'Security Hardening, Monitoring & High Availability',
+      'Infrastructure Migration & Solutions Architect Exam Prep',
     ],
-    coverImage: '/src/assets/images/aws_cloud_infra_1795164482369.jpg',
-  },
-  {
-    id: 'windows-server-batch',
-    title: 'Windows Server 2022 Administration & Hybrid Cloud',
-    category: 'Cloud',
-    batchDate: 'Starting Dec 20, 2026 · Weekend Specialized Batch',
-    batchTime: 'Saturday & Sunday: 3:00 PM – 6:30 PM IST',
-    mode: 'Enterprise Hyper-V & Active Directory Multi-Domain Lab Setup',
-    summary:
-      'Deploy and administer Windows Server 2022 infrastructure in enterprise environments. Master Active Directory Domain Services (AD DS), Group Policy (GPO), DNS/DHCP infrastructure, Hyper-V virtualization, and Azure AD hybrid synchronization.',
-    modules: [
-      'Windows Server 2022 Deployment & Active Directory Domain Architecture',
-      'Enterprise Group Policy Objects (GPO), Security Hardening & Delegation',
-      'DNS Server Zones, DHCP Failover Clustering & IPAM Management',
-      'Hyper-V Virtualization, Virtual Switches & Storage Spaces Direct (S2D)',
-      'Server Backup, Disaster Recovery & Disaster Failover Topologies',
-      'Azure AD Connect Hybrid Identity & Migration Best Practices',
-    ],
-    coverImage: '/src/assets/images/corporate_it_workshop_1795164484663.jpg',
+    coverImage: '/assets/images/aws_cloud_infra_1795164482369.jpg',
   },
 ];
 
@@ -907,35 +882,35 @@ export const GALLERY_ITEMS: GalleryPhoto[] = [
     id: 'g-2',
     title: 'Enterprise Cisco Networking Rack & Lab',
     category: 'Labs',
-    image: '/src/assets/images/cisco_network_lab_1795164486189.jpg',
+    image: '/assets/images/cisco_network_lab_1795164486189.jpg',
     caption: 'Managed switches, routers and structured Ethernet patch cabling for live CCNA & CCNP topologies.',
   },
   {
     id: 'g-3',
     title: 'Corporate & Institutional IT Training Workshop',
     category: 'Training',
-    image: '/src/assets/images/corporate_it_workshop_1795164484663.jpg',
+    image: '/assets/images/corporate_it_workshop_1795164484663.jpg',
     caption: 'Step-by-step live lab guidance: understand the concept, build it, break it, fix it.',
   },
   {
     id: 'g-4',
     title: 'Red Hat Enterprise Linux (RHEL) Server Lab',
     category: 'Infrastructure',
-    image: '/src/assets/images/linux_rhel_lab_1795164484674.jpg',
+    image: '/assets/images/linux_rhel_lab_1795164484674.jpg',
     caption: 'Enterprise Linux server racks and administration workstation built for RHCSA & RHCE practice.',
   },
   {
     id: 'g-5',
     title: 'Hands-On Fault Injection & Troubleshooting Lab',
     category: 'Labs',
-    image: '/src/assets/images/hands_on_troubleshooting_1795164485759.jpg',
+    image: '/assets/images/hands_on_troubleshooting_1795164485759.jpg',
     caption: 'Practical diagnostic assignments reinforcing every module for day-one job readiness.',
   },
   {
     id: 'g-6',
     title: 'AWS Cloud & Virtualization Architecture Desk',
     category: 'Infrastructure',
-    image: '/src/assets/images/aws_cloud_infra_1795164482369.jpg',
+    image: '/assets/images/aws_cloud_infra_1795164482369.jpg',
     caption: 'Designing hybrid lab networks, hypervisor clusters and resilient AWS cloud architectures.',
   },
 ];

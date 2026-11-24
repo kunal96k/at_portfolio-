@@ -7,7 +7,7 @@ import { OutlineButton } from '../components/OutlineButton';
 import { SafeImage } from '../components/SafeImage';
 
 const TRAINING_CATEGORIES = ['All', 'Linux', 'Networking', 'Cloud'] as const;
-const STORAGE_KEY = 'arvind_thevar_upcoming_batches_v2';
+const STORAGE_KEY = 'arvind_thevar_upcoming_batches_v1';
 
 const COVER_BY_CATEGORY: Record<'Linux' | 'Networking' | 'Cloud', string> = {
   Linux: ASSETS.courseLinux,
@@ -28,7 +28,8 @@ export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPagePro
         const parsed = JSON.parse(saved) as TrainingBatch[];
         if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed.map((batch) =>
-            batch.coverImage?.includes('framerusercontent.com')
+            batch.coverImage?.includes('framerusercontent.com') ||
+            batch.coverImage?.startsWith('/src/assets/images/')
               ? { ...batch, coverImage: COVER_BY_CATEGORY[batch.category] ?? ASSETS.courseLinux }
               : batch
           );
@@ -116,7 +117,7 @@ export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPagePro
               className="max-w-[720px]"
             >
               <h1 className="font-display text-[56px] sm:text-[84px] lg:text-[104px] font-bold leading-[1.02] tracking-[-0.03em] uppercase text-[#303030] dark:text-white">
-                UPCOMING TRAINING
+                UPCOMING BATCHES
               </h1>
               <p className="mt-5 text-[16px] sm:text-[18px] font-light leading-[1.6] text-[#303030] dark:text-white/80 max-w-[580px]">
                 Explore upcoming hands-on batches in Red Hat Linux, Cisco Certified Network
@@ -179,9 +180,6 @@ export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPagePro
                         </option>
                         <option value="Amazon Web Services Solutions Architect Associate (AWS)">
                           AWS Solutions Architect Associate (AWS)
-                        </option>
-                        <option value="Windows Server 2022 Administration & Hybrid Cloud">
-                          Windows Server 2022 & Hybrid Cloud
                         </option>
                       </select>
                     </div>
@@ -306,15 +304,9 @@ export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPagePro
                   <div className="flex flex-col justify-between">
                     <div>
                       <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <span className="inline-block rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B] px-3.5 py-1 text-[12px] font-medium">
-                            {program.category}
-                          </span>
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#0BDE66]/15 text-[#04883B] dark:text-[#2EF682] px-3 py-1 text-[11.5px] font-medium border border-[#0BDE66]/30">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#0BDE66] animate-pulse" />
-                            Admissions Open
-                          </span>
-                        </div>
+                        <span className="inline-block rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B] px-3.5 py-1 text-[12px] font-medium">
+                          {program.category}
+                        </span>
                         {program.isCustom && (
                           <button
                             type="button"

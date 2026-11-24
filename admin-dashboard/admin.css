@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-brand-navy: #0B1736;
+  --color-brand-navy-soft: #13234E;
+  --color-brand-blue: #145BFF;
+  --color-brand-blue-hover: #0F4AD6;
+  --color-brand-bg: #F5F7FC;
+  --color-brand-border: #E2E8F0;
+}
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    background-color: #F5F7FC;
+    color: #0B1736;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: rgba(20, 91, 255, 0.12);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    text-wrap: balance;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Smooth subtle scrollbars for contained horizontal tables and drawers */
+.admin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-scroll::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.admin-scroll::-webkit-scrollbar-thumb {
+  background-color: #CBD5E1;
+  border-radius: 9999px;
+}
+
+.admin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

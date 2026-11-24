@@ -34,6 +34,28 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    build: {
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+          adminDashboard: path.resolve(__dirname, 'admin-dashboard/index.html'),
+        },
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+              return 'vendor-react';
+            }
+            if (id.includes('node_modules/motion/') || id.includes('node_modules/framer-motion/')) {
+              return 'vendor-motion';
+            }
+            if (id.includes('node_modules/lucide-react/')) {
+              return 'vendor-icons';
+            }
+            return undefined;
+          },
+        },
+      },
+    },
     optimizeDeps: {
       include: ['react', 'react-dom', 'react-dom/client', 'motion/react'],
     },

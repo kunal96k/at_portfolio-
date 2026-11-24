@@ -29,6 +29,7 @@ export type AppRoute =
   | { page: 'home' }
   | { page: 'about' }
   | { page: 'upcoming-training' }
+  | { page: 'training-course'; slug: string }
   | { page: 'it-services' }
   | { page: 'resources' }
   | { page: 'testimonials' }
@@ -36,7 +37,10 @@ export type AppRoute =
   | { page: 'projects' }
   | { page: 'project-detail'; slug: string }
   | { page: 'blogs' }
-  | { page: 'blog-detail'; slug: string };
+  | { page: 'blog-detail'; slug: string }
+  | { page: 'contact' }
+  | { page: 'privacy-policy' }
+  | { page: 'not-found' };
 
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -91,6 +95,158 @@ export function computePortraitChoreography(progress: number): PortraitTransform
     rotateZ,
     scale,
     hiOpacity,
+  };
+}
+
+/**
+ * Faster, earlier scroll choreography tailored specifically for md tablets (768px–1023px)
+ * so the sticky card finishes shifting and flipping right as My Expertise and About Me
+ * enter the viewport instead of lagging behind scroll.
+ */
+export function computeTabletChoreography(progress: number): PortraitTransformState {
+  const p = clamp(progress, 0, 1);
+
+  const shiftPhase = smoothstep(0.03, 0.32, p);
+  const translateXPercent = lerp(0, 100, shiftPhase);
+
+  const flip1 = smoothstep(0.04, 0.34, p);
+  const flip2 = smoothstep(0.5, 0.78, p);
+  const rotateY = flip1 * 180 + flip2 * 180;
+
+  let rotateZ = 0;
+  if (p < 0.48) {
+    rotateZ = lerp(0, 5.5, smoothstep(0.04, 0.34, p));
+  } else {
+    rotateZ = lerp(5.5, 3.2, smoothstep(0.5, 0.78, p));
+  }
+
+  const flipMid1 = Math.sin(flip1 * Math.PI);
+  const flipMid2 = Math.sin(flip2 * Math.PI);
+  const scale = 1 - 0.045 * Math.max(flipMid1, flipMid2);
+
+  const hiOpacity = 1 - smoothstep(0.01, 0.12, p);
+
+  return {
+    translateXPercent,
+    rotateY,
+    rotateZ,
+    scale,
+    hiOpacity,
+  };
+}
+
+/**
+ * On md tablets (768px–1023px), once the sticky card is fully flipped to its back face
+ * in My Expertise (progress >= 0.46), swap the hidden front face image away from
+ * Arvind's Hero portrait so About Me displays a distinct training image instead of
+ * duplicating the Hero portrait.
+ */
+export function shouldSwapTabletFrontToAbout(progress: number): boolean {
+  return clamp(progress, 0, 1) >= 0.46;
+}
+
+/**
+ * Computes the horizontal glide distance (in px) from viewport center to the
+ * right column for the unified sticky 3D portrait stage on md (768px+) and lg (1024px+).
+ */
+export function computeStageHorizontalShift(viewportWidth: number): number {
+  if (viewportWidth < 768) return 0;
+  if (viewportWidth < 1024) {
+    const containerW = Math.max(viewportWidth - 48, 320);
+    return Math.round(containerW * 0.285);
+  }
+  const containerW = Math.min(viewportWidth - 64, 1120);
+  return Math.round(containerW * 0.275);
+}
+
+export interface MobileHeroPortraitState {
+  rotateY: number;
+  rotateZ: number;
+  scale: number;
+  hiOpacity: number;
+}
+
+/**
+ * Subtle scroll-linked 3D tilt & badge fade as the mobile (< md) Hero scrolls away.
+ */
+export function computeMobileHeroPortraitTransform(progress: number): MobileHeroPortraitState {
+  const p = clamp(progress, 0, 1);
+  const t = smoothstep(0.03, 0.72, p);
+  return {
+    rotateY: lerp(0, 22, t),
+    rotateZ: lerp(0, 3.5, t),
+    scale: lerp(1, 0.95, t),
+    hiOpacity: 1 - smoothstep(0.02, 0.3, p),
+  };
+}
+
+export interface MobileCardFlipState {
+  rotateY: number;
+  rotateZ: number;
+  scale: number;
+  y: number;
+}
+
+/**
+ * Scroll-driven 3D flip choreography for mobile (< md) cards.
+ * Completes the 180deg flip early (progress 0.06 -> 0.44) so the flip plays visibly
+ * as the card enters the reading zone rather than firing late off-screen.
+ */
+export function computeMobileFlipTransform(
+  progress: number,
+  direction: 'front-to-back' | 'back-to-front'
+): MobileCardFlipState {
+  const p = clamp(progress, 0, 1);
+  const flipT = smoothstep(0.06, 0.44, p);
+  const rotateY =
+    direction === 'front-to-back' ? lerp(0, 180, flipT) : lerp(180, 360, flipT);
+  const rotateZ =
+    direction === 'front-to-back' ? lerp(-2.5, 3, flipT) : lerp(3, -2, flipT);
+  const scale = 1 - 0.045 * Math.sin(flipT * Math.PI);
+  const y = lerp(12, -8, p);
+
+  return { rotateY, rotateZ, scale, y };
+}
+
+export interface ScrollRevealConfig {
+  viewport: {
+    once: true;
+    amount: number;
+    margin?: string;
+  };
+  duration: number;
+  isCompactViewport: boolean;
+}
+
+/**
+ * Returns viewport trigger config for whileInView animations:
+ * - On sm & md (< 1024px): triggers immediately as elements approach/enter the viewport
+ *   with a faster duration so scroll animations never fire late or off-screen.
+ * - On lg+ (>= 1024px): preserves the original desktop threshold and duration.
+ */
+export function getScrollRevealConfig(
+  viewportWidth: number,
+  lgAmount = 0.2,
+  lgDuration = 0.6
+): ScrollRevealConfig {
+  if (viewportWidth < 1024) {
+    return {
+      viewport: {
+        once: true,
+        amount: 0.02,
+        margin: '80px 0px 80px 0px',
+      },
+      duration: Math.min(lgDuration, 0.38),
+      isCompactViewport: true,
+    };
+  }
+  return {
+    viewport: {
+      once: true,
+      amount: lgAmount,
+    },
+    duration: lgDuration,
+    isCompactViewport: false,
   };
 }
 
@@ -182,8 +338,18 @@ export function parseRoute(pathname: string): AppRoute {
   if (clean === '/about') {
     return { page: 'about' };
   }
-  if (clean === '/upcoming-training') {
+  if (clean === '/upcoming-training' || clean === '/upcoming-batches') {
     return { page: 'upcoming-training' };
+  }
+  if (clean.startsWith('/training/')) {
+    const slug = clean.slice('/training/'.length);
+    if (slug) return { page: 'training-course', slug };
+  }
+  if (clean === '/contact') {
+    return { page: 'contact' };
+  }
+  if (clean === '/privacy-policy') {
+    return { page: 'privacy-policy' };
   }
   if (clean === '/it-services') {
     return { page: 'it-services' };
@@ -204,14 +370,21 @@ export function parseRoute(pathname: string): AppRoute {
     const slug = clean.slice('/projects/'.length);
     if (slug) return { page: 'project-detail', slug };
   }
-  if (clean === '/blogs') {
+  if (clean === '/blogs' || clean === '/blog') {
     return { page: 'blogs' };
   }
   if (clean.startsWith('/blogs/')) {
     const slug = clean.slice('/blogs/'.length);
     if (slug) return { page: 'blog-detail', slug };
   }
-  return { page: 'home' };
+  if (clean.startsWith('/blog/')) {
+    const slug = clean.slice('/blog/'.length);
+    if (slug) return { page: 'blog-detail', slug };
+  }
+  if (clean === '/404') {
+    return { page: 'not-found' };
+  }
+  return { page: 'not-found' };
 }
 
 export function formatCounterValue(current: number, target: number, suffix: string): string {

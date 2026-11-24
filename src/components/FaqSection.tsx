@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ChevronUp } from 'lucide-react';
 import { FAQS } from '../data/portfolioData';
+import { useResponsiveReveal } from '../hooks/useResponsiveReveal';
 
 export function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const reveal = useResponsiveReveal(0.25, 0.6);
 
   const toggle = (idx: number) => {
     setOpenIndex((prev) => (prev === idx ? null : idx));
@@ -18,10 +20,10 @@ export function FaqSection() {
       <div className="mx-auto max-w-[1120px] grid grid-cols-1 lg:grid-cols-[0.82fr_1.18fr] gap-10 lg:gap-16 items-start">
         {/* Left Sticky Heading Column */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          viewport={reveal.viewport}
+          transition={{ duration: reveal.duration, ease: [0.16, 1, 0.3, 1] }}
           className="lg:sticky lg:top-32"
         >
           <h2 className="font-display text-[44px] sm:text-[56px] lg:text-[60px] font-bold leading-[1.12] uppercase text-[#303030] dark:text-white">

@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { BLOGS } from '../data/portfolioData';
+import { useResponsiveReveal } from '../hooks/useResponsiveReveal';
 import { OutlineButton } from './OutlineButton';
 import { SafeImage } from './SafeImage';
 
@@ -9,6 +10,8 @@ interface BlogsPreviewSectionProps {
 
 export function BlogsPreviewSection({ onNavigate }: BlogsPreviewSectionProps) {
   const previewPosts = BLOGS.slice(0, 2);
+  const headerReveal = useResponsiveReveal(0.25, 0.6);
+  const cardReveal = useResponsiveReveal(0.15, 0.6);
 
   return (
     <section
@@ -17,10 +20,10 @@ export function BlogsPreviewSection({ onNavigate }: BlogsPreviewSectionProps) {
     >
       <div className="mx-auto max-w-[1120px]">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          viewport={headerReveal.viewport}
+          transition={{ duration: headerReveal.duration, ease: [0.16, 1, 0.3, 1] }}
           className="max-w-[580px]"
         >
           <h2 className="font-display text-[44px] sm:text-[56px] lg:text-[60px] font-bold leading-[1.15] uppercase text-[#303030] dark:text-white">
@@ -42,10 +45,14 @@ export function BlogsPreviewSection({ onNavigate }: BlogsPreviewSectionProps) {
                 e.preventDefault();
                 onNavigate(`/blogs/${post.slug}`);
               }}
-              initial={{ opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.6, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              viewport={cardReveal.viewport}
+              transition={{
+                duration: cardReveal.duration,
+                delay: cardReveal.isCompactViewport ? 0 : idx * 0.08,
+                ease: [0.16, 1, 0.3, 1],
+              }}
               className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E67E6] dark:focus-visible:ring-[#D0FF71] rounded-[20px]"
             >
               <div className="overflow-hidden rounded-[20px] aspect-[16/10] bg-[#ECECEE] dark:bg-[#2C2C2D]">

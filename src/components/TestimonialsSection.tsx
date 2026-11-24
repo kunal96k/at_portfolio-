@@ -6,6 +6,7 @@ import {
   WHY_LEARN_ITEMS,
 } from '../data/portfolioData';
 import { CountUpNumber } from './CountUpNumber';
+import { useResponsiveReveal } from '../hooks/useResponsiveReveal';
 import { OutlineButton } from './OutlineButton';
 import { SafeImage } from './SafeImage';
 
@@ -18,6 +19,9 @@ export function TestimonialsSection({
   onNavigate,
   showTestimonialsLink = true,
 }: TestimonialsSectionProps) {
+  const headerReveal = useResponsiveReveal(0.25, 0.6);
+  const cardReveal = useResponsiveReveal(0.15, 0.55);
+
   return (
     <section
       aria-label="Corporate and Institutional Training"
@@ -25,10 +29,10 @@ export function TestimonialsSection({
     >
       <div className="mx-auto max-w-[1120px]">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          viewport={headerReveal.viewport}
+          transition={{ duration: headerReveal.duration, ease: [0.16, 1, 0.3, 1] }}
           className="max-w-[680px]"
         >
           <h2 className="font-display text-[44px] sm:text-[56px] lg:text-[60px] font-bold leading-[1.12] uppercase text-[#303030] dark:text-white">
@@ -45,10 +49,14 @@ export function TestimonialsSection({
           {CORPORATE_PARTNERS.slice(0, 2).map((partner, idx) => (
             <motion.article
               key={partner.organization}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.55, delay: idx * 0.05, ease: [0.16, 1, 0.3, 1] }}
+              viewport={cardReveal.viewport}
+              transition={{
+                duration: cardReveal.duration,
+                delay: cardReveal.isCompactViewport ? 0 : idx * 0.05,
+                ease: [0.16, 1, 0.3, 1],
+              }}
               className="flex flex-col justify-between rounded-[22px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-7 sm:p-8 min-h-[220px] transition-colors duration-300"
             >
               <div className="w-10 h-10 rounded-full bg-white dark:bg-[#1E1E1F] text-[#5E67E6] dark:text-[#D0FF71] flex items-center justify-center">
@@ -67,10 +75,14 @@ export function TestimonialsSection({
 
           {/* Verified Fact Card 1: 15+ Years Industry Experience */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.55, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            viewport={cardReveal.viewport}
+            transition={{
+              duration: cardReveal.duration,
+              delay: cardReveal.isCompactViewport ? 0 : 0.1,
+              ease: [0.16, 1, 0.3, 1],
+            }}
             className="flex flex-col justify-between rounded-[22px] bg-[#2B2B2C] dark:bg-white text-white dark:text-[#303030] p-7 sm:p-8 min-h-[220px] transition-colors duration-300"
           >
             <p className="text-[16px] font-light leading-[1.55] opacity-90">
@@ -86,10 +98,14 @@ export function TestimonialsSection({
 
           {/* Verified Fact Card 2: 10 Core Domains */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.55, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
+            viewport={cardReveal.viewport}
+            transition={{
+              duration: cardReveal.duration,
+              delay: cardReveal.isCompactViewport ? 0 : 0.14,
+              ease: [0.16, 1, 0.3, 1],
+            }}
             className="flex flex-col justify-between rounded-[22px] bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#303030] p-7 sm:p-8 min-h-[220px] transition-colors duration-300"
           >
             <p className="text-[16px] font-light leading-[1.55] opacity-95">
@@ -107,10 +123,14 @@ export function TestimonialsSection({
           {CORPORATE_PARTNERS.slice(2).map((partner, idx) => (
             <motion.article
               key={partner.organization}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.55, delay: 0.05 * idx, ease: [0.16, 1, 0.3, 1] }}
+              viewport={cardReveal.viewport}
+              transition={{
+                duration: cardReveal.duration,
+                delay: cardReveal.isCompactViewport ? 0 : 0.05 * idx,
+                ease: [0.16, 1, 0.3, 1],
+              }}
               className="flex flex-col justify-between rounded-[22px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-7 sm:p-8 min-h-[200px] transition-colors duration-300"
             >
               <div className="w-10 h-10 rounded-full bg-white dark:bg-[#1E1E1F] text-[#5E67E6] dark:text-[#D0FF71] flex items-center justify-center">
