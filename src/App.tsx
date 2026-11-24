@@ -72,6 +72,18 @@ export default function App() {
   );
   const [isDark, setIsDark] = useState(false);
 
+  // Ensure overall favicon is consistently /favicon.png
+  useEffect(() => {
+    let link = document.querySelector<HTMLLinkElement>("link[rel*='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.type = 'image/png';
+    link.href = '/favicon.png';
+  }, []);
+
   // Sync dark mode class on <html>
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);

@@ -10,8 +10,7 @@ import {
 } from '../data/portfolioData';
 import type { AppRoute } from './scrollMath';
 
-export const DEFAULT_SITE_ORIGIN =
-  'https://ais-pre-a42rcztlt42slsnbbfpj3e-3362827001.asia-southeast1.run.app';
+export const DEFAULT_SITE_ORIGIN = 'https://arvindthevar.vercel.app';
 export const DEFAULT_OG_IMAGE = '/assets/optimized/og-share.jpg';
 export const SITE_NAME = 'Arvind Thevar';
 
@@ -68,7 +67,7 @@ function buildPersonAndOrgEntities(origin: string): Record<string, unknown>[] {
       '@id': orgId,
       name: `${PROFILE.name} — IT Infrastructure Training`,
       url: siteUrl,
-      logo: toAbsoluteUrl(origin, '/favicon.svg'),
+      logo: toAbsoluteUrl(origin, '/favicon.png'),
       image: toAbsoluteUrl(origin, DEFAULT_OG_IMAGE),
       telephone: PROFILE.phone,
       email: PROFILE.email,

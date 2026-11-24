@@ -81,6 +81,7 @@ export function SafeImage({
   height,
 }: SafeImageProps) {
   const [failed, setFailed] = useState(false);
+  const [useFallback, setUseFallback] = useState(false);
 
   if (failed) {
     return (
@@ -104,29 +105,38 @@ export function SafeImage({
   const resolvedHeight = height ?? meta?.height;
   const decoding = fetchPriority === 'high' ? 'sync' : 'async';
 
-  const imgEl = (
-    <img
-      src={src}
-      alt={alt}
-      width={resolvedWidth}
-      height={resolvedHeight}
-      loading={loading}
-      decoding={decoding}
-      fetchPriority={fetchPriority}
-      referrerPolicy="no-referrer"
-      onError={() => setFailed(true)}
-      className={className}
-    />
-  );
-
-  if (!meta) {
-    return imgEl;
+  if (useFallback || !meta) {
+    return (
+      <img
+        src={src}
+        alt={alt}
+        width={resolvedWidth}
+        height={resolvedHeight}
+        loading={loading}
+        decoding={decoding}
+        fetchPriority={fetchPriority}
+        referrerPolicy="no-referrer"
+        onError={() => setFailed(true)}
+        className={className}
+      />
+    );
   }
 
   return (
     <picture className="block w-full h-full">
       <source srcSet={meta.webp} type="image/webp" />
-      {imgEl}
+      <img
+        src={src}
+        alt={alt}
+        width={resolvedWidth}
+        height={resolvedHeight}
+        loading={loading}
+        decoding={decoding}
+        fetchPriority={fetchPriority}
+        referrerPolicy="no-referrer"
+        onError={() => setUseFallback(true)}
+        className={className}
+      />
     </picture>
   );
 }
