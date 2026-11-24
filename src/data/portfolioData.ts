@@ -598,7 +598,7 @@ export const FAQS: FaqItem[] = [
     number: '6.',
     question: 'HOW CAN I BOOK A FREE CONSULTATION OR CHECK UPCOMING BATCHES?',
     answer:
-      'You can explore upcoming batches on the Upcoming Training page, reach out through the contact form below, email arvindthaver@gmail.com, or call / WhatsApp directly at +91 88888 29652.',
+      'You can explore upcoming batches on the Upcoming Batches page, reach out through the contact form below, email arvindthaver@gmail.com, or call / WhatsApp directly at +91 88888 29652.',
   },
 ];
 

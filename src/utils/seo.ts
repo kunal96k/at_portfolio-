@@ -161,7 +161,7 @@ export function buildRouteSeo(
         pathname,
         ogType: 'website',
         ogImage: toAbsoluteUrl(cleanOrigin, '/assets/optimized/linux_rhel_lab_1795164484674.webp'),
-        ogImageAlt: 'Red Hat Linux, Cisco CCNA & AWS upcoming training labs',
+        ogImageAlt: 'Red Hat Linux, Cisco CCNA & AWS upcoming batches and labs',
         keywords:
           'Upcoming RHEL batch, Cisco CCNA training Nashik, AWS Solutions Architect course, RHCSA RHCE classes',
         jsonLd: {
@@ -186,7 +186,7 @@ export function buildRouteSeo(
             },
             buildBreadcrumbList(cleanOrigin, [
               { name: 'Home', path: '/' },
-              { name: 'Upcoming Training', path: pathname },
+              { name: 'Upcoming Batches', path: pathname },
             ]),
           ],
         },
@@ -585,7 +585,7 @@ export function buildRouteSeo(
             },
             buildBreadcrumbList(cleanOrigin, [
               { name: 'Home', path: '/' },
-              { name: 'Upcoming Training', path: '/upcoming-training' },
+              { name: 'Upcoming Batches', path: '/upcoming-training' },
               { name: course.shortTitle, path: pathname },
             ]),
           ],

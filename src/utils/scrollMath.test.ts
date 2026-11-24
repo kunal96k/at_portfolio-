@@ -158,6 +158,7 @@ test('route parser resolves all Portavia routes cleanly', () => {
   assert.deepEqual(parseRoute('/'), { page: 'home' });
   assert.deepEqual(parseRoute('/about/'), { page: 'about' });
   assert.deepEqual(parseRoute('/upcoming-training'), { page: 'upcoming-training' });
+  assert.deepEqual(parseRoute('/upcoming-batches'), { page: 'upcoming-training' });
   assert.deepEqual(parseRoute('/it-services'), { page: 'it-services' });
   assert.deepEqual(parseRoute('/resources'), { page: 'resources' });
   assert.deepEqual(parseRoute('/testimonials'), { page: 'testimonials' });

@@ -117,7 +117,7 @@ export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPagePro
               className="max-w-[720px]"
             >
               <h1 className="font-display text-[56px] sm:text-[84px] lg:text-[104px] font-bold leading-[1.02] tracking-[-0.03em] uppercase text-[#303030] dark:text-white">
-                UPCOMING TRAINING
+                UPCOMING BATCHES
               </h1>
               <p className="mt-5 text-[16px] sm:text-[18px] font-light leading-[1.6] text-[#303030] dark:text-white/80 max-w-[580px]">
                 Explore upcoming hands-on batches in Red Hat Linux, Cisco Certified Network

@@ -30,6 +30,7 @@ async function main() {
     '/',
     '/about',
     '/upcoming-training',
+    '/upcoming-batches',
     '/training/rhel-linux',
     '/training/cisco-ccna-ccnp',
     '/training/aws-solutions-architect',
@@ -205,15 +206,15 @@ async function main() {
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${sitemapUrls
-  .map(
-    (u) => `  <url>
+      .map(
+        (u) => `  <url>
     <loc>${u.loc}</loc>
     <lastmod>${u.lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>${u.priority}</priority>
   </url>`
-  )
-  .join('\n')}
+      )
+      .join('\n')}
 </urlset>
 `;
 

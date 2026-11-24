@@ -45,7 +45,7 @@ export function CourseDetailPage({ slug, onNavigate, onContactClick }: CourseDet
             }}
             className="hover:text-[#4F58DF] dark:hover:text-[#D0FF71] transition-colors"
           >
-            Training
+            Upcoming Batches
           </a>
           <ChevronRight className="w-3.5 h-3.5 opacity-50" aria-hidden="true" />
           <span className="text-[#303030] dark:text-white font-semibold truncate max-w-[240px] sm:max-w-none">

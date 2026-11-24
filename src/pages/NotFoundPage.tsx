@@ -41,7 +41,7 @@ export function NotFoundPage({ onNavigate }: NotFoundPageProps) {
             className="inline-flex items-center gap-2 rounded-full border border-[#303030]/25 dark:border-white/25 px-6 py-3 text-[14.5px] font-medium text-[#303030] dark:text-white hover:bg-[#F5F5F7] dark:hover:bg-[#2A2A2C] transition-colors cursor-pointer"
           >
             <BookOpen className="w-4 h-4" aria-hidden="true" />
-            <span>View Training Batches</span>
+            <span>View Upcoming Batches</span>
           </a>
           <a
             href="/contact"

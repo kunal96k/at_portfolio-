@@ -12,7 +12,7 @@ interface FooterProps {
 const QUICK_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'About Us', path: '/about' },
-  { label: 'Upcoming Training', path: '/upcoming-training' },
+  { label: 'Upcoming Batches', path: '/upcoming-training' },
   { label: 'Notes & Resources', path: '/resources' },
   { label: 'Student Testimonials', path: '/testimonials' },
   { label: 'Blogs & Guides', path: '/blogs' },

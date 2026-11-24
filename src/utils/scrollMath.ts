@@ -338,7 +338,7 @@ export function parseRoute(pathname: string): AppRoute {
   if (clean === '/about') {
     return { page: 'about' };
   }
-  if (clean === '/upcoming-training') {
+  if (clean === '/upcoming-training' || clean === '/upcoming-batches') {
     return { page: 'upcoming-training' };
   }
   if (clean.startsWith('/training/')) {

@@ -29,7 +29,7 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
     <main>
       <PortraitShowcaseSection onNavigate={onNavigate} onContactClick={onContactClick} />
 
-      {/* Ten Core Domains + Upcoming Training Overview */}
+      {/* Ten Core Domains + Upcoming Batches Overview */}
       <section
         aria-label="Ten Core Training Domains"
         className="relative z-10 w-full px-5 sm:px-8 py-16 sm:py-24"
@@ -81,7 +81,7 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
             ))}
           </div>
 
-          {/* Upcoming Training Preview Strip */}
+          {/* Upcoming Batches Preview Strip */}
           <div className="mt-16 pt-14 border-t border-[#E5E5E5] dark:border-[#333335]">
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div>

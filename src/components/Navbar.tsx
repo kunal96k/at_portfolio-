@@ -21,7 +21,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Home', href: '/', page: 'home' },
   { label: 'About Us', href: '/about', page: 'about' },
-  { label: 'Upcoming Training', href: '/upcoming-training', page: 'upcoming-training' },
+  { label: 'Upcoming Batches', href: '/upcoming-training', page: 'upcoming-training' },
   { label: 'Resources', href: '/resources', page: 'resources' },
   { label: 'Testimonials', href: '/testimonials', page: 'testimonials' },
   { label: 'Blogs', href: '/blogs', page: 'blogs', matchPages: ['blogs', 'blog-detail'] },
