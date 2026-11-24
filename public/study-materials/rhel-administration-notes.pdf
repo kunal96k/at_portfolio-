@@ -1,0 +1,71 @@
+%PDF-1.4
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
+3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 7 0 R >> endobj
+4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj
+5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> endobj
+6 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Courier >> endobj
+7 0 obj << /Length 2582 >> stream
+0.369 0.404 0.902 rg 40 742 532 58 re f
+1 1 1 rg
+BT /F2 11 Tf 54 776 Td (ARVIND THEVAR  |  FREE IT INFRASTRUCTURE STUDY MATERIAL) Tj ET
+BT /F1 10 Tf 54 757 Td (100% Free Resource - No Hidden Charges - Live Lab-Driven Training) Tj ET
+0.18 0.18 0.19 rg
+BT /F2 18 Tf 44 704 Td (Red Hat Enterprise Linux \(RHEL\) Administration Notes) Tj ET
+0.369 0.404 0.902 rg
+BT /F2 11 Tf 44 682 Td (NOTES  |  Linux & RHEL) Tj ET
+0.22 0.22 0.24 rg
+BT /F1 11 Tf 44 656 Td (Structured free study notes covering RHEL installation, user and permission) Tj ET
+BT /F1 11 Tf 44 640 Td (management, LVM storage configuration, systemd service control, and RHCSA/RHCE) Tj ET
+BT /F1 11 Tf 44 624 Td (command fundamentals.) Tj ET
+0.85 0.85 0.88 RG 1 w 44 598 m 568 598 l S
+0.18 0.18 0.19 rg
+BT /F2 13 Tf 44 570 Td (KEY MODULES & STUDY CHECKLIST) Tj ET
+0.369 0.404 0.902 rg
+BT /F2 11 Tf 44 548 Td (01.) Tj ET
+0.18 0.18 0.19 rg
+BT /F1 11 Tf 70 548 Td (File system hierarchy, standard permissions, special bits \(SUID/SGID/Sticky\)) Tj ET
+BT /F1 11 Tf 70 531 Td (& ACLs) Tj ET
+0.369 0.404 0.902 rg
+BT /F2 11 Tf 44 510 Td (02.) Tj ET
+0.18 0.18 0.19 rg
+BT /F1 11 Tf 70 510 Td (Disk partitioning, Physical Volumes, Volume Groups, LVM expansion &) Tj ET
+BT /F1 11 Tf 70 493 Td (/etc/fstab mounts) Tj ET
+0.369 0.404 0.902 rg
+BT /F2 11 Tf 44 472 Td (03.) Tj ET
+0.18 0.18 0.19 rg
+BT /F1 11 Tf 70 472 Td (Managing systemd units, targets, journalctl logs, firewalld & SELinux) Tj ET
+BT /F1 11 Tf 70 455 Td (booleans) Tj ET
+0.369 0.404 0.902 rg
+BT /F2 11 Tf 44 434 Td (04.) Tj ET
+0.18 0.18 0.19 rg
+BT /F1 11 Tf 70 434 Td (RHCSA & RHCE high-frequency command checklist and exam preparation tips) Tj ET
+0.18 0.18 0.19 rg
+BT /F2 13 Tf 44 399 Td (PRACTICAL LAB COMMANDS & QUICK REFERENCE) Tj ET
+0.95 0.96 0.98 rg 44 251 524 132 re f
+0.12 0.14 0.20 rg
+BT /F3 10 Tf 56 361 Td (# Check user groups, permissions & ACLs) Tj ET
+BT /F3 10 Tf 56 343 Td (id <username> && setfacl -m u:devuser:rwx /srv/project) Tj ET
+BT /F3 10 Tf 56 325 Td (# Inspect & extend LVM storage safely) Tj ET
+BT /F3 10 Tf 56 307 Td (lsblk && lvextend -L +5G -r /dev/vg_data/lv_app) Tj ET
+BT /F3 10 Tf 56 289 Td (# Verify systemd service & firewall rules) Tj ET
+BT /F3 10 Tf 56 271 Td (systemctl enable --now httpd && firewall-cmd --add-service=http --permanent) Tj ET
+0.85 0.85 0.88 RG 1 w 44 68 m 568 68 l S
+0.42 0.42 0.45 rg
+BT /F1 9.5 Tf 44 50 Td (Prepared by Arvind Thevar | IT Trainer & IT Infrastructure Professional \(15+ Years\)) Tj ET
+BT /F1 9.5 Tf 44 35 Td (Contact: +91 88888 29652 | Email: arvindthaver@gmail.com | 100% Free Educational Notes) Tj ET
+endstream endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000261 00000 n 
+0000000331 00000 n 
+0000000406 00000 n 
+0000000474 00000 n 
+trailer << /Size 8 /Root 1 0 R >>
+startxref
+3108
+%%EOF

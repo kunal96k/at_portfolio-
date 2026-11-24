@@ -1,0 +1,16 @@
+{
+  "name": "Arvind Thevar — IT Trainer & IT Infrastructure Professional",
+  "short_name": "Arvind Thevar",
+  "description": "Hands-on IT infrastructure training in Red Hat Linux (RHEL), Cisco CCNA & CCNP, Windows Server, Virtualization, and AWS Cloud Computing.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#4F58DF",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
