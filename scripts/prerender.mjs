@@ -48,6 +48,10 @@ async function main() {
     '/404',
   ];
 
+  // Prerender verification & analytics tags
+  const googleVerification = process.env.VITE_GOOGLE_SITE_VERIFICATION?.trim();
+  const bingVerification = process.env.VITE_BING_SITE_VERIFICATION?.trim();
+  const siteOrigin = (process.env.VITE_SITE_URL || 'https://arvindthevar.vercel.app').replace(/\/+$/, '');
   const now = new Date().toISOString().split('T')[0];
   const sitemapUrls = [];
 
@@ -65,15 +69,21 @@ async function main() {
     // Replace or inject meta description
     const descTag = `<meta name="description" content="${escapeHtml(seo.description)}" />`;
     if (pageHtml.includes('<meta name="description"')) {
-      pageHtml = pageHtml.replace(/<meta\s+name="description"[^>]*>/i, descTag);
+      pageHtml = pageHtml.replace(/<meta\s+name="description"[\s\S]*?>/i, descTag);
     } else {
       pageHtml = pageHtml.replace('</head>', `    ${descTag}\n  </head>`);
+    }
+
+    // Replace or inject keywords
+    const keywordsTag = `<meta name="keywords" content="${escapeHtml(seo.keywords)}" />`;
+    if (pageHtml.includes('<meta name="keywords"')) {
+      pageHtml = pageHtml.replace(/<meta\s+name="keywords"[\s\S]*?>/i, keywordsTag);
     }
 
     // Replace or inject canonical
     const canonicalTag = `<link rel="canonical" href="${seo.canonicalUrl}" />`;
     if (pageHtml.includes('<link rel="canonical"')) {
-      pageHtml = pageHtml.replace(/<link\s+rel="canonical"[^>]*>/i, canonicalTag);
+      pageHtml = pageHtml.replace(/<link\s+rel="canonical"[\s\S]*?>/i, canonicalTag);
     } else {
       pageHtml = pageHtml.replace('</head>', `    ${canonicalTag}\n  </head>`);
     }
@@ -85,13 +95,13 @@ async function main() {
         : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
     const robotsTag = `<meta name="robots" content="${robotsContent}" />`;
     if (pageHtml.includes('<meta name="robots"')) {
-      pageHtml = pageHtml.replace(/<meta\s+name="robots"[^>]*>/i, robotsTag);
+      pageHtml = pageHtml.replace(/<meta\s+name="robots"[\s\S]*?>/i, robotsTag);
     } else {
       pageHtml = pageHtml.replace('</head>', `    ${robotsTag}\n  </head>`);
     }
 
     // Replace OpenGraph & Twitter tags
-    const ogTags = `
+    const ogTags = `<!-- SOCIAL_META_START -->
     <!-- OpenGraph Social Metadata -->
     <meta property="og:type" content="${seo.ogType}" />
     <meta property="og:site_name" content="Arvind Thevar" />
@@ -104,17 +114,23 @@ async function main() {
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="${escapeHtml(seo.ogImageAlt)}" />
 
-    <!-- Twitter Card Metadata -->
+    <!-- Twitter / X Social Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(seo.title)}" />
     <meta name="twitter:description" content="${escapeHtml(seo.description)}" />
     <meta name="twitter:image" content="${seo.ogImage}" />
-    <meta name="twitter:image:alt" content="${escapeHtml(seo.ogImageAlt)}" />`;
+    <meta name="twitter:image:alt" content="${escapeHtml(seo.ogImageAlt)}" />
+    <!-- SOCIAL_META_END -->`;
 
     // Replace existing OG and Twitter block if present
-    if (pageHtml.includes('<!-- OpenGraph Social Metadata -->')) {
+    if (pageHtml.includes('<!-- SOCIAL_META_START -->')) {
       pageHtml = pageHtml.replace(
-        /<!-- OpenGraph Social Metadata -->[\s\S]*?<!-- Twitter Card Metadata -->[\s\S]*?<meta name="twitter:image"[^>]*>/i,
+        /<!-- SOCIAL_META_START -->[\s\S]*?<!-- SOCIAL_META_END -->/i,
+        ogTags.trim()
+      );
+    } else if (pageHtml.includes('<!-- OpenGraph Social Metadata -->')) {
+      pageHtml = pageHtml.replace(
+        /<!-- OpenGraph Social Metadata -->[\s\S]*?<!-- Twitter \/ X Social Card -->[\s\S]*?<meta name="twitter:image:alt"[^>]*>/i,
         ogTags.trim()
       );
     }
@@ -138,6 +154,19 @@ async function main() {
       );
     } else {
       pageHtml = pageHtml.replace('</head>', `${jsonLdScript}  </head>`);
+    }
+
+    // Process Google and Bing verification tags
+    if (googleVerification) {
+      pageHtml = pageHtml.replace('%VITE_GOOGLE_SITE_VERIFICATION%', googleVerification);
+    } else {
+      pageHtml = pageHtml.replace(/<meta\s+name="google-site-verification"[^>]*>\s*/i, '');
+    }
+
+    if (bingVerification) {
+      pageHtml = pageHtml.replace('%VITE_BING_SITE_VERIFICATION%', bingVerification);
+    } else {
+      pageHtml = pageHtml.replace(/<meta\s+name="msvalidate\.01"[^>]*>\s*/i, '');
     }
 
     // Inject prerendered body HTML into #root
@@ -197,7 +226,7 @@ ${sitemapUrls
 Allow: /
 Disallow: /admin-dashboard/
 
-Sitemap: https://arvindthevar.vercel.app/sitemap.xml
+Sitemap: ${siteOrigin}/sitemap.xml
 `;
 
   fs.writeFileSync(path.resolve(distDir, 'robots.txt'), robotsTxt, 'utf-8');

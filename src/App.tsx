@@ -10,6 +10,7 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { HomePage } from './pages/HomePage';
 import { parseRoute, type AppRoute } from './utils/scrollMath';
 import { applyRouteSeoToDocument } from './utils/seo';
+import { initAnalytics, trackPageView } from './utils/analytics';
 
 const AboutPage = lazy(() =>
   import('./pages/AboutPage').then((m) => ({ default: m.AboutPage }))
@@ -104,9 +105,17 @@ export default function App({ initialRoute }: { initialRoute?: AppRoute } = {}) 
     document.documentElement.classList.toggle('dark', isDark);
   }, [isDark]);
 
+  // Initialize GA4 if VITE_GA_ID is set
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+
   // Apply dynamic per-route SEO metadata, canonical URL, OpenGraph, Twitter Cards & Schema.org JSON-LD
   useEffect(() => {
     applyRouteSeoToDocument(route);
+    if (typeof window !== 'undefined') {
+      trackPageView(window.location.pathname);
+    }
   }, [route]);
 
   // Listen to browser back/forward navigation

@@ -11,6 +11,7 @@ import { HiBadge } from './HiBadge';
 import { useResponsiveReveal } from '../hooks/useResponsiveReveal';
 import { OutlineButton } from './OutlineButton';
 import { SafeImage } from './SafeImage';
+import { trackEnquirySubmit } from '../utils/analytics';
 
 const SERVICE_OPTIONS = [
   'Red Hat Linux (RHEL / RHCSA & RHCE)',
@@ -28,15 +29,22 @@ export function ContactSection() {
     service: '',
     message: '',
   });
+  const [honeypot, setHoneypot] = useState('');
   const [errors, setErrors] = useState<ContactFormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const reveal = useResponsiveReveal(0.2, 0.65);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    // Anti-spam honeypot check: bots fill this field, humans never see it
+    if (honeypot.trim() !== '') {
+      setSubmitted(true);
+      return;
+    }
     const validationErrors = validateContactForm(values);
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length === 0) {
+      trackEnquirySubmit(values.service);
       setSubmitted(true);
     }
   };
@@ -138,6 +146,20 @@ export function ContactSection() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-5">
+              {/* Anti-spam honeypot (hidden from humans, trapped bots fill it) */}
+              <div className="sr-only" aria-hidden="true">
+                <label htmlFor="website-url">Leave this field empty</label>
+                <input
+                  id="website-url"
+                  type="text"
+                  name="website_url"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </div>
+
               {/* Row 1: Name + Email */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>

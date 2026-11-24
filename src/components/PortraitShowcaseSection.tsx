@@ -111,6 +111,7 @@ function TabletDesktopPortraitStage({
                   src={frontFaceSrc}
                   alt={frontFaceAlt}
                   loading="eager"
+                  fetchPriority="high"
                   className={
                     useDistinctAboutFront
                       ? 'w-full h-full object-cover'
@@ -159,7 +160,8 @@ function TabletDesktopPortraitStage({
                 {PROFILE.roleTitle}
               </p>
               <h1 className="font-display text-[66px] lg:text-[104px] xl:text-[120px] font-bold leading-[1.02] tracking-[-0.03em] uppercase text-[#303030] dark:text-white">
-                {PROFILE.heroLeft}
+                <span className="sr-only">Arvind Thevar — IT Infrastructure Trainer &amp; Systems Engineer</span>
+                <span aria-hidden="true">{PROFILE.heroLeft}</span>
               </h1>
               <p className="mt-3 lg:mt-4 text-[13px] lg:text-[15px] font-light leading-[1.55] lg:leading-[1.6] text-[#5C5C5C] dark:text-white/75">
                 15+ years of real-world enterprise IT infrastructure experience—now in the
@@ -179,9 +181,9 @@ function TabletDesktopPortraitStage({
             className="flex justify-start pt-6 lg:pt-10"
           >
             <div className="flex flex-col items-end max-w-[240px] lg:max-w-[360px]">
-              <h1 className="font-display text-[66px] lg:text-[104px] xl:text-[120px] font-bold leading-[1.02] tracking-[-0.03em] uppercase text-[#303030] dark:text-white">
+              <div className="font-display text-[66px] lg:text-[104px] xl:text-[120px] font-bold leading-[1.02] tracking-[-0.03em] uppercase text-[#303030] dark:text-white" aria-hidden="true">
                 {PROFILE.heroRight}
-              </h1>
+              </div>
               <p className="mt-3 lg:mt-4 text-right text-[15px] lg:text-[18px] font-medium leading-[1.45] text-[#303030] dark:text-white">
                 {PROFILE.heroTagline}
               </p>
@@ -475,7 +477,8 @@ function MobilePortraitStage({ onNavigate, onContactClick }: PortraitShowcaseSec
           transition={{ duration: 0.55, delay: 0.05 }}
           className="mt-1 font-display text-[68px] sm:text-[88px] font-bold leading-[1.02] tracking-[-0.03em] uppercase text-[#303030] dark:text-white"
         >
-          {PROFILE.heroLeft}
+          <span className="sr-only">Arvind Thevar — IT Infrastructure Trainer &amp; Systems Engineer</span>
+          <span aria-hidden="true">{PROFILE.heroLeft}</span>
         </motion.h1>
 
         {/* Centered Portrait Card + Scroll-linked 3D Tilt + Hi/Wave Badge */}
@@ -498,6 +501,7 @@ function MobilePortraitStage({ onNavigate, onContactClick }: PortraitShowcaseSec
               src={ASSETS.portraitFront}
               alt="Arvind Thevar portrait"
               loading="eager"
+              fetchPriority="high"
               className="w-full h-full object-cover object-[40%_18%] scale-[1.08]"
             />
           </motion.div>
@@ -506,14 +510,15 @@ function MobilePortraitStage({ onNavigate, onContactClick }: PortraitShowcaseSec
           </motion.div>
         </motion.div>
 
-        <motion.h1
+        <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.15 }}
+          aria-hidden="true"
           className="font-display text-[68px] sm:text-[88px] font-bold leading-[1.02] tracking-[-0.03em] uppercase text-[#303030] dark:text-white"
         >
           {PROFILE.heroRight}
-        </motion.h1>
+        </motion.div>
 
         <motion.p
           initial={{ opacity: 0, y: 14 }}

@@ -2,6 +2,7 @@ import { ArrowUpRight, Mail, Phone } from 'lucide-react';
 import { ASSETS, PROFILE } from '../data/portfolioData';
 import { SafeImage } from './SafeImage';
 import { SocialIcon } from './SocialIcons';
+import { trackEmailClick, trackPhoneClick, trackSocialClick } from '../utils/analytics';
 
 interface FooterProps {
   onNavigate?: (path: string) => void;
@@ -12,19 +13,20 @@ const QUICK_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'About Us', path: '/about' },
   { label: 'Upcoming Training', path: '/upcoming-training' },
-  { label: 'IT Services', path: '/it-services' },
   { label: 'Notes & Resources', path: '/resources' },
   { label: 'Student Testimonials', path: '/testimonials' },
-  { label: 'Blogs', path: '/blogs' },
-  { label: 'Gallery', path: '/gallery' },
+  { label: 'Blogs & Guides', path: '/blogs' },
+  { label: 'Lab Gallery', path: '/gallery' },
+  { label: 'Contact & Admissions', path: '/contact' },
+  { label: 'Privacy Policy', path: '/privacy-policy' },
 ];
 
 const CORE_TRACKS = [
-  { label: 'Red Hat Linux (RHEL)', path: '/upcoming-training' },
-  { label: 'Cisco CCNA & CCNP', path: '/upcoming-training' },
-  { label: 'AWS Solutions Architect', path: '/upcoming-training' },
-  { label: 'Windows Server & Virtualization', path: '/it-services' },
-  { label: 'Corporate & Institutional Labs', path: '/it-services' },
+  { label: 'Red Hat Linux (RHEL)', path: '/training/rhel-linux' },
+  { label: 'Cisco CCNA & CCNP', path: '/training/cisco-ccna-ccnp' },
+  { label: 'AWS Solutions Architect', path: '/training/aws-solutions-architect' },
+  { label: 'Windows Server & AD', path: '/training/windows-server' },
+  { label: 'Virtualization & Labs', path: '/training/virtualization-cloud' },
 ];
 
 export function Footer({ onNavigate, onContactClick }: FooterProps) {
@@ -141,7 +143,11 @@ export function Footer({ onNavigate, onContactClick }: FooterProps) {
               </h2>
 
               <div className="space-y-3">
-                <a href={PROFILE.phoneHref} className="flex items-start gap-3 group">
+                <a
+                  href={PROFILE.phoneHref}
+                  onClick={() => trackPhoneClick(PROFILE.phone)}
+                  className="flex items-start gap-3 group"
+                >
                   <span className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/18 dark:bg-[#1A1A1B]/12 shrink-0 group-hover:bg-white/25 dark:group-hover:bg-[#1A1A1B]/20 transition-colors">
                     <Phone className="w-4 h-4" aria-hidden="true" />
                   </span>
@@ -155,7 +161,11 @@ export function Footer({ onNavigate, onContactClick }: FooterProps) {
                   </div>
                 </a>
 
-                <a href={`mailto:${PROFILE.email}`} className="flex items-start gap-3 group">
+                <a
+                  href={`mailto:${PROFILE.email}`}
+                  onClick={() => trackEmailClick(PROFILE.email)}
+                  className="flex items-start gap-3 group"
+                >
                   <span className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/18 dark:bg-[#1A1A1B]/12 shrink-0 group-hover:bg-white/25 dark:group-hover:bg-[#1A1A1B]/20 transition-colors">
                     <Mail className="w-4 h-4" aria-hidden="true" />
                   </span>
@@ -180,6 +190,7 @@ export function Footer({ onNavigate, onContactClick }: FooterProps) {
                   <a
                     key={social.id}
                     href={social.href}
+                    onClick={() => trackSocialClick(social.label, social.href)}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${social.label} (opens in a new tab)`}
