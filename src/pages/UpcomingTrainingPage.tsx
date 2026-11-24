@@ -7,7 +7,7 @@ import { OutlineButton } from '../components/OutlineButton';
 import { SafeImage } from '../components/SafeImage';
 
 const TRAINING_CATEGORIES = ['All', 'Linux', 'Networking', 'Cloud'] as const;
-const STORAGE_KEY = 'arvind_thevar_upcoming_batches_v1';
+const STORAGE_KEY = 'arvind_thevar_upcoming_batches_v2';
 
 const COVER_BY_CATEGORY: Record<'Linux' | 'Networking' | 'Cloud', string> = {
   Linux: ASSETS.courseLinux,
@@ -180,6 +180,9 @@ export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPagePro
                         <option value="Amazon Web Services Solutions Architect Associate (AWS)">
                           AWS Solutions Architect Associate (AWS)
                         </option>
+                        <option value="Windows Server 2022 Administration & Hybrid Cloud">
+                          Windows Server 2022 & Hybrid Cloud
+                        </option>
                       </select>
                     </div>
 
@@ -303,9 +306,15 @@ export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPagePro
                   <div className="flex flex-col justify-between">
                     <div>
                       <div className="flex flex-wrap items-center justify-between gap-3">
-                        <span className="inline-block rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B] px-3.5 py-1 text-[12px] font-medium">
-                          {program.category}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B] px-3.5 py-1 text-[12px] font-medium">
+                            {program.category}
+                          </span>
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#0BDE66]/15 text-[#04883B] dark:text-[#2EF682] px-3 py-1 text-[11.5px] font-medium border border-[#0BDE66]/30">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#0BDE66] animate-pulse" />
+                            Admissions Open
+                          </span>
+                        </div>
                         {program.isCustom && (
                           <button
                             type="button"
