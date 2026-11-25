@@ -1,18 +1,19 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Calendar, ChevronDown, Clock, Plus, Trash2, Users } from 'lucide-react';
+import { Calendar, ChevronDown, Clock, Users } from 'lucide-react';
 import { ASSETS, INITIAL_UPCOMING_BATCHES, type TrainingBatch } from '../data/portfolioData';
 import { ContactSection } from '../components/ContactSection';
 import { OutlineButton } from '../components/OutlineButton';
 import { SafeImage } from '../components/SafeImage';
 
-const TRAINING_CATEGORIES = ['All', 'Linux', 'Networking', 'Cloud'] as const;
+const TRAINING_CATEGORIES = ['All', 'Linux', 'Networking', 'Cloud', 'DevOps'] as const;
 const STORAGE_KEY = 'arvind_thevar_upcoming_batches_v1';
 
-const COVER_BY_CATEGORY: Record<'Linux' | 'Networking' | 'Cloud', string> = {
+const COVER_BY_CATEGORY: Record<'Linux' | 'Networking' | 'Cloud' | 'DevOps', string> = {
   Linux: ASSETS.courseLinux,
   Networking: ASSETS.courseCisco,
   Cloud: ASSETS.courseAws,
+  DevOps: ASSETS.courseCorporate,
 };
 
 interface UpcomingTrainingPageProps {
@@ -20,7 +21,7 @@ interface UpcomingTrainingPageProps {
 }
 
 export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPageProps) {
-  const [batches, setBatches] = useState<TrainingBatch[]>(() => {
+  const [batches] = useState<TrainingBatch[]>(() => {
     if (typeof window === 'undefined') return INITIAL_UPCOMING_BATCHES;
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY);
@@ -45,65 +46,11 @@ export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPagePro
   const [expandedId, setExpandedId] = useState<string | null>(
     INITIAL_UPCOMING_BATCHES[0]?.id ?? null
   );
-  const [showAddForm, setShowAddForm] = useState(false);
-
-  const [courseTitle, setCourseTitle] = useState('Red Hat Linux (RHEL)');
-  const [courseCategory, setCourseCategory] = useState<'Linux' | 'Networking' | 'Cloud'>('Linux');
-  const [batchDate, setBatchDate] = useState('');
-  const [batchTime, setBatchTime] = useState('');
-  const [batchMode, setBatchMode] = useState('Live Online + Lab Sessions');
-  const [formError, setFormError] = useState<string | null>(null);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(batches));
-    } catch {
-      // Ignore storage quota errors
-    }
-  }, [batches]);
 
   const filtered =
     activeCategory === 'All'
       ? batches
       : batches.filter((item) => item.category === activeCategory);
-
-  const handleAddBatch = (e: FormEvent) => {
-    e.preventDefault();
-    if (!courseTitle.trim() || !batchDate.trim() || !batchTime.trim()) {
-      setFormError('Please provide the course name, start date, and batch timing.');
-      return;
-    }
-
-    const newBatch: TrainingBatch = {
-      id: `custom-${Date.now()}`,
-      title: courseTitle.trim(),
-      category: courseCategory,
-      batchDate: batchDate.trim(),
-      batchTime: batchTime.trim(),
-      mode: batchMode.trim() || 'Live Lab-Driven Training',
-      summary:
-        'Hands-on, lab-driven batch focused on real enterprise configurations, live troubleshooting and certification readiness.',
-      modules: [
-        'Plain-language core concepts & architecture',
-        'Step-by-step live lab implementation',
-        'Real-world troubleshooting & practical assignments',
-        'Certification preparation & interview guidance',
-      ],
-      coverImage: COVER_BY_CATEGORY[courseCategory],
-      isCustom: true,
-    };
-
-    setBatches((prev) => [newBatch, ...prev]);
-    setExpandedId(newBatch.id);
-    setBatchDate('');
-    setBatchTime('');
-    setFormError(null);
-    setShowAddForm(false);
-  };
-
-  const handleRemoveCustomBatch = (id: string) => {
-    setBatches((prev) => prev.filter((item) => item.id !== id));
-  };
 
   return (
     <main className="relative z-10">
@@ -120,139 +67,10 @@ export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPagePro
                 UPCOMING BATCHES
               </h1>
               <p className="mt-5 text-[16px] sm:text-[18px] font-light leading-[1.6] text-[#303030] dark:text-white/80 max-w-[580px]">
-                Explore upcoming hands-on batches in Red Hat Linux, Cisco Certified Network
-                Associate (CCNA), and Amazon Web Services Solutions Architect Associate (AWS).
+                Explore upcoming hands-on batches in Red Hat Linux (RHEL), Cisco CCNA, AWS Cloud Architecture, and DevOps &amp; Automation.
               </p>
             </motion.div>
-
-            <button
-              type="button"
-              onClick={() => setShowAddForm((prev) => !prev)}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B] px-5 py-3 text-[14px] font-medium hover:opacity-90 transition-opacity cursor-pointer min-h-[44px] shrink-0 self-start lg:self-end"
-            >
-              <Plus className="w-4 h-4" aria-hidden="true" />
-              <span>{showAddForm ? 'Close Batch Form' : 'Add Batch Date & Time'}</span>
-            </button>
           </div>
-
-          {/* Trainer Batch Schedule Publisher Form */}
-          <AnimatePresence initial={false}>
-            {showAddForm && (
-              <motion.form
-                onSubmit={handleAddBatch}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
-                <div className="mt-8 rounded-[24px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-6 sm:p-8 border border-[#5E67E6]/25 dark:border-[#D0FF71]/25">
-                  <h2 className="font-display text-[28px] font-bold uppercase text-[#303030] dark:text-white">
-                    UPLOAD UPCOMING BATCH DETAILS
-                  </h2>
-                  <p className="mt-1 text-[14px] font-light text-[#5C5C5C] dark:text-white/70">
-                    Add a scheduled Red Hat Linux, Cisco CCNA or AWS batch with exact date and time.
-                  </p>
-
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div>
-                      <label
-                        htmlFor="batch-course"
-                        className="block text-[13px] font-medium text-[#5E67E6] dark:text-[#D0FF71] mb-1.5"
-                      >
-                        Training Course
-                      </label>
-                      <select
-                        id="batch-course"
-                        value={courseTitle}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setCourseTitle(val);
-                          if (val.includes('Linux')) setCourseCategory('Linux');
-                          else if (val.includes('CCNA')) setCourseCategory('Networking');
-                          else setCourseCategory('Cloud');
-                        }}
-                        className="w-full rounded-full bg-white dark:bg-[#1E1E1F] px-4 py-3 text-[14px] text-[#303030] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71]"
-                      >
-                        <option value="Red Hat Linux (RHEL)">Red Hat Linux (RHEL)</option>
-                        <option value="Cisco Certified Network Associate (CCNA)">
-                          Cisco Certified Network Associate (CCNA)
-                        </option>
-                        <option value="Amazon Web Services Solutions Architect Associate (AWS)">
-                          AWS Solutions Architect Associate (AWS)
-                        </option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="batch-date"
-                        className="block text-[13px] font-medium text-[#5E67E6] dark:text-[#D0FF71] mb-1.5"
-                      >
-                        Start Date
-                      </label>
-                      <input
-                        id="batch-date"
-                        type="date"
-                        value={batchDate}
-                        onChange={(e) => {
-                          setBatchDate(e.target.value);
-                          if (formError) setFormError(null);
-                        }}
-                        className="w-full rounded-full bg-white dark:bg-[#1E1E1F] px-4 py-3 text-[14px] text-[#303030] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71]"
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="batch-time"
-                        className="block text-[13px] font-medium text-[#5E67E6] dark:text-[#D0FF71] mb-1.5"
-                      >
-                        Batch Time
-                      </label>
-                      <input
-                        id="batch-time"
-                        type="text"
-                        placeholder="e.g., 7:00 PM – 9:00 PM IST"
-                        value={batchTime}
-                        onChange={(e) => {
-                          setBatchTime(e.target.value);
-                          if (formError) setFormError(null);
-                        }}
-                        className="w-full rounded-full bg-white dark:bg-[#1E1E1F] px-4 py-3 text-[14px] text-[#303030] dark:text-white placeholder:text-[#9A9A9A] focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71]"
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="batch-mode"
-                        className="block text-[13px] font-medium text-[#5E67E6] dark:text-[#D0FF71] mb-1.5"
-                      >
-                        Format / Mode
-                      </label>
-                      <input
-                        id="batch-mode"
-                        type="text"
-                        value={batchMode}
-                        onChange={(e) => setBatchMode(e.target.value)}
-                        className="w-full rounded-full bg-white dark:bg-[#1E1E1F] px-4 py-3 text-[14px] text-[#303030] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71]"
-                      />
-                    </div>
-                  </div>
-
-                  {formError && (
-                    <p className="mt-3 text-[13px] text-[#E53935] dark:text-[#FF7B7B]">
-                      {formError}
-                    </p>
-                  )}
-
-                  <div className="mt-5">
-                    <OutlineButton type="submit">PUBLISH BATCH</OutlineButton>
-                  </div>
-                </div>
-              </motion.form>
-            )}
-          </AnimatePresence>
 
           {/* Category Filter */}
           <div
@@ -307,17 +125,6 @@ export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPagePro
                         <span className="inline-block rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B] px-3.5 py-1 text-[12px] font-medium">
                           {program.category}
                         </span>
-                        {program.isCustom && (
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveCustomBatch(program.id)}
-                            aria-label={`Remove scheduled batch ${program.title}`}
-                            className="inline-flex items-center gap-1.5 text-[13px] text-[#5C5C5C] dark:text-white/65 hover:text-[#E53935] cursor-pointer"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            Remove
-                          </button>
-                        )}
                       </div>
 
                       <h2 className="mt-4 font-display text-[32px] sm:text-[40px] font-bold leading-[1.1] uppercase text-[#303030] dark:text-white">
@@ -372,7 +179,7 @@ export function UpcomingTrainingPage({ onContactClick }: UpcomingTrainingPagePro
                             >
                               {program.modules.map((mod, mIdx) => (
                                 <li
-                                  key={mod}
+                                   key={mod}
                                   className="flex items-start gap-2.5 text-[14px] sm:text-[15px] font-light text-[#303030] dark:text-white/80"
                                 >
                                   <span className="font-display text-[15px] font-bold text-[#5E67E6] dark:text-[#D0FF71] tabular-nums">

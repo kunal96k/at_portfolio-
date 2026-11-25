@@ -38,7 +38,7 @@ export function ConfirmDialog({
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="min-h-[44px] w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm font-semibold text-[#0B1736] transition-colors hover:bg-[#F5F7FC] disabled:opacity-50 sm:w-auto"
+            className="h-[38px] w-full rounded-lg border border-[#CBD5E1] bg-white px-4 text-[13px] font-semibold text-[#0F172A] shadow-xs transition-colors hover:bg-[#F8FAFC] disabled:opacity-50 sm:w-auto"
           >
             {cancelLabel}
           </button>
@@ -46,7 +46,7 @@ export function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={busy}
-            className={`min-h-[44px] w-full rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-50 sm:w-auto ${
+            className={`h-[38px] w-full rounded-lg px-4 text-[13px] font-semibold text-white shadow-xs transition-colors disabled:opacity-50 sm:w-auto ${
               destructive
                 ? 'bg-[#DC2626] hover:bg-[#B91C1C]'
                 : 'bg-[#145BFF] hover:bg-[#0F4AD6]'

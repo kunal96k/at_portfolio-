@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { motion } from 'motion/react';
-import { CheckCircle2, ChevronDown } from 'lucide-react';
+import { CheckCircle2, ChevronDown, AlertCircle } from 'lucide-react';
 import { ASSETS, PROFILE } from '../data/portfolioData';
 import {
   validateContactForm,
@@ -12,6 +12,7 @@ import { useResponsiveReveal } from '../hooks/useResponsiveReveal';
 import { OutlineButton } from './OutlineButton';
 import { SafeImage } from './SafeImage';
 import { trackEnquirySubmit } from '../utils/analytics';
+import { submitContactEnquiry } from '../services/enquiryApi';
 
 const SERVICE_OPTIONS = [
   'Red Hat Linux (RHEL / RHCSA & RHCE)',
@@ -26,16 +27,21 @@ export function ContactSection() {
   const [values, setValues] = useState<ContactFormValues>({
     name: '',
     email: '',
+    phone: '',
     service: '',
     message: '',
   });
   const [honeypot, setHoneypot] = useState('');
   const [errors, setErrors] = useState<ContactFormErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const reveal = useResponsiveReveal(0.2, 0.65);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
+
     // Anti-spam honeypot check: bots fill this field, humans never see it
     if (honeypot.trim() !== '') {
       setSubmitted(true);
@@ -43,16 +49,36 @@ export function ContactSection() {
     }
     const validationErrors = validateContactForm(values);
     setErrors(validationErrors);
+
     if (Object.keys(validationErrors).length === 0) {
-      trackEnquirySubmit(values.service);
-      setSubmitted(true);
+      setIsSubmitting(true);
+      try {
+        await submitContactEnquiry({
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          service: values.service,
+          message: values.message,
+          sourcePage: typeof window !== 'undefined' ? window.location.pathname : '/',
+          channel: 'Website Form',
+          honeypot,
+        });
+        trackEnquirySubmit(values.service);
+        setSubmitted(true);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to submit form. Please try again.';
+        setSubmitError(message);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
   const resetForm = () => {
-    setValues({ name: '', email: '', service: '', message: '' });
+    setValues({ name: '', email: '', phone: '', service: '', message: '' });
     setErrors({});
     setSubmitted(false);
+    setSubmitError(null);
   };
 
   return (
@@ -172,6 +198,7 @@ export function ContactSection() {
                   <input
                     id="contact-name"
                     type="text"
+                    maxLength={300}
                     value={values.name}
                     onChange={(e) => {
                       setValues((v) => ({ ...v, name: e.target.value }));
@@ -197,6 +224,7 @@ export function ContactSection() {
                   <input
                     id="contact-email"
                     type="email"
+                    maxLength={300}
                     value={values.email}
                     onChange={(e) => {
                       setValues((v) => ({ ...v, email: e.target.value }));
@@ -213,51 +241,79 @@ export function ContactSection() {
                 </div>
               </div>
 
-              {/* Row 2: Training / Service Needed */}
-              <div>
-                <label
-                  htmlFor="contact-service"
-                  className="block text-[14px] font-light text-[#5E67E6] dark:text-[#D0FF71] mb-2"
-                >
-                  Training / Service Needed
-                </label>
-                <div className="relative">
-                  <select
-                    id="contact-service"
-                    value={values.service}
-                    onChange={(e) => {
-                      setValues((v) => ({ ...v, service: e.target.value }));
-                      if (errors.service) setErrors((err) => ({ ...err, service: undefined }));
-                    }}
-                    className={`w-full appearance-none rounded-full bg-[#F5F5F5] dark:bg-[#333335] px-5 py-3.5 pr-11 text-[15px] font-light focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71] transition-shadow cursor-pointer ${
-                      values.service
-                        ? 'text-[#303030] dark:text-white'
-                        : 'text-[#9A9A9A] dark:text-white/45'
-                    }`}
+              {/* Row 2: Phone + Service */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label
+                    htmlFor="contact-phone"
+                    className="block text-[14px] font-light text-[#5E67E6] dark:text-[#D0FF71] mb-2"
                   >
-                    <option value="" disabled>
-                      Select a course or service…
-                    </option>
-                    {SERVICE_OPTIONS.map((opt) => (
-                      <option
-                        key={opt}
-                        value={opt}
-                        className="bg-white dark:bg-[#2C2C2D] text-[#303030] dark:text-white"
-                      >
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5C5C5C] dark:text-white/60"
-                    aria-hidden="true"
+                    Phone / WhatsApp <span className="text-[12px] opacity-70">(Optional)</span>
+                  </label>
+                  <input
+                    id="contact-phone"
+                    type="tel"
+                    maxLength={300}
+                    value={values.phone || ''}
+                    onChange={(e) => {
+                      setValues((v) => ({ ...v, phone: e.target.value }));
+                      if (errors.phone) setErrors((err) => ({ ...err, phone: undefined }));
+                    }}
+                    placeholder="+91 98230 11204"
+                    className="w-full rounded-full bg-[#F5F5F5] dark:bg-[#333335] px-5 py-3.5 text-[15px] font-light text-[#303030] dark:text-white placeholder:text-[#9A9A9A] dark:placeholder:text-white/45 focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71] transition-shadow"
                   />
+                  {errors.phone && (
+                    <p className="mt-1.5 pl-2 text-[13px] text-[#E53935] dark:text-[#FF7B7B]">
+                      {errors.phone}
+                    </p>
+                  )}
                 </div>
-                {errors.service && (
-                  <p className="mt-1.5 pl-2 text-[13px] text-[#E53935] dark:text-[#FF7B7B]">
-                    {errors.service}
-                  </p>
-                )}
+
+                <div>
+                  <label
+                    htmlFor="contact-service"
+                    className="block text-[14px] font-light text-[#5E67E6] dark:text-[#D0FF71] mb-2"
+                  >
+                    Training / Service Needed
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="contact-service"
+                      value={values.service}
+                      onChange={(e) => {
+                        setValues((v) => ({ ...v, service: e.target.value }));
+                        if (errors.service) setErrors((err) => ({ ...err, service: undefined }));
+                      }}
+                      className={`w-full appearance-none rounded-full bg-[#F5F5F5] dark:bg-[#333335] px-5 py-3.5 pr-11 text-[15px] font-light focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71] transition-shadow cursor-pointer ${
+                        values.service
+                          ? 'text-[#303030] dark:text-white'
+                          : 'text-[#9A9A9A] dark:text-white/45'
+                      }`}
+                    >
+                      <option value="" disabled>
+                        Select a course or service…
+                      </option>
+                      {SERVICE_OPTIONS.map((opt) => (
+                        <option
+                          key={opt}
+                          value={opt}
+                          className="bg-white dark:bg-[#2C2C2D] text-[#303030] dark:text-white"
+                        >
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown
+                      className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5C5C5C] dark:text-white/60"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  {errors.service && (
+                    <p className="mt-1.5 pl-2 text-[13px] text-[#E53935] dark:text-[#FF7B7B]">
+                      {errors.service}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Row 3: Message */}
@@ -286,8 +342,17 @@ export function ContactSection() {
                 )}
               </div>
 
+              {submitError && (
+                <div role="alert" className="flex items-center gap-2.5 p-4 rounded-2xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/40 text-[#E53935] dark:text-[#FF7B7B] text-[14px]">
+                  <AlertCircle className="w-5 h-5 shrink-0" aria-hidden="true" />
+                  <span>{submitError}</span>
+                </div>
+              )}
+
               <div className="pt-2">
-                <OutlineButton type="submit">SUBMIT</OutlineButton>
+                <OutlineButton type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'SUBMITTING...' : 'SUBMIT'}
+                </OutlineButton>
               </div>
             </form>
           )}

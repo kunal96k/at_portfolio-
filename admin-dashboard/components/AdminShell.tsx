@@ -16,7 +16,6 @@ import {
   MessageSquareQuote,
   MoreHorizontal,
   PenSquare,
-  Search,
   User,
   Users,
   X,
@@ -25,7 +24,6 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { AdminSectionId, NotificationItem } from '../types/admin';
 import {
   ensureSidebarGroupExpanded,
-  filterSidebarGroups,
   findSidebarGroupForSection,
   toggleSidebarGroup,
   type SidebarGroupDef,
@@ -69,8 +67,6 @@ const SIDEBAR_GROUPS_META: SidebarGroupMeta[] = [
   { id: 'engagement', label: 'Engagement', icon: Users },
 ];
 
-const ALL_GROUP_IDS: SidebarGroupId[] = SIDEBAR_GROUPS_META.map((g) => g.id);
-
 const PRIMARY_BOTTOM_TABS: AdminSectionId[] = [
   'overview',
   'topics',
@@ -101,10 +97,8 @@ export function AdminShell({
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [sidebarQuery, setSidebarQuery] = useState('');
   const [expandedGroups, setExpandedGroups] = useState<SidebarGroupId[]>([
     'curriculum',
-    'engagement',
   ]);
 
   useEffect(() => {
@@ -236,21 +230,7 @@ export function AdminShell({
     }
   }, [activeGroup]);
 
-  const filteredGroups = useMemo(
-    () => filterSidebarGroups(sidebarGroups, sidebarQuery),
-    [sidebarGroups, sidebarQuery]
-  );
-
-  const isSearching = sidebarQuery.trim().length > 0;
   const overviewItem = navItems[0];
-  const overviewMatchesSearch =
-    !isSearching ||
-    [overviewItem.label, overviewItem.id, ...overviewItem.keywords]
-      .join(' ')
-      .toLowerCase()
-      .includes(sidebarQuery.trim().toLowerCase());
-
-  const allGroupsExpanded = expandedGroups.length === ALL_GROUP_IDS.length;
   const unreadNotifCount = notifications.filter((n) => !n.read).length;
   const isMoreSectionActive = MORE_SHEET_SECTIONS.includes(activeSection);
 
@@ -267,12 +247,6 @@ export function AdminShell({
     setExpandedGroups((prev) => toggleSidebarGroup(prev, groupId));
   };
 
-  const handleToggleAllGroups = () => {
-    setExpandedGroups((prev) =>
-      prev.length === ALL_GROUP_IDS.length ? [] : [...ALL_GROUP_IDS]
-    );
-  };
-
   const renderSidebarLinks = (isMobileDrawer = false) => {
     const rowHeight = isMobileDrawer ? 'min-h-[38px]' : 'h-[32px]';
     const groupHeight = isMobileDrawer ? 'min-h-[38px]' : 'h-[32px]';
@@ -281,110 +255,65 @@ export function AdminShell({
 
     return (
       <div className="flex min-h-0 flex-1 flex-col">
-        {/* Compact Quick-Filter Bar (scales cleanly as modules grow) */}
-        <div className="shrink-0 px-3 pt-3 pb-2">
-          <div className="relative flex items-center">
-            <Search
-              className="pointer-events-none absolute left-2.5 h-3.5 w-3.5 text-white/40"
-              aria-hidden="true"
-            />
-            <input
-              type="search"
-              value={sidebarQuery}
-              onChange={(e) => setSidebarQuery(e.target.value)}
-              placeholder="Filter modules..."
-              aria-label="Filter navigation modules"
-              className="h-8 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] pr-7 pl-8 text-[12px] text-white placeholder:text-white/38 transition-colors focus:border-[#3B82F6]/60 focus:bg-white/[0.07] focus:outline-none"
-            />
-            {isSearching && (
-              <button
-                type="button"
-                onClick={() => setSidebarQuery('')}
-                aria-label="Clear module filter"
-                className="absolute right-1.5 flex h-5 w-5 items-center justify-center rounded text-white/50 hover:bg-white/10 hover:text-white"
-              >
-                <X className="h-3 w-3" aria-hidden="true" />
-              </button>
-            )}
-          </div>
-        </div>
-
         {/* Scrollable Navigation Tree */}
         <nav
           aria-label={isMobileDrawer ? 'Mobile sidebar sections' : 'Sidebar sections'}
-          className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain touch-pan-y px-3 pt-1 pb-4 admin-scroll"
+          className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain touch-pan-y px-3 pt-3 pb-4 admin-scroll"
         >
           {/* Pinned Overview Row */}
-          {overviewMatchesSearch && (
-            <button
-              type="button"
-              onClick={() => handleNavigate(overviewItem.id)}
-              aria-current={isOverviewActive ? 'page' : undefined}
-              className={`group flex ${isMobileDrawer ? 'min-h-[40px]' : 'h-[34px]'} w-full items-center justify-between gap-2 rounded-lg px-2.5 text-[12.5px] font-medium transition-colors ${
-                isOverviewActive
-                  ? 'bg-[#145BFF]/22 text-white ring-1 ring-inset ring-[#60A5FA]/30'
-                  : 'text-white/75 hover:bg-white/[0.06] hover:text-white'
-              }`}
-            >
-              <span className="flex min-w-0 items-center gap-2.5">
-                <OverviewIcon
-                  className={`h-[15px] w-[15px] shrink-0 transition-colors ${
-                    isOverviewActive
-                      ? 'text-[#60A5FA]'
-                      : 'text-white/50 group-hover:text-white/80'
-                  }`}
-                  aria-hidden="true"
-                />
-                <span className="truncate">{overviewItem.label}</span>
-              </span>
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => handleNavigate(overviewItem.id)}
+            aria-current={isOverviewActive ? 'page' : undefined}
+            className={`group flex ${isMobileDrawer ? 'min-h-[40px]' : 'h-[34px]'} w-full items-center justify-between gap-2 rounded-lg px-2.5 text-[12.5px] font-medium transition-colors ${
+              isOverviewActive
+                ? 'bg-[#145BFF]/22 text-white ring-1 ring-inset ring-[#60A5FA]/30'
+                : 'text-white/75 hover:bg-white/[0.06] hover:text-white'
+            }`}
+          >
+            <span className="flex min-w-0 items-center gap-2.5">
+              <OverviewIcon
+                className={`h-[15px] w-[15px] shrink-0 transition-colors ${
+                  isOverviewActive
+                    ? 'text-[#60A5FA]'
+                    : 'text-white/50 group-hover:text-white/80'
+                }`}
+                aria-hidden="true"
+              />
+              <span className="truncate">{overviewItem.label}</span>
+            </span>
+          </button>
 
-          {/* Modules Header + Expand/Collapse Control */}
+          {/* Modules Header */}
           <div className="flex items-center justify-between px-2 pt-1">
             <span className="text-[10px] font-semibold uppercase tracking-[0.09em] text-white/38">
               Modules
             </span>
-            {!isSearching && (
+            {expandedGroups.length > 0 && (
               <button
                 type="button"
-                onClick={handleToggleAllGroups}
+                onClick={() => setExpandedGroups([])}
                 className="text-[10.5px] font-medium text-white/45 transition-colors hover:text-white/80"
               >
-                {allGroupsExpanded ? 'Collapse' : 'Expand all'}
+                Collapse
               </button>
             )}
           </div>
 
           {/* Collapsible Dropdown Groups */}
-          {filteredGroups.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-white/10 px-3 py-4 text-center">
-              <p className="text-[11.5px] text-white/55">
-                No modules match &ldquo;{sidebarQuery.trim()}&rdquo;
-              </p>
-              <button
-                type="button"
-                onClick={() => setSidebarQuery('')}
-                className="mt-1.5 text-[11px] font-medium text-[#60A5FA] hover:underline"
-              >
-                Reset filter
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-1">
-              {filteredGroups.map((group) => {
-                const meta = SIDEBAR_GROUPS_META.find((m) => m.id === group.id)!;
-                const GroupIcon = meta.icon;
-                const isExpanded =
-                  isSearching || expandedGroups.includes(group.id);
-                const hasActiveChild = group.items.some(
-                  (item) => item.id === activeSection
-                );
-                const groupAlertCount = group.items.reduce(
-                  (sum, item) =>
-                    sum + (item.highlightBadge && item.badgeCount ? item.badgeCount : 0),
-                  0
-                );
+          <div className="space-y-1">
+            {sidebarGroups.map((group) => {
+              const meta = SIDEBAR_GROUPS_META.find((m) => m.id === group.id)!;
+              const GroupIcon = meta.icon;
+              const isExpanded = expandedGroups.includes(group.id);
+              const hasActiveChild = group.items.some(
+                (item) => item.id === activeSection
+              );
+              const groupAlertCount = group.items.reduce(
+                (sum, item) =>
+                  sum + (item.highlightBadge && item.badgeCount ? item.badgeCount : 0),
+                0
+              );
 
                 return (
                   <div key={group.id}>
@@ -476,7 +405,6 @@ export function AdminShell({
                 );
               })}
             </div>
-          )}
         </nav>
       </div>
     );
@@ -797,8 +725,8 @@ export function AdminShell({
           </div>
         </header>
 
-        {/* Scrollable Workspace Content */}
-        <main className="mx-auto w-full max-w-[1360px] flex-1 px-3 py-4 pb-24 sm:px-5 sm:py-6 lg:px-7 lg:pb-10">
+        {/* Scrollable Workspace Content with clearance for fixed bottom bars */}
+        <main className="mx-auto w-full max-w-[1360px] flex-1 px-3 py-4 pb-36 sm:px-5 sm:py-6 sm:pb-36 lg:px-7 lg:pb-24">
           {children}
         </main>
       </div>

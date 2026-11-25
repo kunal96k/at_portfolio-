@@ -231,17 +231,15 @@ export function toggleSidebarGroup(
   expandedIds: SidebarGroupId[],
   groupId: SidebarGroupId
 ): SidebarGroupId[] {
-  return expandedIds.includes(groupId)
-    ? expandedIds.filter((id) => id !== groupId)
-    : [...expandedIds, groupId];
+  return expandedIds.includes(groupId) ? [] : [groupId];
 }
 
 export function ensureSidebarGroupExpanded(
   expandedIds: SidebarGroupId[],
   groupId: SidebarGroupId | undefined
 ): SidebarGroupId[] {
-  if (!groupId || expandedIds.includes(groupId)) return expandedIds;
-  return [...expandedIds, groupId];
+  if (!groupId) return expandedIds;
+  return [groupId];
 }
 
 export function filterSidebarGroups<T extends SidebarModuleRef>(

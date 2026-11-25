@@ -57,14 +57,15 @@ function buildPersonAndOrgEntities(origin: string): Record<string, unknown>[] {
       email: `mailto:${PROFILE.email}`,
       sameAs: PROFILE.socials.map((s) => s.href),
       knowsAbout: [
-        'Red Hat Enterprise Linux (RHEL)',
-        'RHCSA and RHCE Certification',
-        'Cisco CCNA and CCNP',
-        'Windows Server Administration',
-        'AWS Solutions Architect Associate',
-        'Network Security',
-        'Virtualization Technologies',
-        'IT Infrastructure Troubleshooting',
+        'Red Hat Enterprise Linux (RHEL 9)',
+        'Cisco CCNA (200-301) & CCNP Enterprise',
+        'Amazon Web Services (AWS)',
+        'Google Cloud Platform (GCP)',
+        'Microsoft Azure Cloud',
+        'DevOps, Docker & Kubernetes',
+        'VMware ESXi & vCenter Virtualization',
+        'Network Security & Firewalls',
+        'Enterprise Server Infrastructure',
       ],
       worksFor: { '@id': orgId },
     },
@@ -122,16 +123,16 @@ export function buildRouteSeo(
     case 'about': {
       const pathname = '/about';
       return {
-        title: 'About Arvind Thevar | 15+ Yrs IT Infrastructure Trainer',
+        title: 'About Arvind Thevar | IT Infrastructure & Cloud Trainer',
         description:
-          'Meet Arvind Thevar, an IT Trainer & Infrastructure Professional with 15+ years building production Linux, Cisco, Windows Server, and cloud labs.',
+          'Meet Arvind Thevar, an IT Trainer with 15+ years mentoring engineers in Red Hat Linux (RHEL), Cisco CCNA, AWS Cloud Architecture, and DevOps automation.',
         canonicalUrl: toAbsoluteUrl(cleanOrigin, pathname),
         pathname,
         ogType: 'website',
         ogImage: toAbsoluteUrl(cleanOrigin, DEFAULT_OG_IMAGE),
         ogImageAlt: 'Arvind Thevar — IT Trainer & IT Infrastructure Professional',
         keywords:
-          'About Arvind Thevar, IT Infrastructure Trainer Nashik, Corporate IT Trainer India, RHEL Cisco Mentor',
+          'About Arvind Thevar, Red Hat Linux Trainer Nashik, Cisco CCNA Trainer India, AWS Cloud DevOps Mentor, RHCSA RHCE classes',
         jsonLd: {
           '@context': 'https://schema.org',
           '@graph': [
@@ -154,16 +155,16 @@ export function buildRouteSeo(
     case 'upcoming-training': {
       const pathname = '/upcoming-training';
       return {
-        title: 'Upcoming IT Training Batches | RHEL, Cisco CCNA & AWS',
+        title: 'Upcoming IT Batches | Red Hat Linux, CCNA, AWS & DevOps',
         description:
-          'Join upcoming lab-driven training batches in Red Hat Linux (RHEL), Cisco CCNA/CCNP, and AWS Solutions Architect with live troubleshooting.',
+          'Join upcoming hands-on training batches in Red Hat Linux (RHEL), Cisco CCNA, AWS Cloud, and DevOps automation with live production fault troubleshooting.',
         canonicalUrl: toAbsoluteUrl(cleanOrigin, pathname),
         pathname,
         ogType: 'website',
         ogImage: toAbsoluteUrl(cleanOrigin, '/assets/optimized/linux_rhel_lab_1795164484674.webp'),
         ogImageAlt: 'Red Hat Linux, Cisco CCNA & AWS upcoming batches and labs',
         keywords:
-          'Upcoming RHEL batch, Cisco CCNA training Nashik, AWS Solutions Architect course, RHCSA RHCE classes',
+          'Upcoming RHEL batch, Cisco CCNA training Nashik, AWS Cloud course, DevOps Kubernetes training, RHCSA RHCE classes',
         jsonLd: {
           '@context': 'https://schema.org',
           '@graph': [
@@ -198,7 +199,7 @@ export function buildRouteSeo(
       return {
         title: 'IT Services & Corporate Training | Arvind Thevar',
         description:
-          'Enterprise IT infrastructure services, server deployments, network security, and corporate training across 10 core domains by Arvind Thevar.',
+          'Enterprise IT infrastructure services, Red Hat Linux, Cisco CCNA/CCNP, multi-cloud (AWS, GCP, Azure), DevOps, and VMware virtualization by Arvind Thevar.',
         canonicalUrl: toAbsoluteUrl(cleanOrigin, pathname),
         pathname,
         ogType: 'website',
@@ -208,7 +209,7 @@ export function buildRouteSeo(
         ),
         ogImageAlt: 'Corporate IT infrastructure training and workshops',
         keywords:
-          'Corporate IT training Nashik, Enterprise Network Design, Red Hat Linux consulting, Cyber Security training',
+          'Red Hat Linux consulting, Cisco CCNA CCNP networking, AWS GCP Azure cloud, DevOps VMware Nashik, Corporate IT training India',
         jsonLd: {
           '@context': 'https://schema.org',
           '@graph': [
@@ -218,10 +219,11 @@ export function buildRouteSeo(
               name: 'Enterprise IT Infrastructure Services & Corporate Training',
               provider: orgRef,
               serviceType: [
-                'Red Hat Enterprise Linux Training',
-                'Cisco CCNA & CCNP Corporate Workshops',
-                'Windows Server & Cloud Migration',
-                'IT Infrastructure Troubleshooting',
+                'Red Hat Enterprise Linux Training & Administration',
+                'Cisco CCNA & CCNP Enterprise Networking',
+                'Multi-Cloud Architecture (AWS, GCP, Azure)',
+                'DevOps, Docker, Kubernetes & CI/CD Automation',
+                'VMware Virtualization & Server Infrastructure',
               ],
             },
             buildBreadcrumbList(cleanOrigin, [
@@ -236,16 +238,16 @@ export function buildRouteSeo(
     case 'resources': {
       const pathname = '/resources';
       return {
-        title: 'Free RHEL, CCNA & AWS Study Notes & Lab PDFs',
+        title: 'Free RHEL, CCNA, AWS & DevOps Notes & Lab Manuals',
         description:
-          'Download 100% free Red Hat Linux (RHEL), Cisco CCNA/CCNP, Windows Server, and AWS study notes and lab manuals with zero hidden charges.',
+          'Download 100% free Red Hat Linux (RHEL), Cisco CCNA, AWS Cloud, and DevOps study notes, lab workbooks, and troubleshooting guides with zero hidden charges.',
         canonicalUrl: toAbsoluteUrl(cleanOrigin, pathname),
         pathname,
         ogType: 'website',
         ogImage: toAbsoluteUrl(cleanOrigin, DEFAULT_OG_IMAGE),
         ogImageAlt: 'Free RHEL, Cisco CCNA, and AWS study notes and lab workbooks',
         keywords:
-          'Free RHEL notes PDF, Cisco CCNA CCNP study material, AWS lab workbook free, RHCSA lab manual',
+          'Free RHEL notes PDF, Cisco CCNA study material, AWS lab workbook free, DevOps Docker Kubernetes notes, RHCSA lab manual',
         jsonLd: {
           '@context': 'https://schema.org',
           '@graph': [
@@ -285,7 +287,7 @@ export function buildRouteSeo(
       return {
         title: 'Student Testimonials & Placements | Arvind Thevar',
         description:
-          'Read verified stories from placed IT professionals and institutional partners trained in Linux, Cisco networking, Windows Server, and cloud.',
+          'Read verified stories from placed IT professionals and institutional partners trained in Red Hat Linux, Cisco CCNA, AWS Cloud, and DevOps.',
         canonicalUrl: toAbsoluteUrl(cleanOrigin, pathname),
         pathname,
         ogType: 'website',
@@ -673,16 +675,16 @@ export function buildRouteSeo(
     default: {
       const pathname = '/';
       return {
-        title: 'Arvind Thevar | RHEL, CCNA & AWS Trainer in Nashik',
+        title: 'Arvind Thevar | RHEL, CCNA, AWS & DevOps Trainer Nashik',
         description:
-          'Hands-on IT infrastructure training in Nashik & online by Arvind Thevar (15+ yrs). Master Red Hat Linux (RHEL), Cisco CCNA/CCNP, and AWS Cloud labs.',
+          'Hands-on IT training in Nashik & online by Arvind Thevar (15+ yrs). Master Red Hat Linux (RHEL), Cisco CCNA, AWS Cloud Architecture, and DevOps automation.',
         canonicalUrl: siteUrl,
         pathname,
         ogType: 'website',
         ogImage: toAbsoluteUrl(cleanOrigin, DEFAULT_OG_IMAGE),
         ogImageAlt: 'Arvind Thevar — IT Trainer & IT Infrastructure Professional',
         keywords:
-          'Arvind Thevar, IT Trainer Nashik, Red Hat Linux RHEL training, RHCSA RHCE, Cisco CCNA CCNP, AWS Solutions Architect, Windows Server, IT Infrastructure labs',
+          'Arvind Thevar, IT Trainer Nashik, Red Hat Linux RHEL, RHCSA RHCE, Cisco CCNA 200-301, AWS Cloud Architecture, DevOps Docker Kubernetes, IT Infrastructure labs',
         jsonLd: {
           '@context': 'https://schema.org',
           '@graph': [

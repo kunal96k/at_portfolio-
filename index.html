@@ -9,6 +9,22 @@
     <meta name="author" content="Arvind Thevar" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#4F58DF" />
+    <!-- Immediate script to detect system/stored theme before rendering and prevent flash -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('arvind_portfolio_theme');
+          var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (stored === 'dark' || (!stored && systemDark)) {
+            document.documentElement.classList.add('dark');
+            var meta = document.querySelector("meta[name='theme-color']");
+            if (meta) meta.setAttribute('content', '#1C1C1D');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
 
     <!-- Canonical & Favicons -->
     <link rel="canonical" href="https://arvindthevar.vercel.app/" />

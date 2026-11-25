@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { X } from 'lucide-react';
-import { ASSETS } from '../data/portfolioData';
+import { ASSETS, PROFILE } from '../data/portfolioData';
 import type { AppRoute } from '../utils/scrollMath';
 import { SafeImage } from './SafeImage';
+import { SocialIcon } from './SocialIcons';
 
 interface NavbarProps {
   route: AppRoute;
@@ -22,7 +23,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Home', href: '/', page: 'home' },
   { label: 'About Us', href: '/about', page: 'about' },
   { label: 'Upcoming Batches', href: '/upcoming-training', page: 'upcoming-training' },
-  { label: 'Resources', href: '/resources', page: 'resources' },
+  { label: 'Notes', href: '/resources', page: 'resources' },
   { label: 'Testimonials', href: '/testimonials', page: 'testimonials' },
   { label: 'Blogs', href: '/blogs', page: 'blogs', matchPages: ['blogs', 'blog-detail'] },
   { label: 'Gallery', href: '/gallery', page: 'gallery' },
@@ -339,6 +340,22 @@ export function Navbar({ route, onNavigate, onContactClick }: NavbarProps) {
                       >
                         Explore Training
                       </a>
+                    </div>
+
+                    {/* Social Media Links in Mobile Drawer */}
+                    <div className="mt-3 pt-3 border-t border-[#E5E5E5] dark:border-[#343436] flex items-center justify-center gap-3" aria-label="Social media links">
+                      {PROFILE.socials.map((social) => (
+                        <a
+                          key={social.id}
+                          href={social.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${social.label} (opens in a new tab)`}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2D] text-[#303030] dark:text-white hover:bg-[#4F58DF] hover:text-white dark:hover:bg-[#D0FF71] dark:hover:text-[#1A1A1B] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4F58DF] dark:focus-visible:ring-[#D0FF71]"
+                        >
+                          <SocialIcon id={social.id} className="w-4 h-4" />
+                        </a>
+                      ))}
                     </div>
                   </div>
                 </motion.div>

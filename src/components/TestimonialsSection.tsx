@@ -109,7 +109,7 @@ export function TestimonialsSection({
             className="flex flex-col justify-between rounded-[22px] bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#303030] p-7 sm:p-8 min-h-[220px] transition-colors duration-300"
           >
             <p className="text-[16px] font-light leading-[1.55] opacity-95">
-              Linux, Windows, Cisco, Security, Virtualization &amp; Cloud under one roof
+              Red Hat, CCNA, Cloud (AWS, GCP, Azure), DevOps, VMware &amp; Security under one roof
             </p>
             <div className="mt-8">
               <div className="font-display text-[64px] sm:text-[72px] font-bold leading-none">

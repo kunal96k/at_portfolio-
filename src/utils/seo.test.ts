@@ -82,7 +82,7 @@ test('public/robots.txt and public/sitemap.xml exist and list every public route
   assert.match(robots, /Sitemap:\s*https:\/\/.*\/sitemap\.xml/);
 
   const expectedPaths = getAllPublicSitemapPaths();
-  assert.equal(expectedPaths.length, 17);
+  assert.equal(expectedPaths.length, 18);
   for (const routePath of expectedPaths) {
     const expectedLoc = `${DEFAULT_SITE_ORIGIN}${routePath}`;
     assert.ok(

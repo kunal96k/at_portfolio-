@@ -73,15 +73,15 @@ export function AboutPage() {
         </div>
       </section>
 
-      {/* Section 2: Ten Core Domains */}
+      {/* Section 2: 10 Core Domains */}
       <section className="px-5 sm:px-8 py-16 sm:py-24">
         <div className="mx-auto max-w-[1120px]">
           <div className="max-w-[600px]">
             <h2 className="font-display text-[44px] sm:text-[56px] lg:text-[60px] font-bold leading-[1.12] uppercase text-[#303030] dark:text-white">
-              MY EXPERTISE
+              10 CORE DOMAINS
             </h2>
             <p className="mt-3 text-[18px] font-medium text-[#5E67E6] dark:text-[#D0FF71]">
-              Ten core domains. One goal: job-ready skills.
+              Ten core enterprise domains. One goal: job-ready skills.
             </p>
           </div>
 

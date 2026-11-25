@@ -1,6 +1,6 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
-import { ImagePlus, MessageSquareQuote, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'motion/react';
+import { MessageSquareQuote } from 'lucide-react';
 import {
   INITIAL_STUDENT_TESTIMONIALS,
   type StudentTestimonialItem,
@@ -17,7 +17,7 @@ interface TestimonialsPageProps {
 }
 
 export function TestimonialsPage({ onNavigate }: TestimonialsPageProps) {
-  const [testimonials, setTestimonials] = useState<StudentTestimonialItem[]>(() => {
+  const [testimonials] = useState<StudentTestimonialItem[]>(() => {
     if (typeof window === 'undefined') return INITIAL_STUDENT_TESTIMONIALS;
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY);
@@ -30,61 +30,6 @@ export function TestimonialsPage({ onNavigate }: TestimonialsPageProps) {
     }
     return INITIAL_STUDENT_TESTIMONIALS;
   });
-
-  const [showForm, setShowForm] = useState(false);
-  const [studentName, setStudentName] = useState('');
-  const [courseName, setCourseName] = useState('Red Hat Linux (RHEL)');
-  const [quote, setQuote] = useState('');
-  const [photoDataUrl, setPhotoDataUrl] = useState('');
-  const [formError, setFormError] = useState<string | null>(null);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(testimonials));
-    } catch {
-      // Ignore quota errors
-    }
-  }, [testimonials]);
-
-  const handlePhotoUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setPhotoDataUrl(reader.result);
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleAddTestimonial = (e: FormEvent) => {
-    e.preventDefault();
-    if (!studentName.trim() || !quote.trim()) {
-      setFormError('Please enter the student name and written testimonial.');
-      return;
-    }
-
-    const entry: StudentTestimonialItem = {
-      id: `st-${Date.now()}`,
-      name: studentName.trim(),
-      course: courseName.trim(),
-      quote: quote.trim(),
-      photo: photoDataUrl,
-      isCustom: true,
-    };
-
-    setTestimonials((prev) => [entry, ...prev]);
-    setStudentName('');
-    setQuote('');
-    setPhotoDataUrl('');
-    setFormError(null);
-    setShowForm(false);
-  };
-
-  const handleRemove = (id: string) => {
-    setTestimonials((prev) => prev.filter((item) => item.id !== id));
-  };
 
   return (
     <main className="relative z-10">
@@ -105,138 +50,7 @@ export function TestimonialsPage({ onNavigate }: TestimonialsPageProps) {
                 Cisco networking, Windows Server, virtualization and cloud batches.
               </p>
             </motion.div>
-
-            <button
-              type="button"
-              onClick={() => setShowForm((prev) => !prev)}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B] px-5 py-3 text-[14px] font-medium hover:opacity-90 transition-opacity cursor-pointer min-h-[44px] shrink-0 self-start lg:self-end"
-            >
-              <Plus className="w-4 h-4" aria-hidden="true" />
-              <span>{showForm ? 'Close Form' : 'Add Student Testimonial'}</span>
-            </button>
           </div>
-
-          {/* Add Student Photo + Written Testimonial Form */}
-          <AnimatePresence initial={false}>
-            {showForm && (
-              <motion.form
-                onSubmit={handleAddTestimonial}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
-                <div className="mt-8 rounded-[24px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-6 sm:p-8 border border-[#5E67E6]/25 dark:border-[#D0FF71]/25">
-                  <h2 className="font-display text-[28px] font-bold uppercase text-[#303030] dark:text-white">
-                    ADD STUDENT PHOTO &amp; TESTIMONIAL
-                  </h2>
-
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                      <label
-                        htmlFor="st-name"
-                        className="block text-[13px] font-medium text-[#5E67E6] dark:text-[#D0FF71] mb-1.5"
-                      >
-                        Student Name
-                      </label>
-                      <input
-                        id="st-name"
-                        type="text"
-                        placeholder="Full name"
-                        value={studentName}
-                        onChange={(e) => {
-                          setStudentName(e.target.value);
-                          if (formError) setFormError(null);
-                        }}
-                        className="w-full rounded-full bg-white dark:bg-[#1E1E1F] px-4 py-3 text-[14px] text-[#303030] dark:text-white placeholder:text-[#9A9A9A] focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71]"
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="st-course"
-                        className="block text-[13px] font-medium text-[#5E67E6] dark:text-[#D0FF71] mb-1.5"
-                      >
-                        Training Track
-                      </label>
-                      <select
-                        id="st-course"
-                        value={courseName}
-                        onChange={(e) => setCourseName(e.target.value)}
-                        className="w-full rounded-full bg-white dark:bg-[#1E1E1F] px-4 py-3 text-[14px] text-[#303030] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71]"
-                      >
-                        <option value="Red Hat Linux (RHEL)">Red Hat Linux (RHEL)</option>
-                        <option value="Cisco CCNA">Cisco CCNA</option>
-                        <option value="Cisco CCNP">Cisco CCNP</option>
-                        <option value="AWS Solutions Architect Associate">
-                          AWS Solutions Architect Associate
-                        </option>
-                        <option value="Windows Server & Virtualization">
-                          Windows Server &amp; Virtualization
-                        </option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="st-photo"
-                        className="block text-[13px] font-medium text-[#5E67E6] dark:text-[#D0FF71] mb-1.5"
-                      >
-                        Student Photo (Optional)
-                      </label>
-                      <label
-                        htmlFor="st-photo"
-                        className="flex items-center gap-2 w-full rounded-full bg-white dark:bg-[#1E1E1F] px-4 py-3 text-[14px] text-[#5C5C5C] dark:text-white/75 cursor-pointer hover:ring-2 hover:ring-[#5E67E6] dark:hover:ring-[#D0FF71]"
-                      >
-                        <ImagePlus className="w-4 h-4 text-[#5E67E6] dark:text-[#D0FF71] shrink-0" />
-                        <span className="truncate">
-                          {photoDataUrl ? 'Photo selected' : 'Upload student photo'}
-                        </span>
-                      </label>
-                      <input
-                        id="st-photo"
-                        type="file"
-                        accept="image/*"
-                        onChange={handlePhotoUpload}
-                        className="sr-only"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-4">
-                    <label
-                      htmlFor="st-quote"
-                      className="block text-[13px] font-medium text-[#5E67E6] dark:text-[#D0FF71] mb-1.5"
-                    >
-                      Written Testimonial
-                    </label>
-                    <textarea
-                      id="st-quote"
-                      rows={3}
-                      placeholder="Write the student's genuine feedback about the live labs, troubleshooting practice, and career guidance..."
-                      value={quote}
-                      onChange={(e) => {
-                        setQuote(e.target.value);
-                        if (formError) setFormError(null);
-                      }}
-                      className="w-full rounded-[18px] bg-white dark:bg-[#1E1E1F] px-4 py-3 text-[14px] text-[#303030] dark:text-white placeholder:text-[#9A9A9A] focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71]"
-                    />
-                  </div>
-
-                  {formError && (
-                    <p className="mt-3 text-[13px] text-[#E53935] dark:text-[#FF7B7B]">
-                      {formError}
-                    </p>
-                  )}
-
-                  <div className="mt-5">
-                    <OutlineButton type="submit">SAVE TESTIMONIAL</OutlineButton>
-                  </div>
-                </div>
-              </motion.form>
-            )}
-          </AnimatePresence>
 
           {/* Student Testimonials Grid or Verified Empty State */}
           <div className="mt-10">
@@ -249,14 +63,9 @@ export function TestimonialsPage({ onNavigate }: TestimonialsPageProps) {
                   VERIFIED STUDENT TESTIMONIALS
                 </h2>
                 <p className="mt-2 mx-auto max-w-[520px] text-[15px] sm:text-[16px] font-light leading-[1.6] text-[#5C5C5C] dark:text-white/75">
-                  Student photos and written testimonials will appear here as they are added. Click
-                  &ldquo;Add Student Testimonial&rdquo; above to publish a student’s photo and
-                  written review.
+                  Verified student reviews and industry feedback from past batches.
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
-                  <OutlineButton onClick={() => setShowForm(true)}>
-                    ADD FIRST TESTIMONIAL
-                  </OutlineButton>
                   <OutlineButton onClick={() => onNavigate('/upcoming-training')}>
                     EXPLORE TRAINING
                   </OutlineButton>
@@ -294,32 +103,19 @@ export function TestimonialsPage({ onNavigate }: TestimonialsPageProps) {
                             )}
                           </div>
                         </div>
-
-                        {item.isCustom && (
-                          <button
-                            type="button"
-                            onClick={() => handleRemove(item.id)}
-                            aria-label={`Remove testimonial from ${item.name}`}
-                            className="text-[#5C5C5C] dark:text-white/55 hover:text-[#E53935] cursor-pointer p-1 shrink-0"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
                       </div>
 
-                      <p className="mt-5 text-[15px] font-light leading-[1.65] text-[#303030] dark:text-white/90">
-                        “{item.quote}”
+                      <p className="mt-4 text-[13px] font-medium uppercase tracking-wider text-[#5E67E6] dark:text-[#D0FF71]">
+                        {item.course}
                       </p>
+
+                      <blockquote className="mt-3 text-[15px] font-light leading-[1.65] text-[#303030] dark:text-white/80">
+                        &ldquo;{item.quote}&rdquo;
+                      </blockquote>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-[#E2E2E4] dark:border-[#3A3A3D] flex items-center justify-between gap-2">
-                      <span className="inline-flex items-center rounded-full bg-white dark:bg-[#1E1E1F] px-3 py-1 text-[12px] font-medium text-[#5E67E6] dark:text-[#D0FF71]">
-                        {item.course}
-                      </span>
-                      <MessageSquareQuote
-                        className="w-4 h-4 text-[#5E67E6]/70 dark:text-[#D0FF71]/70 shrink-0"
-                        aria-hidden="true"
-                      />
+                    <div className="mt-6 pt-4 border-t border-[#E5E5E5] dark:border-[#38383A] flex items-center justify-between text-[12.5px] font-light text-[#5C5C5C] dark:text-white/60">
+                      <span>Verified Learner</span>
                     </div>
                   </article>
                 ))}
@@ -329,7 +125,9 @@ export function TestimonialsPage({ onNavigate }: TestimonialsPageProps) {
         </div>
       </section>
 
-      <TestimonialsSection showTestimonialsLink={false} />
+      {/* Featured Testimonials Showcase Strip */}
+      <TestimonialsSection onNavigate={onNavigate} />
+
       <ContactSection />
     </main>
   );

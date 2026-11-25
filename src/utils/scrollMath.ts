@@ -14,6 +14,7 @@ export interface PortraitTransformState {
 export interface ContactFormValues {
   name: string;
   email: string;
+  phone?: string;
   service: string;
   message: string;
 }
@@ -21,6 +22,7 @@ export interface ContactFormValues {
 export interface ContactFormErrors {
   name?: string;
   email?: string;
+  phone?: string;
   service?: string;
   message?: string;
 }
@@ -296,6 +298,10 @@ export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
 
+export function isValidPhone(phone: string): boolean {
+  return /^\+?(?:[0-9][\s().-]*){7,20}$/.test(phone.trim());
+}
+
 export function validateContactForm(values: ContactFormValues): ContactFormErrors {
   const errors: ContactFormErrors = {};
 
@@ -303,22 +309,38 @@ export function validateContactForm(values: ContactFormValues): ContactFormError
     errors.name = 'Please enter your name.';
   } else if (values.name.trim().length < 2) {
     errors.name = 'Name must be at least 2 characters.';
+  } else if (values.name.trim().length > 300) {
+    errors.name = 'Name cannot exceed 300 characters.';
   }
 
   if (!values.email.trim()) {
     errors.email = 'Please enter your email address.';
+  } else if (values.email.trim().length > 300) {
+    errors.email = 'Email cannot exceed 300 characters.';
   } else if (!isValidEmail(values.email)) {
     errors.email = 'Please enter a valid email address.';
   }
 
+  if (values.phone && values.phone.trim()) {
+    if (values.phone.trim().length > 300) {
+      errors.phone = 'Phone number cannot exceed 300 characters.';
+    } else if (!isValidPhone(values.phone)) {
+      errors.phone = 'Please provide a valid phone number (digits and optional + prefix).';
+    }
+  }
+
   if (!values.service.trim()) {
     errors.service = 'Please select a service.';
+  } else if (values.service.trim().length > 300) {
+    errors.service = 'Service cannot exceed 300 characters.';
   }
 
   if (!values.message.trim()) {
     errors.message = 'Please tell me a bit about your project.';
   } else if (values.message.trim().length < 10) {
     errors.message = 'Please provide at least 10 characters of detail.';
+  } else if (values.message.trim().length > 3000) {
+    errors.message = 'Message cannot exceed 3000 characters.';
   }
 
   return errors;

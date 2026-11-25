@@ -59,7 +59,7 @@ export function ItServicesPage({ onNavigate }: ItServicesPageProps) {
       <section className="px-5 sm:px-8 py-12 sm:py-16">
         <div className="mx-auto max-w-[1120px]">
           <h2 className="font-display text-[40px] sm:text-[52px] font-bold leading-[1.12] uppercase text-[#303030] dark:text-white">
-            TEN CORE INFRASTRUCTURE DOMAINS
+            10 CORE INFRASTRUCTURE DOMAINS
           </h2>
           <p className="mt-2 text-[17px] font-medium text-[#5E67E6] dark:text-[#D0FF71]">
             Ten core domains. One goal: job-ready skills.

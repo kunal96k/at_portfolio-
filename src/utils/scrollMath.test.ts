@@ -173,7 +173,7 @@ test('route parser resolves all Portavia routes cleanly', () => {
     page: 'blog-detail',
     slug: '5-design-trends-that-will-define-2024',
   });
-  assert.deepEqual(parseRoute('/unknown'), { page: 'home' });
+  assert.deepEqual(parseRoute('/unknown'), { page: 'not-found' });
 });
 
 test('counter value formats and clamps cleanly', () => {

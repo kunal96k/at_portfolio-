@@ -803,9 +803,9 @@ export function ModuleManagerPage({
   ];
 
   const inputClass =
-    'mt-1.5 min-h-[44px] w-full min-w-0 rounded-xl border border-[#E2E8F0] bg-white px-3.5 text-sm text-[#0B1736] placeholder:text-[#94A3B8] focus:border-[#145BFF] focus:outline-none';
+    'mt-1 h-[38px] w-full min-w-0 rounded-lg border border-[#CBD5E1] bg-white px-3 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#145BFF] focus:ring-1 focus:ring-[#145BFF] focus:outline-none transition-colors';
   const selectClass =
-    'mt-1.5 min-h-[44px] w-full min-w-0 appearance-none rounded-xl border border-[#E2E8F0] bg-white py-2 pr-9 pl-3.5 text-sm text-[#0B1736] focus:border-[#145BFF] focus:outline-none';
+    'mt-1 h-[38px] w-full min-w-0 appearance-none rounded-lg border border-[#CBD5E1] bg-white py-1.5 pr-8 pl-3 text-[13px] text-[#0F172A] focus:border-[#145BFF] focus:ring-1 focus:ring-[#145BFF] focus:outline-none transition-colors';
 
   return (
     <div className="space-y-4">
@@ -895,7 +895,7 @@ export function ModuleManagerPage({
         title={viewing?.title ?? ''}
         subtitle={viewing?.subtitle}
         titleId="record-view-title"
-        maxWidthClass="sm:max-w-lg"
+        maxWidthClass="sm:max-w-xl md:max-w-2xl"
         onClose={() => setViewing(null)}
         headerBadge={viewing ? <StatusBadge status={viewing.status} /> : null}
         footer={
@@ -904,7 +904,7 @@ export function ModuleManagerPage({
               <button
                 type="button"
                 onClick={() => setViewing(null)}
-                className="min-h-[44px] w-full rounded-xl border border-[#E2E8F0] bg-white px-4 text-sm font-semibold text-[#0B1736] hover:bg-[#F5F7FC] sm:w-auto"
+                className="h-[38px] w-full rounded-lg border border-[#CBD5E1] bg-white px-4 text-[13px] font-semibold text-[#0F172A] shadow-xs hover:bg-[#F8FAFC] transition-colors sm:w-auto"
               >
                 Close
               </button>
@@ -915,7 +915,7 @@ export function ModuleManagerPage({
                   setViewing(null);
                   openEditForm(target);
                 }}
-                className="min-h-[44px] w-full rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] px-4 text-sm font-semibold text-[#145BFF] hover:bg-[#DBEAFE] sm:w-auto"
+                className="h-[38px] w-full rounded-lg border border-[#BFDBFE] bg-[#EFF6FF] px-4 text-[13px] font-semibold text-[#145BFF] shadow-xs hover:bg-[#DBEAFE] transition-colors sm:w-auto"
               >
                 Edit
               </button>
@@ -935,7 +935,7 @@ export function ModuleManagerPage({
                     });
                     setViewing(null);
                   }}
-                  className="min-h-[44px] w-full rounded-xl bg-[#145BFF] px-4 text-sm font-semibold text-white hover:bg-[#0F4AD6] sm:w-auto"
+                  className="h-[38px] w-full rounded-lg bg-[#145BFF] px-4 text-[13px] font-semibold text-white shadow-xs hover:bg-[#0F4AD6] transition-colors sm:w-auto"
                 >
                   Mark as Replied
                 </button>
@@ -945,44 +945,44 @@ export function ModuleManagerPage({
         }
       >
         {viewing && (
-          <div className="space-y-4">
+          <div className="space-y-3.5">
             {viewing.thumbnail && (
               <img
                 src={viewing.thumbnail}
                 alt={viewing.title}
                 referrerPolicy="no-referrer"
-                className="aspect-[16/9] w-full rounded-xl border border-[#E2E8F0] object-cover"
+                className="max-h-[200px] w-full rounded-xl border border-[#E2E8F0] object-cover"
               />
             )}
 
-            <dl className="grid grid-cols-1 gap-3 rounded-xl bg-[#F5F7FC] p-3.5 text-xs min-[360px]:grid-cols-2">
+            <dl className="grid grid-cols-1 gap-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 text-xs sm:grid-cols-2 lg:grid-cols-4">
               <div className="min-w-0">
-                <dt className="text-[#64748B]">{meta.primaryFieldLabel}</dt>
-                <dd className="mt-0.5 break-words font-semibold text-[#0B1736]">
+                <dt className="text-[#64748B] text-[11px] font-medium">{meta.primaryFieldLabel}</dt>
+                <dd className="mt-0.5 break-words text-[13px] font-semibold text-[#0F172A]">
                   {viewing.category}
                 </dd>
               </div>
               <div className="min-w-0">
-                <dt className="text-[#64748B]">{meta.metaLabel}</dt>
-                <dd className="mt-0.5 break-words font-semibold text-[#0B1736]">
+                <dt className="text-[#64748B] text-[11px] font-medium">{meta.metaLabel}</dt>
+                <dd className="mt-0.5 break-words text-[13px] font-semibold text-[#0F172A]">
                   {viewing.meta}
                 </dd>
               </div>
               <div className="min-w-0">
-                <dt className="text-[#64748B]">{viewing.extraLabel}</dt>
-                <dd className="mt-0.5 break-words font-semibold text-[#0B1736]">
+                <dt className="text-[#64748B] text-[11px] font-medium">{viewing.extraLabel}</dt>
+                <dd className="mt-0.5 break-words text-[13px] font-semibold text-[#0F172A]">
                   {viewing.extraValue}
                 </dd>
               </div>
               <div className="min-w-0">
-                <dt className="text-[#64748B]">Updated</dt>
-                <dd className="mt-0.5 font-semibold text-[#0B1736] tabular-nums">
+                <dt className="text-[#64748B] text-[11px] font-medium">Updated</dt>
+                <dd className="mt-0.5 text-[13px] font-semibold text-[#0F172A] tabular-nums">
                   {viewing.updatedAt}
                 </dd>
               </div>
             </dl>
 
-            <p className="text-sm leading-relaxed text-[#334155]">
+            <p className="text-[13px] leading-relaxed text-[#334155]">
               {viewing.detail}
             </p>
           </div>
@@ -995,7 +995,7 @@ export function ModuleManagerPage({
         title={editingId ? `Edit ${meta.singular}` : `New ${meta.singular}`}
         subtitle={`Manage ${meta.singular.toLowerCase()} details and attachments.`}
         titleId="module-form-title"
-        maxWidthClass="sm:max-w-xl"
+        maxWidthClass="sm:max-w-2xl lg:max-w-3xl"
         onClose={() => setFormOpen(false)}
         asForm
         onFormSubmit={handleSave}
@@ -1004,30 +1004,30 @@ export function ModuleManagerPage({
             <button
               type="button"
               onClick={() => setFormOpen(false)}
-              className="min-h-[44px] w-full rounded-xl border border-[#E2E8F0] bg-white px-4 text-sm font-semibold text-[#475569] hover:bg-[#F5F7FC] sm:w-auto"
+              className="h-[38px] w-full rounded-lg border border-[#CBD5E1] bg-white px-4 text-[13px] font-semibold text-[#475569] shadow-xs hover:bg-[#F8FAFC] transition-colors sm:w-auto"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="min-h-[44px] w-full rounded-xl bg-[#145BFF] px-5 text-sm font-semibold text-white hover:bg-[#0F4AD6] sm:w-auto"
+              className="h-[38px] w-full rounded-lg bg-[#145BFF] px-5 text-[13px] font-semibold text-white shadow-xs hover:bg-[#0F4AD6] transition-colors sm:w-auto"
             >
               {editingId ? 'Save Changes' : `Create ${meta.singular}`}
             </button>
           </div>
         }
       >
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {/* Guideline Note */}
-          <div className="flex items-start gap-2.5 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF]/70 px-3.5 py-2.5 text-xs leading-relaxed text-[#1E3A8A]">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#145BFF]" />
+          <div className="flex items-center gap-2 rounded-lg border border-[#BFDBFE] bg-[#EFF6FF]/60 px-3 py-2 text-xs leading-relaxed text-[#1E3A8A]">
+            <Info className="h-3.5 w-3.5 shrink-0 text-[#145BFF]" />
             <span>{meta.guidelineNote}</span>
           </div>
 
           {fError && (
             <p
               role="alert"
-              className="rounded-xl border border-[#FECACA] bg-[#FEF2F2] px-3.5 py-2.5 text-xs font-medium text-[#B91C1C]"
+              className="rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-3 py-2 text-xs font-medium text-[#B91C1C]"
             >
               {fError}
             </p>
@@ -1037,7 +1037,7 @@ export function ModuleManagerPage({
           <div>
             <label
               htmlFor="mod-title"
-              className="block text-sm font-semibold text-[#0B1736]"
+              className="block text-[12.5px] font-semibold text-[#334155]"
             >
               {meta.titleLabel} <span className="text-[#DC2626]">*</span>
             </label>
@@ -1064,7 +1064,7 @@ export function ModuleManagerPage({
               <div>
                 <label
                   htmlFor="mod-blog-slug"
-                  className="block text-sm font-semibold text-[#0B1736]"
+                  className="block text-[12.5px] font-semibold text-[#334155]"
                 >
                   URL Slug
                 </label>
@@ -1081,7 +1081,7 @@ export function ModuleManagerPage({
               <div>
                 <label
                   htmlFor="mod-blog-author"
-                  className="block text-sm font-semibold text-[#0B1736]"
+                  className="block text-[12.5px] font-semibold text-[#334155]"
                 >
                   Author
                 </label>
@@ -1102,7 +1102,7 @@ export function ModuleManagerPage({
               <div>
                 <label
                   htmlFor="mod-course-code"
-                  className="block text-sm font-semibold text-[#0B1736]"
+                  className="block text-[12.5px] font-semibold text-[#334155]"
                 >
                   Course Code
                 </label>
@@ -1118,7 +1118,7 @@ export function ModuleManagerPage({
               <div>
                 <label
                   htmlFor="mod-course-duration"
-                  className="block text-sm font-semibold text-[#0B1736]"
+                  className="block text-[12.5px] font-semibold text-[#334155]"
                 >
                   Duration
                 </label>
@@ -1134,7 +1134,7 @@ export function ModuleManagerPage({
               <div>
                 <label
                   htmlFor="mod-course-mode"
-                  className="block text-sm font-semibold text-[#0B1736]"
+                  className="block text-[12.5px] font-semibold text-[#334155]"
                 >
                   Delivery Mode
                 </label>
@@ -1160,7 +1160,7 @@ export function ModuleManagerPage({
               <div>
                 <label
                   htmlFor="mod-course-enrolled"
-                  className="block text-sm font-semibold text-[#0B1736]"
+                  className="block text-[12.5px] font-semibold text-[#334155]"
                 >
                   Enrolled Learners
                 </label>
@@ -1184,7 +1184,7 @@ export function ModuleManagerPage({
               <div>
                 <label
                   htmlFor="mod-enq-email"
-                  className="block text-sm font-semibold text-[#0B1736]"
+                  className="block text-[12.5px] font-semibold text-[#334155]"
                 >
                   Email Address
                 </label>
@@ -1200,7 +1200,7 @@ export function ModuleManagerPage({
               <div>
                 <label
                   htmlFor="mod-enq-channel"
-                  className="block text-sm font-semibold text-[#0B1736]"
+                  className="block text-[12.5px] font-semibold text-[#334155]"
                 >
                   Enquiry Channel
                 </label>
@@ -1231,7 +1231,7 @@ export function ModuleManagerPage({
             <div>
               <label
                 htmlFor="mod-category"
-                className="block text-sm font-semibold text-[#0B1736]"
+                className="block text-[12.5px] font-semibold text-[#334155]"
               >
                 {meta.categoryLabel}
               </label>
@@ -1294,7 +1294,7 @@ export function ModuleManagerPage({
             <div>
               <label
                 htmlFor="mod-status"
-                className="block text-sm font-semibold text-[#0B1736]"
+                className="block text-[12.5px] font-semibold text-[#334155]"
               >
                 Status
               </label>
@@ -1326,7 +1326,7 @@ export function ModuleManagerPage({
             <div>
               <label
                 htmlFor="mod-resource-type"
-                className="block text-sm font-semibold text-[#0B1736]"
+                className="block text-[12.5px] font-semibold text-[#334155]"
               >
                 Resource File Type
               </label>
@@ -1357,7 +1357,7 @@ export function ModuleManagerPage({
               <div>
                 <label
                   htmlFor="mod-meta"
-                  className="block text-sm font-semibold text-[#0B1736]"
+                  className="block text-[12.5px] font-semibold text-[#334155]"
                 >
                   Job Role
                 </label>
@@ -1373,7 +1373,7 @@ export function ModuleManagerPage({
               <div>
                 <label
                   htmlFor="mod-company"
-                  className="block text-sm font-semibold text-[#0B1736]"
+                  className="block text-[12.5px] font-semibold text-[#334155]"
                 >
                   Company / Employer
                 </label>
@@ -1389,7 +1389,7 @@ export function ModuleManagerPage({
             </div>
           ) : section === 'media' ? (
             <div>
-              <span className="block text-sm font-semibold text-[#0B1736]">
+              <span className="block text-[12.5px] font-semibold text-[#334155]">
                 Upload Asset Type
               </span>
               <div className="mt-1.5 grid grid-cols-2 gap-2">
@@ -1421,7 +1421,7 @@ export function ModuleManagerPage({
             <div>
               <label
                 htmlFor="mod-meta"
-                className="block text-sm font-semibold text-[#0B1736]"
+                className="block text-[12.5px] font-semibold text-[#334155]"
               >
                 {meta.metaLabel}
               </label>
@@ -1449,16 +1449,15 @@ export function ModuleManagerPage({
                 <p className="text-sm font-semibold text-[#0B1736]">
                   Featured on Website
                 </p>
-                <p className="text-xs text-[#64748B]">
-                  Pin this {meta.singular.toLowerCase()} in highlighted landing
-                  sections.
+                <p className="text-[11px] text-[#64748B]">
+                  Pin this {meta.singular.toLowerCase()} in highlighted sections.
                 </p>
               </div>
               <input
                 type="checkbox"
                 checked={fFeatured}
                 onChange={(e) => setFFeatured(e.target.checked)}
-                className="h-5 w-5 shrink-0 rounded border-[#CBD5E1] accent-[#145BFF]"
+                className="h-4 w-4 shrink-0 rounded border-[#CBD5E1] accent-[#145BFF]"
               />
             </label>
           )}
@@ -1467,17 +1466,17 @@ export function ModuleManagerPage({
           <div>
             <label
               htmlFor="mod-detail"
-              className="block text-sm font-semibold text-[#0B1736]"
+              className="block text-[12.5px] font-semibold text-[#334155]"
             >
               {meta.detailLabel}
             </label>
             <textarea
               id="mod-detail"
-              rows={3}
+              rows={2}
               value={fDetail}
               placeholder={meta.detailPlaceholder}
               onChange={(e) => setFDetail(e.target.value)}
-              className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] p-3.5 text-sm text-[#0B1736] placeholder:text-[#94A3B8] focus:border-[#145BFF] focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-[#CBD5E1] p-2.5 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#145BFF] focus:ring-1 focus:ring-[#145BFF] focus:outline-none transition-colors"
             />
           </div>
 

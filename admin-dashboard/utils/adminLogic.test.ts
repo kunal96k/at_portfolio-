@@ -225,15 +225,11 @@ test('sidebar dropdown helpers resolve active groups, toggle cleanly, and filter
   assert.equal(findSidebarGroupForSection(groups, 'overview'), undefined);
 
   assert.deepEqual(toggleSidebarGroup(['curriculum'], 'publishing'), [
-    'curriculum',
     'publishing',
   ]);
-  assert.deepEqual(toggleSidebarGroup(['curriculum', 'publishing'], 'curriculum'), [
-    'publishing',
-  ]);
+  assert.deepEqual(toggleSidebarGroup(['curriculum'], 'curriculum'), []);
 
   assert.deepEqual(ensureSidebarGroupExpanded(['curriculum'], 'engagement'), [
-    'curriculum',
     'engagement',
   ]);
   assert.deepEqual(ensureSidebarGroupExpanded(['curriculum'], 'curriculum'), [

@@ -82,11 +82,28 @@ function RouteFallback() {
   );
 }
 
+const THEME_STORAGE_KEY = 'arvind_portfolio_theme';
+
+function getInitialTheme(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (stored === 'dark') return true;
+    if (stored === 'light') return false;
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return true;
+    }
+  } catch {
+    // Fallback to light
+  }
+  return false;
+}
+
 export default function App({ initialRoute }: { initialRoute?: AppRoute } = {}) {
   const [route, setRoute] = useState<AppRoute>(() =>
     initialRoute || (typeof window !== 'undefined' ? parseRoute(window.location.pathname) : { page: 'home' })
   );
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState<boolean>(getInitialTheme);
 
   // Ensure overall favicon is consistently /favicon.png
   useEffect(() => {
@@ -100,10 +117,50 @@ export default function App({ initialRoute }: { initialRoute?: AppRoute } = {}) 
     link.href = '/favicon.png';
   }, []);
 
-  // Sync dark mode class on <html>
+  // Sync dark mode class on <html> & theme-color meta tag
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
+    const metaThemeColor = document.querySelector("meta[name='theme-color']");
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', isDark ? '#1C1C1D' : '#4F58DF');
+    }
   }, [isDark]);
+
+  // Reactive listener: automatically adapt when user's system or browser theme changes
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      const isSystemDark = e.matches;
+      setIsDark(isSystemDark);
+      try {
+        window.localStorage.setItem(THEME_STORAGE_KEY, isSystemDark ? 'dark' : 'light');
+      } catch {
+        // Ignore storage errors
+      }
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleSystemThemeChange);
+      return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    } else if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleSystemThemeChange);
+      return () => mediaQuery.removeListener(handleSystemThemeChange);
+    }
+  }, []);
+
+  const handleToggleTheme = () => {
+    setIsDark((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light');
+      } catch {
+        // Ignore storage errors
+      }
+      return next;
+    });
+  };
 
   // Initialize GA4 if VITE_GA_ID is set
   useEffect(() => {
@@ -209,7 +266,7 @@ export default function App({ initialRoute }: { initialRoute?: AppRoute } = {}) 
       <Footer onNavigate={navigate} onContactClick={scrollToContact} />
 
       {/* Bottom-Center Light / Dark Theme Toggle */}
-      <ThemeToggle isDark={isDark} onToggle={() => setIsDark((prev) => !prev)} />
+      <ThemeToggle isDark={isDark} onToggle={handleToggleTheme} />
     </div>
   );
 }

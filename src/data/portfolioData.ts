@@ -89,7 +89,7 @@ export interface BlogPost {
 export interface TrainingBatch {
   id: string;
   title: string;
-  category: 'Linux' | 'Networking' | 'Cloud';
+  category: 'Linux' | 'Networking' | 'Cloud' | 'DevOps';
   batchDate: string;
   batchTime: string;
   mode: string;
@@ -144,15 +144,15 @@ export const PROFILE = {
   heroIntro1:
     'I am Arvind Thevar, an IT Trainer and IT Infrastructure Professional with more than 15 years of experience in the IT industry. I have spent my career building, managing and troubleshooting enterprise infrastructure, and I now bring that real-world experience into the training room.',
   heroIntro2:
-    'I help students, freshers, working professionals and aspiring engineers master Linux, Cisco networking, Windows Server, virtualization and cloud through practical, lab-driven training that prepares them for real IT environments.',
+    'I help students, freshers, working professionals and aspiring engineers master Red Hat Linux, Cisco CCNA networking, AWS Cloud architecture, and DevOps through practical, lab-driven training that prepares them for real IT environments.',
   aboutTagline: 'Experience you can learn from, not just read about.',
   aboutSummary:
-    'I am an IT Trainer and IT Infrastructure Professional with more than 15 years of hands-on experience in the IT industry—building, managing and troubleshooting Linux and Windows servers, enterprise networks, virtualization platforms and cloud infrastructure.',
+    'I am an IT Trainer and IT Infrastructure Professional with more than 15 years of hands-on experience in the IT industry—building, managing and troubleshooting Red Hat Linux servers, Cisco enterprise networks, AWS cloud architectures, and DevOps automation workflows.',
   aboutParagraphs: [
-    'I am an IT Trainer and IT Infrastructure Professional with more than 15 years of hands-on experience in the IT industry. My career has been built on the technologies that keep businesses running: Linux and Windows servers, enterprise networks, virtualization platforms and, increasingly, the cloud.',
+    'I am an IT Trainer and IT Infrastructure Professional with more than 15 years of hands-on experience in the IT industry. My career has been built on the technologies that keep businesses running: Linux servers, Cisco enterprise networks, AWS cloud architectures, and DevOps automation.',
     'Over these years I have worked on server deployments, network design and configuration, system administration, performance tuning and day-to-day troubleshooting in live production environments. I have seen what happens when a server goes down at the worst possible moment, and I know the skills an engineer needs to bring it back up with confidence.',
     'That experience shapes everything I teach. I do not train from slides alone. My sessions are built around live labs, real configurations and the kind of problems engineers actually face at work. Every concept is connected to a practical task, and every task is connected to a real job role.',
-    'My learners include college students, freshers starting their careers, working professionals moving into infrastructure roles, and engineers preparing for certifications such as RHEL, CCNA and CCNP. I also work with organisations that want to upskill their IT teams with structured, job-focused training.',
+    'My learners include college students, freshers starting their careers, working professionals moving into infrastructure roles, and engineers preparing for certifications such as RHCSA, RHCE, CCNA, and AWS Solutions Architect. I also work with organisations that want to upskill their IT teams with structured, job-focused training.',
     'What drives me is simple. I enjoy watching a learner go from "I don\'t know where to start" to "I configured it, broke it and fixed it myself." That shift in confidence is what turns a student into a professional, and it is what I aim to deliver in every batch I teach.',
   ],
   missionTagline: 'Building the next generation of IT infrastructure professionals.',
@@ -194,47 +194,47 @@ export const PROFILE = {
 
 export const SERVICES: ServiceItem[] = [
   {
-    id: 'linux-rhel',
+    id: 'redhat-linux',
     number: '1.',
-    title: 'LINUX & RED HAT (RHEL)',
+    title: 'RED HAT LINUX (RHEL)',
     items: [
-      'Red Hat Enterprise Linux (RHEL) installation, configuration & RHCSA / RHCE preparation',
-      'Users, permissions, storage, systemd services & shell scripting',
-      'Daily system administration tasks & live Linux troubleshooting',
-      'Server deployment, performance tuning & production reliability',
+      'Red Hat Enterprise Linux (RHEL 9) installation, logical volume management (LVM) & RHCSA / RHCE preparation',
+      'Users, groups, POSIX permissions, ACLs, systemd unit management & automated Bash shell scripting',
+      'Production system administration, firewalld, SELinux enforcement, kernel logging & disaster recovery',
+      'Bare-metal & virtualized server deployments, OS performance tuning & mission-critical reliability',
     ],
   },
   {
-    id: 'cisco-networking',
+    id: 'cisco-ccna',
     number: '2.',
-    title: 'CISCO CCNA & CCNP',
+    title: 'CISCO CCNA NETWORKING',
     items: [
-      'Networking fundamentals, IP addressing, subnetting, switching & routing',
-      'Hands-on Cisco IOS configuration in real-world lab topologies',
-      'Advanced routing & switching: OSPF, EIGRP, BGP & enterprise redundancy',
-      'Network Security: Firewalls, ACLs, VPNs & secure device hardening',
+      'Networking fundamentals, IPv4 & IPv6 addressing, VLSM subnetting & Cisco IOS command-line fluency',
+      'Enterprise switching architecture: VLAN segmentation, 802.1Q trunking, Spanning Tree (STP/RSTP) & EtherChannel',
+      'Routing protocols & high availability: multi-area OSPF, static routes, gateway redundancy (HSRP) & BGP basics',
+      'Network infrastructure security: Access Control Lists (ACLs), stateful NAT/PAT, site-to-site VPNs & switch hardening',
     ],
   },
   {
-    id: 'windows-cloud',
+    id: 'aws-cloud',
     number: '3.',
-    title: 'WINDOWS SERVER & CLOUD',
+    title: 'AWS CLOUD ARCHITECTURE',
     items: [
-      'Windows Server Administration: Active Directory, DNS, DHCP & Group Policy',
-      'File services, directory management & enterprise Microsoft workflows',
-      'Cloud Computing concepts, service models & AWS Solutions Architect Associate',
-      'Deploying, managing & migrating infrastructure workloads to the cloud',
+      'Amazon Web Services cloud architecture & AWS Certified Solutions Architect Associate (SAA-C03) curriculum',
+      'Virtual Private Cloud (VPC) design: public/private subnets, Internet Gateways, NAT Gateways & Route 53 DNS',
+      'Elastic Compute Cloud (EC2), auto-scaling groups, Elastic Load Balancing (ALB/NLB) & S3/EBS tiered storage',
+      'Cloud security governance: Identity & Access Management (IAM), policies, Multi-Factor Auth, CloudWatch & Disaster Recovery',
     ],
   },
   {
-    id: 'virtualization-infra',
+    id: 'devops',
     number: '4.',
-    title: 'VIRTUALIZATION & INFRASTRUCTURE',
+    title: 'DEVOPS & AUTOMATION',
     items: [
-      'Virtualization Technologies: VMs, hypervisors & virtual lab networks',
-      'Server Infrastructure & Management: planning, deploying & monitoring',
-      'Structured, step-by-step IT Infrastructure troubleshooting methodology',
-      'Corporate & institutional team upskilling tailored to real job roles',
+      'Containerization with Docker: Dockerfile optimization, multi-stage builds, container networking & persistent volumes',
+      'Kubernetes (K8s) orchestration: Pods, Deployments, ReplicaSets, Services, ConfigMaps, Secrets & Ingress control',
+      'Infrastructure automation with Ansible: inventory management, playbooks, reusable roles & host configuration',
+      'CI/CD pipeline delivery & Infrastructure as Code (IaC): Git workflows, automated testing & Terraform provisioning',
     ],
   },
 ];
@@ -242,63 +242,63 @@ export const SERVICES: ServiceItem[] = [
 export const EXPERTISE_DOMAINS: ExpertiseDomain[] = [
   {
     number: '01',
-    title: 'Red Hat Enterprise Linux (RHEL)',
+    title: 'Red Hat',
     description:
-      'Install, configure and manage RHEL systems, with focused preparation for RHCSA and RHCE certification.',
+      'Enterprise Linux (RHEL 9) system administration, storage management (LVM), systemd services, firewalld, SELinux, and RHCSA & RHCE certification preparation.',
   },
   {
     number: '02',
-    title: 'Linux System Administration',
+    title: 'CCNA',
     description:
-      'Users, permissions, storage, services, shell scripting and the daily tasks of a Linux administrator.',
+      'Networking fundamentals, IPv4/IPv6 subnetting, enterprise switching, VLANs, multi-area OSPF routing, ACLs, and hands-on Cisco IOS configuration.',
   },
   {
     number: '03',
-    title: 'Cisco CCNA',
+    title: 'CCNP',
     description:
-      'Networking fundamentals, IP addressing, subnetting, switching, routing and Cisco IOS configuration.',
+      'Advanced enterprise routing & switching, dual-stack architectures, BGP, EIGRP, path optimization, infrastructure security, and network automation.',
   },
   {
     number: '04',
-    title: 'Cisco CCNP',
+    title: 'Amazon Web Services (AWS)',
     description:
-      'Advanced routing and switching, OSPF, EIGRP, BGP, redundancy and enterprise network design.',
+      'AWS Cloud architecture, VPC multi-tier design, EC2 auto-scaling, S3 storage, IAM governance, and Solutions Architect Associate exam preparation.',
   },
   {
     number: '05',
-    title: 'Windows Server Administration',
+    title: 'Google Cloud Platform (GCP)',
     description:
-      'Active Directory, DNS, DHCP, Group Policy, file services and Windows Server management.',
+      'GCP infrastructure deployment, Compute Engine, Virtual Private Cloud (VPC), Cloud Storage, IAM policies, and cloud networking fundamentals.',
   },
   {
     number: '06',
-    title: 'Cloud Computing',
+    title: 'Microsoft Azure',
     description:
-      'Cloud concepts, service models, deploying and managing workloads, and migrating infrastructure to the cloud.',
+      'Azure Virtual Machines, virtual networks, Azure Active Directory (Entra ID), blob storage, resource management, and hybrid enterprise cloud integrations.',
   },
   {
     number: '07',
-    title: 'Network Security',
+    title: 'DevOps',
     description:
-      'Firewalls, ACLs, VPNs, secure device hardening and protecting networks against common threats.',
+      'CI/CD pipeline delivery, Docker containerization, Kubernetes cluster orchestration, Ansible automation playbooks, and Terraform Infrastructure as Code.',
   },
   {
     number: '08',
-    title: 'Virtualization Technologies',
+    title: 'VMware',
     description:
-      'Building and managing virtual machines, hypervisors and virtual networks in a lab environment.',
+      'VMware ESXi hypervisors, vCenter Server virtualization management, virtual networking, shared datastores, VM high availability, and fault tolerance.',
   },
   {
     number: '09',
-    title: 'Server Infrastructure & Management',
+    title: 'Network Security',
     description:
-      'Planning, deploying, monitoring and maintaining servers for reliability and performance.',
+      'Next-Gen firewalls, stateful packet inspection, site-to-site & remote IPsec/SSL VPNs, Access Control Lists (ACLs), NAT/PAT, and device hardening.',
   },
   {
     number: '10',
-    title: 'IT Infrastructure & Troubleshooting',
+    title: 'Server Infrastructure',
     description:
-      'A structured, step-by-step method to diagnose and fix server, network and system issues fast.',
+      'End-to-end bare-metal and virtual server deployment, performance monitoring, OS hardening, backup disaster recovery, and structured live troubleshooting.',
   },
 ];
 
@@ -568,7 +568,7 @@ export const FAQS: FaqItem[] = [
     number: '1.',
     question: 'WHICH COURSES AND DOMAINS DO YOU TEACH?',
     answer:
-      'I deliver hands-on training across 10 core infrastructure domains: Red Hat Enterprise Linux (RHEL / RHCSA & RHCE), Linux System Administration, Cisco CCNA, Cisco CCNP, Windows Server Administration, Cloud Computing (including AWS Solutions Architect Associate), Network Security, Virtualization Technologies, Server Infrastructure & Management, and IT Infrastructure Troubleshooting.',
+      'I deliver hands-on training across 10 core domains: Red Hat, CCNA, CCNP, Amazon Web Services (AWS), Google Cloud Platform (GCP), Microsoft Azure, DevOps, VMware, Network Security, and Server Infrastructure.',
   },
   {
     number: '2.',
@@ -738,6 +738,23 @@ export const INITIAL_UPCOMING_BATCHES: TrainingBatch[] = [
       'Infrastructure Migration & Solutions Architect Exam Prep',
     ],
     coverImage: '/assets/images/aws_cloud_infra_1795164482369.jpg',
+  },
+  {
+    id: 'devops-batch',
+    title: 'DevOps & Infrastructure Automation',
+    category: 'DevOps',
+    batchDate: 'Date to be announced (Editable below)',
+    batchTime: 'Weekday / Weekend Slots',
+    mode: 'Live Lab-Driven Training',
+    summary:
+      'Master modern DevOps workflows with Docker containers, Kubernetes cluster orchestration, Ansible configuration management, CI/CD pipelines, and Terraform IaC.',
+    modules: [
+      'Linux Containers & Multi-Stage Dockerfile Packaging',
+      'Kubernetes (K8s) Pods, Services, Deployments & Ingress',
+      'Ansible Automation Playbooks, Roles & Inventory Control',
+      'CI/CD Pipelines, GitOps & Terraform Infrastructure as Code',
+    ],
+    coverImage: '/assets/images/corporate_it_workshop_1795164484663.jpg',
   },
 ];
 

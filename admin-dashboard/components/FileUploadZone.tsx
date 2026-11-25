@@ -78,7 +78,7 @@ export function ImageUploadZone({
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-1.5">
-        <label htmlFor={inputId} className="text-sm font-semibold text-[#0B1736]">
+        <label htmlFor={inputId} className="text-[12.5px] font-semibold text-[#334155]">
           {label}
         </label>
         <span className="text-[11px] font-semibold text-[#145BFF]">
@@ -178,7 +178,7 @@ export function ImageUploadZone({
             <Upload className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[#0B1736]">
+            <p className="text-[13px] font-semibold text-[#0F172A]">
               Tap to upload image
             </p>
             <p className="mt-0.5 text-xs text-[#64748B]">{helperText}</p>
@@ -291,7 +291,7 @@ export function DocumentUploadList({
   return (
     <div className="space-y-2.5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <label htmlFor={inputId} className="text-sm font-semibold text-[#0B1736]">
+        <label htmlFor={inputId} className="text-[12.5px] font-semibold text-[#334155]">
           {label}
         </label>
         <span className="text-[11px] font-semibold text-[#145BFF] tabular-nums">

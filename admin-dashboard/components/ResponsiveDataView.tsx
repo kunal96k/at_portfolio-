@@ -427,39 +427,44 @@ export function ResponsiveDataView<T extends { id: string }>({
         )}
       </MobileModalShell>
 
-      {/* Responsive Pagination Bar (Zero overflow even at 320px) */}
-      <div className="flex flex-col items-center justify-between gap-2.5 rounded-2xl border border-[#E2E8F0] bg-white px-3.5 py-3 sm:flex-row sm:px-4">
-        <p className="text-center text-xs font-medium text-[#475569] tabular-nums sm:text-left">
-          Showing {startIndex + 1}–{endIndex} of {totalItems}{' '}
-          {totalItems === 1 ? 'record' : 'records'}
-        </p>
+      {/* Fixed Bottom Pagination Bar (Docked to bottom as per screens: sm, md, lg) */}
+      <div
+        data-testid="fixed-pagination-bar"
+        className="fixed right-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] left-0 z-20 border-t border-[#CBD5E1] bg-white/95 px-3 py-2 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] backdrop-blur-md sm:px-5 sm:py-2.5 lg:bottom-0 lg:left-[244px] lg:px-7 lg:py-3"
+      >
+        <div className="mx-auto flex max-w-[1360px] flex-col items-center justify-between gap-1.5 min-[420px]:flex-row min-[420px]:gap-3">
+          <p className="text-center text-[12px] font-medium text-[#475569] tabular-nums min-[420px]:text-left">
+            Showing <span className="font-semibold text-[#0F172A]">{startIndex + 1}–{endIndex}</span> of{' '}
+            <span className="font-semibold text-[#0F172A]">{totalItems}</span> {totalItems === 1 ? 'record' : 'records'}
+          </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
-          <button
-            type="button"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage <= 1}
-            aria-label="Previous page"
-            className="inline-flex min-h-[42px] items-center gap-1 rounded-xl border border-[#E2E8F0] bg-white px-3 text-xs font-semibold text-[#0B1736] transition-colors hover:bg-[#F5F7FC] disabled:opacity-40"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            <span>Prev</span>
-          </button>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage <= 1}
+              aria-label="Previous page"
+              className="inline-flex h-[32px] sm:h-[34px] items-center gap-1 rounded-lg border border-[#CBD5E1] bg-white px-2.5 sm:px-3 text-xs font-semibold text-[#0F172A] shadow-xs transition-colors hover:bg-[#F8FAFC] disabled:opacity-40 disabled:hover:bg-white"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+              <span>Prev</span>
+            </button>
 
-          <span className="px-2 text-xs font-semibold text-[#0B1736] tabular-nums">
-            {currentPage} / {totalPages}
-          </span>
+            <span className="px-2 text-xs font-semibold text-[#0F172A] tabular-nums">
+              Page {currentPage} of {totalPages}
+            </span>
 
-          <button
-            type="button"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage >= totalPages}
-            aria-label="Next page"
-            className="inline-flex min-h-[42px] items-center gap-1 rounded-xl border border-[#E2E8F0] bg-white px-3 text-xs font-semibold text-[#0B1736] transition-colors hover:bg-[#F5F7FC] disabled:opacity-40"
-          >
-            <span>Next</span>
-            <ChevronRight className="h-4 w-4" />
-          </button>
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage >= totalPages}
+              aria-label="Next page"
+              className="inline-flex h-[32px] sm:h-[34px] items-center gap-1 rounded-lg border border-[#CBD5E1] bg-white px-2.5 sm:px-3 text-xs font-semibold text-[#0F172A] shadow-xs transition-colors hover:bg-[#F8FAFC] disabled:opacity-40 disabled:hover:bg-white"
+            >
+              <span>Next</span>
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

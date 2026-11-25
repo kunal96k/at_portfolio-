@@ -48,7 +48,7 @@ export function TopicPreviewModal({
           <button
             type="button"
             onClick={() => onToggleStatus(topic)}
-            className="min-h-[44px] w-full rounded-xl border border-[#E2E8F0] bg-white px-4 text-sm font-semibold text-[#0B1736] hover:bg-[#F5F7FC] sm:w-auto"
+            className="h-[38px] w-full rounded-lg border border-[#CBD5E1] bg-white px-3.5 text-[13px] font-semibold text-[#0F172A] shadow-xs hover:bg-[#F8FAFC] transition-colors sm:w-auto"
           >
             {topic.status === 'Published' ? 'Move to Draft' : 'Publish Now'}
           </button>
@@ -57,7 +57,7 @@ export function TopicPreviewModal({
             <button
               type="button"
               onClick={onClose}
-              className="min-h-[44px] w-full min-w-0 rounded-xl border border-[#E2E8F0] bg-white px-4 text-sm font-semibold text-[#475569] hover:bg-[#F5F7FC] sm:w-auto"
+              className="h-[38px] w-full min-w-0 rounded-lg border border-[#CBD5E1] bg-white px-3.5 text-[13px] font-semibold text-[#475569] shadow-xs hover:bg-[#F8FAFC] transition-colors sm:w-auto"
             >
               Close
             </button>
@@ -67,7 +67,7 @@ export function TopicPreviewModal({
                 onClose();
                 onEdit(topic);
               }}
-              className="inline-flex min-h-[44px] w-full min-w-0 items-center justify-center gap-1.5 rounded-xl bg-[#145BFF] px-4 text-sm font-semibold text-white hover:bg-[#0F4AD6] sm:w-auto whitespace-nowrap"
+              className="inline-flex h-[38px] w-full min-w-0 items-center justify-center gap-1.5 rounded-lg bg-[#145BFF] px-4 text-[13px] font-semibold text-white shadow-xs hover:bg-[#0F4AD6] transition-colors sm:w-auto whitespace-nowrap"
             >
               <Edit3 className="h-4 w-4 shrink-0" />
               <span>Edit Topic</span>
@@ -76,14 +76,14 @@ export function TopicPreviewModal({
         </div>
       }
     >
-      <div className="space-y-5">
+      <div className="space-y-4">
         {topic.coverImage && (
-          <div className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-[#F5F7FC]">
+          <div className="overflow-hidden rounded-xl border border-[#E2E8F0] bg-[#F5F7FC]">
             <img
               src={topic.coverImage}
               alt={topic.title}
               referrerPolicy="no-referrer"
-              className="aspect-[16/9] w-full object-cover"
+              className="max-h-[220px] w-full object-cover"
             />
           </div>
         )}

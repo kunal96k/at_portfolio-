@@ -167,6 +167,21 @@ function TabletDesktopPortraitStage({
                 15+ years of real-world enterprise IT infrastructure experience—now in the
                 training room.
               </p>
+              {/* Topside Social Media Links */}
+              <div className="mt-4 lg:mt-5 flex items-center gap-2.5" aria-label="Social media links">
+                {PROFILE.socials.map((social) => (
+                  <a
+                    key={social.id}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${social.label} (opens in a new tab)`}
+                    className="inline-flex h-9 w-9 lg:h-10 lg:w-10 items-center justify-center rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2D] text-[#303030] dark:text-white hover:bg-[#5E67E6] hover:text-white dark:hover:bg-[#D0FF71] dark:hover:text-[#1A1A1B] hover:-translate-y-0.5 transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E67E6] dark:focus-visible:ring-[#D0FF71]"
+                  >
+                    <SocialIcon id={social.id} className="w-4 h-4 lg:w-4.5 lg:h-4.5" />
+                  </a>
+                ))}
+              </div>
             </div>
           </motion.div>
 
@@ -229,8 +244,7 @@ function TabletDesktopPortraitStage({
               MY EXPERTISE
             </h2>
             <p className="mt-3 lg:mt-4 mb-8 lg:mb-10 text-[16px] lg:text-[18px] font-light leading-[1.55] text-[#303030] dark:text-white/80 max-w-[490px]">
-              Ten core domains. One goal: job-ready skills built through live labs and real
-              enterprise configurations.
+              Ten core enterprise domains. One goal: job-ready skills built through live labs and real enterprise configurations.
             </p>
             <ServicesAccordion />
           </motion.div>
@@ -554,6 +568,22 @@ function MobilePortraitStage({ onNavigate, onContactClick }: PortraitShowcaseSec
             Book a Free Consultation
           </button>
         </div>
+
+        {/* Topside Mobile Social Media Links */}
+        <div className="mt-5 flex items-center justify-center gap-3" aria-label="Social media links">
+          {PROFILE.socials.map((social) => (
+            <a
+              key={social.id}
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${social.label} (opens in a new tab)`}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2D] text-[#303030] dark:text-white hover:bg-[#5E67E6] hover:text-white dark:hover:bg-[#D0FF71] dark:hover:text-[#1A1A1B] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E67E6] dark:focus-visible:ring-[#D0FF71]"
+            >
+              <SocialIcon id={social.id} className="w-4.5 h-4.5" />
+            </a>
+          ))}
+        </div>
       </section>
 
       {/* Mobile Expertise Section with Single Scroll-Driven 3D Flip Card (Distinct Lab Photos — No Portrait Duplicate) */}
@@ -569,8 +599,7 @@ function MobilePortraitStage({ onNavigate, onContactClick }: PortraitShowcaseSec
               MY EXPERTISE
             </h2>
             <p className="mt-3 mb-6 text-[16px] sm:text-[18px] font-light leading-[1.55] text-[#303030] dark:text-white/80">
-              Ten core domains. One goal: job-ready skills built through live labs and real
-              enterprise configurations.
+              Ten core enterprise domains. One goal: job-ready skills built through live labs and real enterprise configurations.
             </p>
           </motion.div>
 

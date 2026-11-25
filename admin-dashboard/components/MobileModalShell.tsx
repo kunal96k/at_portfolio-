@@ -63,7 +63,7 @@ export function MobileModalShell({
 
   if (!open) return null;
 
-  const panelClasses = `relative z-10 flex w-full ${maxWidthClass} max-h-[92dvh] sm:max-h-[90dvh] flex-col overflow-hidden rounded-t-3xl border border-[#E2E8F0] bg-white shadow-2xl sm:rounded-2xl`;
+  const panelClasses = `relative z-10 flex w-full ${maxWidthClass} max-h-[92dvh] sm:max-h-[88dvh] flex-col overflow-hidden rounded-t-3xl border border-[#CBD5E1] bg-white shadow-2xl sm:rounded-2xl`;
 
   const innerContent = (
     <>
@@ -73,12 +73,12 @@ export function MobileModalShell({
       </div>
 
       {/* Fixed Header */}
-      <div className="flex shrink-0 items-start justify-between gap-3 border-b border-[#E2E8F0] px-4 py-3 sm:items-center sm:px-6 sm:py-4">
+      <div className="flex shrink-0 items-start justify-between gap-3 border-b border-[#E2E8F0] px-4 py-3 sm:items-center sm:px-6 sm:py-3.5 bg-white">
         <div className="min-w-0 flex-1">
-          {headerBadge && <div className="mb-1.5 flex flex-wrap items-center gap-2">{headerBadge}</div>}
+          {headerBadge && <div className="mb-1 flex flex-wrap items-center gap-1.5">{headerBadge}</div>}
           <h2
             id={titleId}
-            className="truncate text-base font-bold text-[#0B1736] sm:text-lg"
+            className="truncate text-[15px] sm:text-base font-bold text-[#0F172A]"
           >
             {title}
           </h2>
@@ -93,23 +93,23 @@ export function MobileModalShell({
           onClick={onClose}
           disabled={busy}
           aria-label={`Close ${title}`}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-[#64748B] transition-colors hover:bg-[#F5F7FC] hover:text-[#0B1736] disabled:opacity-50"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#64748B] transition-colors hover:bg-[#F1F5F9] hover:text-[#0F172A] disabled:opacity-50"
         >
-          <X className="h-5 w-5" />
+          <X className="h-4.5 w-4.5" />
         </button>
       </div>
 
       {/* Scrollable Body (min-h-0 + overscroll-contain + touch-pan-y guarantees smooth mobile scroll) */}
       <div
         data-testid="modal-scroll-body"
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y p-4 sm:p-6 admin-scroll"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y p-4 sm:p-5 sm:px-6 admin-scroll"
       >
         {children}
       </div>
 
-      {/* Fixed Sticky Footer */}
+      {/* Fixed Sticky Footer with guaranteed bottom clearance so buttons never touch container bottom edge */}
       {footer && (
-        <div className="shrink-0 border-t border-[#E2E8F0] bg-white px-4 py-3 pb-safe sm:px-6">
+        <div className="shrink-0 border-t border-[#E2E8F0] bg-[#FAFAFC] px-4 pt-3.5 pb-4.5 sm:px-6 sm:pt-3.5 sm:pb-5">
           {footer}
         </div>
       )}
