@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../config/api';
 import type { CourseAttachment } from './coursesService';
 import { adminFetch } from './authService';
 import { resolveResourceUrl } from './resourcesService';
@@ -94,12 +95,8 @@ export interface BlogPageResult {
 export const BLOGS_STORAGE_KEY = 'arvind_thevar_blogs_v2';
 export const BLOGS_UPDATED_EVENT = 'arvind-blogs-updated';
 
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  'http://localhost:8080';
-
 function blogsApiBase(): string {
-  return `${API_BASE_URL.replace(/\/+$/, '')}/api/blogs`;
+  return `${getApiBaseUrl()}/api/blogs`;
 }
 
 function normalizeStatus(rawStatus: unknown): BlogStatus {

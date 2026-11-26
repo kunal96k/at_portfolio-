@@ -51,7 +51,7 @@ async function main() {
   // Prerender verification & analytics tags
   const googleVerification = process.env.VITE_GOOGLE_SITE_VERIFICATION?.trim();
   const bingVerification = process.env.VITE_BING_SITE_VERIFICATION?.trim();
-  const siteOrigin = (process.env.VITE_SITE_URL || 'https://arvindthevar.vercel.app').replace(/\/+$/, '');
+  const siteOrigin = (process.env.VITE_SITE_URL || 'https://arvindthevar.com').replace(/\/+$/, '');
   const now = new Date().toISOString().split('T')[0];
   const sitemapUrls = [];
 

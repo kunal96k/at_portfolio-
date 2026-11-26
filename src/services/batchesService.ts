@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../config/api';
 import { ASSETS } from '../data/portfolioData';
 import { adminFetch } from './authService';
 import { resolveResourceUrl } from './resourcesService';
@@ -109,12 +110,8 @@ export interface BatchPageResult {
 export const BATCHES_STORAGE_KEY = 'arvind_thevar_batches_v2';
 export const BATCHES_UPDATED_EVENT = 'arvind-batches-updated';
 
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  'http://localhost:8080';
-
 function batchesApiBase(): string {
-  return `${API_BASE_URL.replace(/\/+$/, '')}/api/batches`;
+  return `${getApiBaseUrl()}/api/batches`;
 }
 
 export const COVER_BY_BATCH_CATEGORY: Record<string, string> = {

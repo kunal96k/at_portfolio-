@@ -2,6 +2,29 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.arvindthevar.com"
+        }
+      ],
+      "destination": "https://arvindthevar.com/$1",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/admin-dashboard",
+      "destination": "/admin-dashboard/index.html"
+    },
+    {
+      "source": "/admin-dashboard/(.*)",
+      "destination": "/admin-dashboard/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
@@ -13,8 +36,25 @@
       ]
     },
     {
+      "source": "/admin-dashboard(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
@@ -30,6 +70,10 @@
         {
           "key": "Permissions-Policy",
           "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'none'; upgrade-insecure-requests;"
         }
       ]
     }

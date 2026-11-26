@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../config/api';
 import { ASSETS, EXPERTISE_DOMAINS } from '../data/portfolioData';
 import { adminFetch } from './authService';
 
@@ -79,12 +80,8 @@ export interface CourseDomainPage {
 export const COURSES_STORAGE_KEY = 'arvind_thevar_courses_v1';
 export const COURSES_UPDATED_EVENT = 'arvind-courses-updated';
 
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  'http://localhost:8080';
-
 function coursesApiBase(): string {
-  return `${API_BASE_URL.replace(/\/+$/, '')}/api/courses`;
+  return `${getApiBaseUrl()}/api/courses`;
 }
 
 export function parseCourseModules(detailedSyllabus: string): string[] {
@@ -201,8 +198,9 @@ export function saveCoursesToStorage(courses: CourseDomain[]): void {
 
 function mapApiCourse(apiItem: Record<string, unknown>): CourseDomain {
   const rawCover = String(apiItem.coverImage ?? ASSETS.courseLinux);
+  const apiBase = getApiBaseUrl();
   const resolvedCover = rawCover.startsWith('/api/files/')
-    ? `${API_BASE_URL.replace(/\/+$/, '')}${rawCover}`
+    ? `${apiBase}${rawCover}`
     : rawCover;
 
   const resolvedAttachments: CourseAttachment[] = Array.isArray(
@@ -212,7 +210,7 @@ function mapApiCourse(apiItem: Record<string, unknown>): CourseDomain {
         ...att,
         url:
           att.url && att.url.startsWith('/api/files/')
-            ? `${API_BASE_URL.replace(/\/+$/, '')}${att.url}`
+            ? `${apiBase}${att.url}`
             : att.url,
       }))
     : [];

@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../config/api';
 import { STUDY_RESOURCES } from '../data/portfolioData';
 import { adminFetch } from './authService';
 
@@ -134,18 +135,14 @@ export interface ResourceSearchParams {
   sortDir?: 'asc' | 'desc';
 }
 
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  'http://localhost:8080';
-
 function resourcesApiBase(): string {
-  return `${API_BASE_URL.replace(/\/+$/, '')}/api/resources`;
+  return `${getApiBaseUrl()}/api/resources`;
 }
 
 export function resolveResourceUrl(fileUrl: string): string {
   if (!fileUrl) return '';
   if (fileUrl.startsWith('/api/')) {
-    return `${API_BASE_URL.replace(/\/+$/, '')}${fileUrl}`;
+    return `${getApiBaseUrl()}${fileUrl}`;
   }
   return fileUrl;
 }
@@ -156,7 +153,7 @@ export async function uploadProjectFileBackend(
 ): Promise<ProjectUploadedFileResult> {
   const formData = new FormData();
   formData.append('file', file);
-  const base = API_BASE_URL.replace(/\/+$/, '');
+  const base = getApiBaseUrl();
   const response = await adminFetch(
     `${base}/api/files/upload?folder=${encodeURIComponent(folder)}`,
     {

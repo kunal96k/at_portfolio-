@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../../../src/config/api';
 import {
   createCourseBackend,
   deleteCourseBackend,
@@ -18,7 +19,7 @@ import type {
 function formatConnectionError(err: unknown): Error {
   if (err instanceof TypeError) {
     return new Error(
-      'Unable to reach Spring Boot backend at http://localhost:8080/api/courses. Start the backend server to manage Course / Domains.'
+      `Unable to reach backend server (${getApiBaseUrl() || 'same-origin'}/api/courses). Please verify the backend service is running.`
     );
   }
   return err instanceof Error ? err : new Error('Request failed.');

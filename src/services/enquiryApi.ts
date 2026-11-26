@@ -3,11 +3,8 @@
  * server-side paginated Enquiry management.
  */
 
+import { getApiBaseUrl } from '../config/api';
 import { adminFetch } from './authService';
-
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  'http://localhost:8080';
 
 export const ENQUIRIES_UPDATED_EVENT = 'arvind-enquiries-updated';
 export const NOTIFICATION_LIMIT = 5;
@@ -91,7 +88,7 @@ export interface EnquiryApiResponse {
 }
 
 function enquiriesApiBase(): string {
-  return `${API_BASE_URL.replace(/\/+$/, '')}/api/enquiries`;
+  return `${getApiBaseUrl()}/api/enquiries`;
 }
 
 function normalizeStatus(rawStatus: unknown): EnquiryStatus {
@@ -199,7 +196,7 @@ function notifyEnquiriesUpdated(): void {
 export async function submitContactEnquiry(
   payload: SubmitEnquiryPayload
 ): Promise<EnquiryApiResponse> {
-  const endpoint = `${API_BASE_URL.replace(/\/+$/, '')}/api/contact/submit`;
+  const endpoint = `${getApiBaseUrl()}/api/contact/submit`;
   const cleanPhone = payload.phone?.trim();
 
   const body: SubmitEnquiryPayload = {

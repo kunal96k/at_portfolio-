@@ -1,6 +1,4 @@
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  'http://localhost:8080';
+import { getApiBaseUrl } from '../config/api';
 
 export const ADMIN_SESSION_EXPIRED_EVENT = 'arvind-admin-session-expired';
 
@@ -27,7 +25,7 @@ export interface AdminLoginCredentials {
 let cachedCsrfToken: string | null = null;
 
 function authApiBase(): string {
-  return `${API_BASE_URL.replace(/\/+$/, '')}/api/auth`;
+  return `${getApiBaseUrl()}/api/auth`;
 }
 
 function mergePlainHeaders(

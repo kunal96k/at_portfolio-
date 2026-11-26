@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../config/api';
 import { adminFetch } from './authService';
 import {
   resolveResourceUrl,
@@ -71,12 +72,8 @@ export interface TestimonialPageResult {
 
 export const TESTIMONIALS_UPDATED_EVENT = 'arvind-testimonials-updated';
 
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  'http://localhost:8080';
-
 function testimonialsApiBase(): string {
-  return `${API_BASE_URL.replace(/\/+$/, '')}/api/testimonials`;
+  return `${getApiBaseUrl()}/api/testimonials`;
 }
 
 function normalizeStatus(raw: unknown): TestimonialStatus {

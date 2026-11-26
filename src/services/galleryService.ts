@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from '../config/api';
 import { adminFetch } from './authService';
 import {
   resolveResourceUrl,
@@ -80,12 +81,8 @@ export interface GalleryPageResult {
 export const GALLERY_STORAGE_KEY = 'arvind_thevar_gallery_v2';
 export const GALLERY_UPDATED_EVENT = 'arvind-gallery-updated';
 
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  'http://localhost:8080';
-
 function galleryApiBase(): string {
-  return `${API_BASE_URL.replace(/\/+$/, '')}/api/gallery`;
+  return `${getApiBaseUrl()}/api/gallery`;
 }
 
 function normalizeStatus(rawStatus: unknown): GalleryStatus {
