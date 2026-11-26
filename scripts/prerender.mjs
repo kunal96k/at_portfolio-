@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { generateAllErrorPages } from './generateErrorPages.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -232,6 +233,9 @@ Sitemap: ${siteOrigin}/sitemap.xml
   fs.writeFileSync(path.resolve(distDir, 'robots.txt'), robotsTxt, 'utf-8');
   fs.writeFileSync(path.resolve(rootDir, 'public', 'robots.txt'), robotsTxt, 'utf-8');
   console.log(`  ✓ Generated robots.txt`);
+
+  const errCount = generateAllErrorPages({ writeToDist: true });
+  console.log(`  ✓ Generated ${errCount} Nginx responsive error & maintenance pages`);
 
   // Cleanup dist-ssr
   if (fs.existsSync(distSsrDir)) {

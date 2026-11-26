@@ -92,3 +92,20 @@ test('public/robots.txt and public/sitemap.xml exist and list every public route
   }
   assert.equal(sitemap.includes('admin-dashboard'), false);
 });
+
+test('responsive Nginx error and maintenance pages exist, exclude indexing, and have zero external asset dependencies', () => {
+  const errFiles = ['403.html', '404.html', '429.html', '500.html', '502.html', '503.html', 'maintenance.html'];
+  for (const file of errFiles) {
+    const html = fs.readFileSync(
+      path.resolve(process.cwd(), 'public/error-pages', file),
+      'utf8'
+    );
+    assert.match(html, /name="viewport"/);
+    assert.match(html, /name="robots"\s+content="noindex,\s*nofollow"/);
+    assert.match(html, /@media \(min-width: 640px\)/);
+    assert.match(html, /@media \(min-width: 1024px\)/);
+    assert.match(html, /tel:\+918888829652/);
+    assert.match(html, /arvindthaver@gmail\.com/);
+    assert.equal(html.includes('fonts.googleapis.com'), false);
+  }
+});

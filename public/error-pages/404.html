@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>404 — Page Not Found | Arvind Thevar</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#4F58DF" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('arvind_portfolio_theme');
+          var dark = stored === 'dark' || (!stored && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      :root {
+        --bg: #ffffff;
+        --bg-soft: #f5f5f7;
+        --surface-card: #ffffff;
+        --surface-panel: #f8f9fc;
+        --ink: #222328;
+        --ink-muted: #555863;
+        --border: rgba(34, 35, 40, 0.12);
+        --accent: #4f58df;
+        --accent-ink: #ffffff;
+        --accent-soft: rgba(79, 88, 223, 0.1);
+        --tone-amber: #b45309;
+        --tone-amber-bg: rgba(245, 158, 11, 0.12);
+        --tone-rose: #be123c;
+        --tone-rose-bg: rgba(244, 63, 94, 0.12);
+        --tone-indigo: #4f58df;
+        --tone-indigo-bg: rgba(79, 88, 223, 0.1);
+        --dot-color: rgba(79, 88, 223, 0.16);
+      }
+
+      html.dark {
+        --bg: #1a1a1b;
+        --bg-soft: #232325;
+        --surface-card: #222224;
+        --surface-panel: #29292c;
+        --ink: #f8fafc;
+        --ink-muted: rgba(255, 255, 255, 0.74);
+        --border: rgba(255, 255, 255, 0.13);
+        --accent: #d0ff71;
+        --accent-ink: #1a1a1b;
+        --accent-soft: rgba(208, 255, 113, 0.14);
+        --tone-amber: #fcd34d;
+        --tone-amber-bg: rgba(251, 191, 36, 0.14);
+        --tone-rose: #fda4af;
+        --tone-rose-bg: rgba(244, 63, 94, 0.16);
+        --tone-indigo: #d0ff71;
+        --tone-indigo-bg: rgba(208, 255, 113, 0.14);
+        --dot-color: rgba(208, 255, 113, 0.12);
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: var(--bg);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+
+      .backdrop {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image: radial-gradient(var(--dot-color) 1.25px, transparent 1.25px);
+        background-size: 26px 26px;
+        opacity: 0.75;
+        z-index: 0;
+      }
+
+      .page-shell {
+        position: relative;
+        z-index: 1;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 16px;
+      }
+
+      /* Top Navigation Strip */
+      .topbar {
+        width: 100%;
+        max-width: 1120px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--surface-card);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: inherit;
+        min-width: 0;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: var(--accent);
+        color: var(--accent-ink);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 14px;
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+      }
+
+      .brand-text {
+        min-width: 0;
+      }
+
+      .brand-title {
+        display: block;
+        font-weight: 700;
+        font-size: 14.5px;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .brand-sub {
+        display: block;
+        font-size: 11.5px;
+        color: var(--ink-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .theme-btn {
+        border: 1px solid var(--border);
+        background: var(--surface-panel);
+        color: var(--ink);
+        border-radius: 999px;
+        min-height: 38px;
+        padding: 0 14px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .theme-btn:hover {
+        border-color: var(--accent);
+      }
+
+      /* Main Responsive Error Card */
+      .main-area {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 0;
+      }
+
+      .card {
+        width: 100%;
+        max-width: 1040px;
+        background: var(--surface-card);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 24px 20px;
+        box-shadow: 0 20px 50px -24px rgba(15, 23, 42, 0.25);
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 13px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .tone-indigo { color: var(--tone-indigo); background: var(--tone-indigo-bg); }
+      .tone-amber { color: var(--tone-amber); background: var(--tone-amber-bg); }
+      .tone-rose { color: var(--tone-rose); background: var(--tone-rose-bg); }
+
+      .display-code {
+        margin: 14px 0 4px;
+        font-size: clamp(44px, 11vw, 72px);
+        font-weight: 800;
+        line-height: 0.96;
+        letter-spacing: -0.03em;
+        color: var(--accent);
+      }
+
+      h1 {
+        margin: 8px 0 0;
+        font-size: clamp(24px, 4.6vw, 38px);
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        margin: 12px 0 0;
+        font-size: clamp(15px, 2.2vw, 17px);
+        font-weight: 600;
+        line-height: 1.5;
+        color: var(--ink);
+      }
+
+      .desc {
+        margin: 10px 0 0;
+        font-size: 14.5px;
+        line-height: 1.65;
+        color: var(--ink-muted);
+      }
+
+      .retry-pill {
+        margin-top: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface-panel);
+        font-size: 13px;
+        color: var(--ink-muted);
+      }
+
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+      }
+
+      .actions {
+        margin-top: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 46px;
+        padding: 0 20px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
+        width: 100%;
+      }
+
+      .btn svg {
+        width: 17px;
+        height: 17px;
+        flex-shrink: 0;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: var(--accent-ink);
+      }
+
+      .btn-primary:hover {
+        opacity: 0.92;
+      }
+
+      .btn-outline {
+        background: transparent;
+        border-color: var(--border);
+        color: var(--ink);
+      }
+
+      .btn-outline:hover {
+        background: var(--surface-panel);
+      }
+
+      /* Right Diagnostic & Direct Contact Panel */
+      .side-panel {
+        background: var(--surface-panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 20px 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .icon-box {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .hero-svg {
+        width: 34px;
+        height: 34px;
+      }
+
+      .panel-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+      }
+
+      .panel-status {
+        margin-top: 3px;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .checklist {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .checklist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 13.5px;
+        line-height: 1.5;
+        color: var(--ink-muted);
+      }
+
+      .step-idx {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--accent);
+        background: var(--accent-soft);
+        padding: 2px 7px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .support-box {
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+      }
+
+      .support-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--ink-muted);
+        margin: 0 0 10px;
+      }
+
+      .support-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .support-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface-card);
+        color: var(--ink);
+        text-decoration: none;
+        font-size: 12.5px;
+        font-weight: 600;
+        min-height: 42px;
+        word-break: break-word;
+      }
+
+      .support-link:hover {
+        border-color: var(--accent);
+      }
+
+      .support-meta {
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--ink-muted);
+      }
+
+      /* Footer Strip */
+      .foot {
+        width: 100%;
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 10px 4px 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        text-align: center;
+        font-size: 12px;
+        color: var(--ink-muted);
+      }
+
+      /* Tablet Perspective (640px+) */
+      @media (min-width: 640px) {
+        .page-shell { padding: 24px; }
+        .topbar { padding: 12px 18px; }
+        .card { padding: 34px 32px; gap: 28px; }
+        .actions { flex-direction: row; flex-wrap: wrap; }
+        .btn { width: auto; min-width: 185px; }
+        .support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .support-link-full { grid-column: span 2; }
+        .foot { flex-direction: row; justify-content: space-between; text-align: left; }
+      }
+
+      /* Laptop & Desktop Perspective (1024px+) */
+      @media (min-width: 1024px) {
+        .page-shell { padding: 28px 36px; }
+        .card {
+          grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.92fr);
+          align-items: stretch;
+          padding: 44px;
+          gap: 36px;
+        }
+        .side-panel { padding: 26px 24px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="backdrop" aria-hidden="true"></div>
+    <div class="page-shell">
+      <header class="topbar">
+        <a href="/" class="brand">
+          <span class="brand-mark">AT</span>
+          <span class="brand-text">
+            <span class="brand-title">Arvind Thevar</span>
+            <span class="brand-sub">IT Infrastructure &amp; Cloud Training</span>
+          </span>
+        </a>
+        <button type="button" class="theme-btn" id="theme-toggle" aria-label="Toggle color theme">
+          Theme
+        </button>
+      </header>
+
+      <main class="main-area" role="main">
+        <section class="card" aria-labelledby="err-heading">
+          <div>
+            <span class="badge tone-indigo">Route Not Found · HTTP 404</span>
+            <div class="display-code" aria-hidden="true">404</div>
+            <h1 id="err-heading">Page Not Found</h1>
+            <p class="subtitle">The requested page or resource URL could not be located on this server.</p>
+            <p class="desc">The link you followed may have moved, been renamed, or been removed. Use the quick actions below to return to our main training portal or check upcoming batch schedules.</p>
+            
+            <div class="actions">
+              <a href="/" class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5.5v-6.5h-5V21H4a1 1 0 0 1-1-1V9.5Z"/></svg><span>Return to Home</span></a>
+              <a href="/upcoming-batches" class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Upcoming Batches</span></a>
+            </div>
+          </div>
+
+          <aside class="side-panel" aria-label="Status and support details">
+            <div>
+              <div class="panel-head">
+                <div class="icon-box"><svg class="hero-svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+    <circle cx="28" cy="28" r="17" stroke="currentColor" stroke-width="2.5"/>
+    <path d="m41 41 13 13" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    <path d="M23 23 33 33M33 23 23 33" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  </svg></div>
+                <div>
+                  <div class="panel-label">System Status</div>
+                  <div class="panel-status">Edge Static Router</div>
+                </div>
+              </div>
+              <ul class="checklist" style="margin-top: 16px;">
+              <li><span class="step-idx">01</span><span>Check the URL spelling in your browser address bar</span></li>
+              <li><span class="step-idx">02</span><span>Explore Red Hat Linux, Cisco CCNA/CCNP & AWS tracks from Home</span></li>
+              <li><span class="step-idx">03</span><span>Contact us directly if you were looking for specific study material</span></li>
+              </ul>
+            </div>
+
+            <div class="support-box">
+              <p class="support-title">Direct Training Support (Nashik &amp; Online)</p>
+              <div class="support-grid">
+                <a href="tel:+918888829652" class="support-link">
+                  <span>Call</span>
+                  <span class="support-meta">+91 88888 29652</span>
+                </a>
+                <a href="https://wa.me/918888829652" target="_blank" rel="noopener noreferrer" class="support-link">
+                  <span>WhatsApp</span>
+                  <span class="support-meta">Chat Now</span>
+                </a>
+                <a href="mailto:arvindthaver@gmail.com" class="support-link support-link-full">
+                  <span>Email Support</span>
+                  <span class="support-meta">arvindthaver@gmail.com</span>
+                </a>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </main>
+
+      <footer class="foot">
+        <span>&copy; 2026 Arvind Thevar. All Rights Reserved.</span>
+        <span>https://arvindthevar.com</span>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        var toggle = document.getElementById('theme-toggle');
+        function syncThemeLabel() {
+          if (!toggle) return;
+          toggle.textContent = document.documentElement.classList.contains('dark') ? 'Light Mode' : 'Dark Mode';
+        }
+        syncThemeLabel();
+        if (toggle) {
+          toggle.addEventListener('click', function () {
+            var isDark = document.documentElement.classList.toggle('dark');
+            try { localStorage.setItem('arvind_portfolio_theme', isDark ? 'dark' : 'light'); } catch (e) {}
+            syncThemeLabel();
+          });
+        }
+
+        document.querySelectorAll('[data-reload-btn="true"]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            window.location.reload();
+          });
+        });
+
+        var retrySeconds = 0;
+        var timerEl = document.getElementById('retry-timer');
+        if (retrySeconds > 0 && timerEl) {
+          var remaining = retrySeconds;
+          var interval = window.setInterval(function () {
+            remaining -= 1;
+            if (remaining <= 0) {
+              window.clearInterval(interval);
+              timerEl.textContent = 'reconnecting...';
+              window.location.reload();
+              return;
+            }
+            timerEl.textContent = remaining + 's';
+          }, 1000);
+        }
+      })();
+    </script>
+  </body>
+</html>
