@@ -162,9 +162,8 @@ export function BatchFiltersBar({
 
       {/* Row 2: Server-Side Filter & Sort Controls */}
       <div
-        className={`grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid lg:grid-cols-12 ${
-          filtersExpanded ? 'grid' : 'hidden lg:grid'
-        }`}
+        className={`grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid lg:grid-cols-12 ${filtersExpanded ? 'grid' : 'hidden lg:grid'
+          }`}
       >
         <div className="relative min-w-0 lg:col-span-2">
           <select

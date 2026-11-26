@@ -1,10 +1,13 @@
 import { motion } from 'motion/react';
 import {
   BookOpen,
+  CalendarClock,
   ChevronLeft,
   ChevronRight,
   Clock,
+  FileText,
   Loader2,
+  MessageSquare,
   Paperclip,
   Search,
   Sparkles,
@@ -198,39 +201,62 @@ export function BlogsPage({ onNavigate }: BlogsPageProps) {
               ))}
             </div>
           ) : posts.length === 0 ? (
-            <div className="mt-12 rounded-[24px] border border-dashed border-[#D4D4D8] dark:border-[#3A3A3D] bg-[#F5F5F5] dark:bg-[#2C2C2D] px-6 py-14 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white dark:bg-[#1E1E1F] text-[#5E67E6] dark:text-[#D0FF71] shadow-xs">
-                <BookOpen className="h-7 w-7" aria-hidden="true" />
+            <div className="mt-12 rounded-[26px] border border-dashed border-[#D6D8E4] bg-[#F5F5F5] px-6 py-12 text-center sm:px-10 sm:py-16 dark:border-[#3A3A3E] dark:bg-[#252528]">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#5E67E6]/12 text-[#5E67E6] dark:bg-[#D0FF71]/15 dark:text-[#D0FF71]">
+                <BookOpen className="h-8 w-8" aria-hidden="true" />
               </div>
-              <h2 className="mt-5 font-display text-[28px] sm:text-[34px] font-bold uppercase text-[#303030] dark:text-white">
+
+              <p className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1 text-[12px] font-semibold uppercase tracking-wider text-[#5E67E6] shadow-xs dark:bg-[#1C1C1E] dark:text-[#D0FF71]">
+                {hasActiveFilter ? 'Filter Update' : 'Insights Update'}
+              </p>
+
+              <h2 className="mx-auto mt-3 max-w-[560px] font-display text-[28px] font-bold uppercase leading-[1.12] text-[#303030] sm:text-[36px] dark:text-white">
                 {hasActiveFilter
-                  ? 'No Matching Blog Articles Found'
-                  : 'No Blog Articles Available Right Now'}
+                  ? 'NO MATCHING BLOG ARTICLES FOUND'
+                  : 'NO BLOG ARTICLES AVAILABLE RIGHT NOW'}
               </h2>
-              <p className="mx-auto mt-2.5 max-w-[540px] text-[15px] sm:text-[16px] font-light leading-[1.6] text-[#5C5C5C] dark:text-white/75">
+
+              <p className="mx-auto mt-3 max-w-[540px] text-[15px] leading-[1.65] font-light text-[#5C5C5C] sm:text-[16px] dark:text-white/75">
                 {hasActiveFilter
                   ? 'No articles match your current search or category filter. Clear the filters to browse all published insights.'
-                  : 'New Red Hat Linux, Cisco networking, and AWS guides published or scheduled from the Admin Dashboard will appear here automatically.'}
+                  : 'Our technical guides library is currently being updated with fresh Red Hat Linux, Cisco networking, AWS cloud, and troubleshooting articles. Explore study notes or view upcoming batches in the meantime.'}
               </p>
-              <div className="mt-7 flex flex-wrap justify-center gap-3">
+
+              <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
                 {hasActiveFilter ? (
                   <button
                     type="button"
                     onClick={resetFilters}
-                    className="inline-flex items-center justify-center rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] px-6 py-2.5 text-[14px] font-medium text-white dark:text-[#1A1A1B] cursor-pointer"
+                    className="inline-flex min-h-[46px] items-center justify-center rounded-full bg-[#5E67E6] px-6 py-3 text-[14px] font-semibold text-white shadow-sm transition-opacity hover:opacity-90 dark:bg-[#D0FF71] dark:text-[#1A1A1B] cursor-pointer"
                   >
                     Reset Filters
                   </button>
                 ) : (
                   <>
-                    <OutlineButton onClick={() => onNavigate('/resources')}>
-                      EXPLORE STUDY NOTES
-                    </OutlineButton>
-                    <OutlineButton
-                      onClick={() => onNavigate('/upcoming-batches')}
+                    <button
+                      type="button"
+                      onClick={() => onNavigate('/resources')}
+                      className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-full bg-[#5E67E6] px-6 py-3 text-[14px] font-semibold text-white shadow-sm transition-opacity hover:opacity-90 dark:bg-[#D0FF71] dark:text-[#1A1A1B] cursor-pointer"
                     >
-                      UPCOMING BATCHES
-                    </OutlineButton>
+                      <FileText className="h-4 w-4" aria-hidden="true" />
+                      <span>Explore Study Notes</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onNavigate('/upcoming-batches')}
+                      className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-full border border-[#303030]/20 bg-white px-5 py-3 text-[14px] font-medium text-[#303030] transition-colors hover:bg-[#303030] hover:text-white dark:border-white/20 dark:bg-[#1E1E20] dark:text-white dark:hover:bg-white dark:hover:text-[#1A1A1B] cursor-pointer"
+                    >
+                      <CalendarClock className="h-4 w-4" aria-hidden="true" />
+                      <span>Upcoming Batches</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onNavigate('/contact')}
+                      className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-full border border-transparent px-4 py-3 text-[14px] font-medium text-[#5E67E6] hover:underline dark:text-[#D0FF71] cursor-pointer"
+                    >
+                      <MessageSquare className="h-4 w-4" aria-hidden="true" />
+                      <span>Book Consultation</span>
+                    </button>
                   </>
                 )}
               </div>

@@ -228,7 +228,10 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
       <FeaturedProjectsSection onNavigate={onNavigate} showBrowseButton />
       <TestimonialsSection onNavigate={onNavigate} showTestimonialsLink />
       <FaqSection />
-      <BlogsPreviewSection onNavigate={onNavigate} />
+      <BlogsPreviewSection
+        onNavigate={onNavigate}
+        onContactClick={onContactClick}
+      />
       <ContactSection />
       <FloatingContactToggler onContactClick={onContactClick} />
     </main>
