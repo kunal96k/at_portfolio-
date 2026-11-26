@@ -20,7 +20,10 @@ import {
 } from '../src/services/coursesService';
 import {
   ENQUIRIES_UPDATED_EVENT,
-  fetchAdminEnquiriesPageBackend,
+  fetchUnreadNotificationsBackend,
+  markAllNewEnquiriesReadBackend,
+  NOTIFICATION_LIMIT,
+  updateEnquiryStatusBackend,
   type ContactEnquiryItem,
 } from '../src/services/enquiryApi';
 import { TESTIMONIALS_UPDATED_EVENT } from '../src/services/testimonialsService';
@@ -65,9 +68,6 @@ export default function AdminApp() {
   const [unreadEnquiriesList, setUnreadEnquiriesList] = useState<
     ContactEnquiryItem[]
   >([]);
-  const [acknowledgedNotifIds, setAcknowledgedNotifIds] = useState<
-    Set<string>
-  >(() => new Set());
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const applyOverviewSidebarStats = useCallback(
@@ -84,16 +84,10 @@ export default function AdminApp() {
   );
 
   const syncEnquiryHeaderNotifications = useCallback(() => {
-    void fetchAdminEnquiriesPageBackend({
-      status: 'New',
-      page: 0,
-      size: 5,
-      sortBy: 'createdAt',
-      sortDir: 'desc',
-    })
+    void fetchUnreadNotificationsBackend(NOTIFICATION_LIMIT)
       .then((res) => {
-        setUnreadEnquiriesCount(res.stats.newCount);
-        setUnreadEnquiriesList(res.items);
+        setUnreadEnquiriesCount(res.totalUnread);
+        setUnreadEnquiriesList(res.items.slice(0, NOTIFICATION_LIMIT));
       })
       .catch(() => {
         // Offline backend handled cleanly
@@ -181,18 +175,18 @@ export default function AdminApp() {
 
   const liveNotifications: NotificationItem[] = useMemo(
     () =>
-      unreadEnquiriesList.map((enq) => {
-        const notifId = `enquiry-notif-${enq.id}`;
-        return {
-          id: notifId,
+      unreadEnquiriesList
+        .filter((enq) => enq.status === 'New')
+        .slice(0, NOTIFICATION_LIMIT)
+        .map((enq) => ({
+          id: `enquiry-notif-${enq.id}`,
           title: `New Enquiry: ${enq.name}`,
           detail: `${enq.service || 'General Consultation'} · ${enq.channel}`,
           timeAgo: enq.createdAt ? enq.createdAt.slice(0, 16) : 'Recent',
-          read: acknowledgedNotifIds.has(notifId),
+          read: false,
           targetSection: 'enquiries',
-        };
-      }),
-    [unreadEnquiriesList, acknowledgedNotifIds]
+        })),
+    [unreadEnquiriesList]
   );
 
   const pushToast = useCallback((toast: Omit<ToastItem, 'id'>) => {
@@ -208,19 +202,37 @@ export default function AdminApp() {
   }, []);
 
   const handleMarkAllRead = () => {
-    setAcknowledgedNotifIds(
-      new Set(liveNotifications.map((item) => item.id))
-    );
-    pushToast({ tone: 'info', title: 'All notifications marked as read' });
+    if (unreadEnquiriesList.length === 0 && unreadEnquiriesCount === 0) {
+      return;
+    }
+    setUnreadEnquiriesList([]);
+    setUnreadEnquiriesCount(0);
+    void markAllNewEnquiriesReadBackend()
+      .then(() => {
+        pushToast({ tone: 'info', title: 'All notifications marked as read' });
+      })
+      .catch((err) => {
+        syncEnquiryHeaderNotifications();
+        pushToast({
+          tone: 'error',
+          title: 'Could not mark notifications read',
+          description: err instanceof Error ? err.message : undefined,
+        });
+      });
   };
 
   const handleNotificationClick = (item: NotificationItem) => {
-    setAcknowledgedNotifIds((prev) => {
-      const next = new Set(prev);
-      next.add(item.id);
-      return next;
-    });
+    const enquiryId = item.id.replace(/^enquiry-notif-/, '');
+    setUnreadEnquiriesList((prev) =>
+      prev.filter((enq) => enq.id !== enquiryId)
+    );
+    setUnreadEnquiriesCount((prev) => Math.max(0, prev - 1));
     setActiveSection(item.targetSection);
+    if (enquiryId) {
+      void updateEnquiryStatusBackend(enquiryId, 'Read').catch(() => {
+        syncEnquiryHeaderNotifications();
+      });
+    }
   };
 
   const handleLoginSuccess = (email: string) => {

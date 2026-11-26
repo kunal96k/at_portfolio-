@@ -8,6 +8,7 @@ const API_BASE_URL =
   'http://localhost:8080';
 
 export const ENQUIRIES_UPDATED_EVENT = 'arvind-enquiries-updated';
+export const NOTIFICATION_LIMIT = 5;
 
 export type EnquiryStatus = 'New' | 'Read' | 'Replied' | 'Archived';
 
@@ -344,4 +345,42 @@ export async function deleteEnquiryBackend(id: string): Promise<void> {
     throw new Error(await parseEnquiryApiError(response));
   }
   notifyEnquiriesUpdated();
+}
+
+export async function fetchUnreadNotificationsBackend(
+  limit = NOTIFICATION_LIMIT,
+  signal?: AbortSignal
+): Promise<{ items: ContactEnquiryItem[]; totalUnread: number }> {
+  const safeLimit = Math.min(NOTIFICATION_LIMIT, Math.max(1, limit));
+  const result = await fetchAdminEnquiriesPageBackend(
+    {
+      status: 'New',
+      page: 0,
+      size: safeLimit,
+      sortBy: 'createdAt',
+      sortDir: 'desc',
+    },
+    signal
+  );
+  return {
+    items: result.items
+      .filter((item) => item.status === 'New')
+      .slice(0, NOTIFICATION_LIMIT),
+    totalUnread: result.stats.newCount,
+  };
+}
+
+export async function markAllNewEnquiriesReadBackend(): Promise<number> {
+  const response = await fetch(`${enquiriesApiBase()}/mark-all-read`, {
+    method: 'PATCH',
+    headers: { Accept: 'application/json' },
+  });
+  if (!response.ok) {
+    throw new Error(await parseEnquiryApiError(response));
+  }
+  const json = (await response.json()) as {
+    data?: { updatedCount?: number };
+  };
+  notifyEnquiriesUpdated();
+  return Number(json?.data?.updatedCount ?? 0);
 }
