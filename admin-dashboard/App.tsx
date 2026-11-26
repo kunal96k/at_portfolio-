@@ -26,6 +26,7 @@ import {
 } from '../src/services/coursesService';
 import {
   ENQUIRIES_UPDATED_EVENT,
+  ENQUIRY_SYNC_CHANNEL,
   fetchUnreadNotificationsBackend,
   markAllNewEnquiriesReadBackend,
   NOTIFICATION_LIMIT,
@@ -125,6 +126,7 @@ export default function AdminApp() {
   const [blogsCount, setBlogsCount] = useState<number>(0);
   const [galleryCount, setGalleryCount] = useState<number>(0);
   const [testimonialsCount, setTestimonialsCount] = useState<number>(0);
+  const [enquiriesCount, setEnquiriesCount] = useState<number>(0);
   const [unreadEnquiriesCount, setUnreadEnquiriesCount] = useState<number>(0);
   const [unreadEnquiriesList, setUnreadEnquiriesList] = useState<
     ContactEnquiryItem[]
@@ -139,6 +141,7 @@ export default function AdminApp() {
       setBlogsCount(data.kpis.totalBlogs);
       setGalleryCount(data.kpis.totalGallery);
       setTestimonialsCount(data.kpis.totalTestimonials);
+      setEnquiriesCount(data.kpis.totalEnquiries);
       setUnreadEnquiriesCount(data.kpis.newEnquiries);
     },
     []
@@ -148,6 +151,7 @@ export default function AdminApp() {
     void fetchUnreadNotificationsBackend(NOTIFICATION_LIMIT)
       .then((res) => {
         setUnreadEnquiriesCount(res.totalUnread);
+        setEnquiriesCount(res.totalEnquiries);
         setUnreadEnquiriesList(res.items.slice(0, NOTIFICATION_LIMIT));
       })
       .catch(() => {
@@ -188,11 +192,39 @@ export default function AdminApp() {
       syncSidebarCountsFromBackend();
       syncEnquiryHeaderNotifications();
     };
+    const handleVisibilityOrFocus = () => {
+      if (typeof document === 'undefined' || !document.hidden) {
+        handleGlobalRefresh();
+      }
+    };
     window.addEventListener(ENQUIRIES_UPDATED_EVENT, handleGlobalRefresh);
     window.addEventListener(TESTIMONIALS_UPDATED_EVENT, handleGlobalRefresh);
+    window.addEventListener('focus', handleVisibilityOrFocus);
+    document.addEventListener('visibilitychange', handleVisibilityOrFocus);
+
+    let broadcastChannel: BroadcastChannel | null = null;
+    if (typeof BroadcastChannel !== 'undefined') {
+      try {
+        broadcastChannel = new BroadcastChannel(ENQUIRY_SYNC_CHANNEL);
+        broadcastChannel.onmessage = () => {
+          handleGlobalRefresh();
+          window.dispatchEvent(new CustomEvent(ENQUIRIES_UPDATED_EVENT));
+        };
+      } catch {
+        broadcastChannel = null;
+      }
+    }
+
+    const pollTimer = window.setInterval(() => {
+      if (typeof document === 'undefined' || !document.hidden) {
+        syncSidebarCountsFromBackend();
+        syncEnquiryHeaderNotifications();
+      }
+    }, 15000);
 
     return () => {
       cancelled = true;
+      window.clearInterval(pollTimer);
       window.removeEventListener(
         ENQUIRIES_UPDATED_EVENT,
         handleGlobalRefresh
@@ -201,6 +233,9 @@ export default function AdminApp() {
         TESTIMONIALS_UPDATED_EVENT,
         handleGlobalRefresh
       );
+      window.removeEventListener('focus', handleVisibilityOrFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityOrFocus);
+      broadcastChannel?.close();
     };
   }, [authStatus, syncSidebarCountsFromBackend, syncEnquiryHeaderNotifications]);
 
@@ -231,7 +266,8 @@ export default function AdminApp() {
   }, []);
 
   const handleEnquiriesCountChange = useCallback(
-    (_total: number, newCount: number) => {
+    (total: number, newCount: number) => {
+      setEnquiriesCount(total);
       setUnreadEnquiriesCount(newCount);
     },
     []
@@ -324,6 +360,7 @@ export default function AdminApp() {
       setAuthStatus('unauthenticated');
       setUnreadEnquiriesList([]);
       setUnreadEnquiriesCount(0);
+      setEnquiriesCount(0);
       if (typeof window !== 'undefined') {
         window.history.replaceState({}, '', '/admin-dashboard/?view=login');
       }
@@ -366,6 +403,7 @@ export default function AdminApp() {
         onMarkAllRead={handleMarkAllRead}
         onNotificationClick={handleNotificationClick}
         unreadEnquiriesCount={unreadEnquiriesCount}
+        enquiriesCount={enquiriesCount}
         batchesCount={batchesCount}
         coursesCount={coursesCount}
         resourcesCount={resourcesCount}

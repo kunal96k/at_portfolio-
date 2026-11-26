@@ -42,6 +42,7 @@ export interface NavItemConfig {
   keywords: string[];
   icon: typeof LayoutDashboard;
   badgeCount?: number;
+  alertCount?: number;
   highlightBadge?: boolean;
 }
 
@@ -63,6 +64,7 @@ interface AdminShellProps {
   onMarkAllRead: () => void;
   onNotificationClick: (item: NotificationItem) => void;
   unreadEnquiriesCount: number;
+  enquiriesCount?: number;
   batchesCount: number;
   coursesCount?: number;
   resourcesCount?: number;
@@ -105,6 +107,7 @@ export function AdminShell({
   onMarkAllRead,
   onNotificationClick,
   unreadEnquiriesCount,
+  enquiriesCount,
   batchesCount,
   coursesCount,
   resourcesCount,
@@ -206,7 +209,8 @@ export function AdminShell({
         group: 'engagement',
         keywords: ['leads', 'messages', 'contact', 'inbox'],
         icon: Mail,
-        badgeCount: unreadEnquiriesCount > 0 ? unreadEnquiriesCount : undefined,
+        badgeCount: enquiriesCount ?? unreadEnquiriesCount,
+        alertCount: unreadEnquiriesCount > 0 ? unreadEnquiriesCount : undefined,
         highlightBadge: unreadEnquiriesCount > 0,
       },
       {
@@ -220,7 +224,7 @@ export function AdminShell({
         badgeCount: testimonialsCount,
       },
     ],
-    [batchesCount, coursesCount, resourcesCount, blogsCount, galleryCount, testimonialsCount, unreadEnquiriesCount]
+    [batchesCount, coursesCount, resourcesCount, blogsCount, galleryCount, testimonialsCount, enquiriesCount, unreadEnquiriesCount]
   );
 
   const sidebarGroups: SidebarGroupDef<NavItemConfig>[] = useMemo(
@@ -377,7 +381,9 @@ export function AdminShell({
               );
               const groupAlertCount = group.items.reduce(
                 (sum, item) =>
-                  sum + (item.highlightBadge && item.badgeCount ? item.badgeCount : 0),
+                  sum +
+                  (item.alertCount ??
+                    (item.highlightBadge && item.badgeCount ? item.badgeCount : 0)),
                 0
               );
 
@@ -445,15 +451,24 @@ export function AdminShell({
                             </span>
 
                             {item.badgeCount !== undefined && (
-                              <span
-                                className={`shrink-0 text-[10.5px] font-medium tabular-nums ${item.highlightBadge
-                                  ? 'text-[#93C5FD]'
-                                  : isActive
-                                    ? 'text-white/85'
-                                    : 'text-white/42'
-                                  }`}
-                              >
-                                {item.badgeCount}
+                              <span className="flex shrink-0 items-center gap-1.5">
+                                {item.alertCount !== undefined && item.alertCount > 0 && (
+                                  <span
+                                    aria-hidden="true"
+                                    title={`${item.alertCount} unread`}
+                                    className="h-1.5 w-1.5 rounded-full bg-[#60A5FA]"
+                                  />
+                                )}
+                                <span
+                                  className={`text-[10.5px] font-medium tabular-nums ${item.highlightBadge
+                                    ? 'text-[#93C5FD]'
+                                    : isActive
+                                      ? 'text-white/85'
+                                      : 'text-white/42'
+                                    }`}
+                                >
+                                  {item.badgeCount}
+                                </span>
                               </span>
                             )}
                           </button>

@@ -179,9 +179,20 @@ export async function parseEnquiryApiError(response: Response): Promise<string> 
   return `Request failed with status ${response.status}`;
 }
 
+export const ENQUIRY_SYNC_CHANNEL = 'arvind-portfolio-enquiries';
+
 function notifyEnquiriesUpdated(): void {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(ENQUIRIES_UPDATED_EVENT));
+    if (typeof BroadcastChannel !== 'undefined') {
+      try {
+        const channel = new BroadcastChannel(ENQUIRY_SYNC_CHANNEL);
+        channel.postMessage({ type: 'updated', ts: Date.now() });
+        channel.close();
+      } catch {
+        // Ignore browsers blocking BroadcastChannel in restricted contexts
+      }
+    }
   }
 }
 
@@ -352,7 +363,11 @@ export async function deleteEnquiryBackend(id: string): Promise<void> {
 export async function fetchUnreadNotificationsBackend(
   limit = NOTIFICATION_LIMIT,
   signal?: AbortSignal
-): Promise<{ items: ContactEnquiryItem[]; totalUnread: number }> {
+): Promise<{
+  items: ContactEnquiryItem[];
+  totalUnread: number;
+  totalEnquiries: number;
+}> {
   const safeLimit = Math.min(NOTIFICATION_LIMIT, Math.max(1, limit));
   const result = await fetchAdminEnquiriesPageBackend(
     {
@@ -369,6 +384,7 @@ export async function fetchUnreadNotificationsBackend(
       .filter((item) => item.status === 'New')
       .slice(0, NOTIFICATION_LIMIT),
     totalUnread: result.stats.newCount,
+    totalEnquiries: result.stats.total,
   };
 }
 

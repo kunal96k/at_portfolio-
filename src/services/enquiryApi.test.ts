@@ -47,6 +47,7 @@ test('fetchUnreadNotificationsBackend requests status=New top 5 and strips any r
     assert.equal(parsedUrl.searchParams.get('sortDir'), 'desc');
     assert.equal(result.items.length, NOTIFICATION_LIMIT);
     assert.equal(result.totalUnread, 6);
+    assert.equal(result.totalEnquiries, 7);
     assert.ok(result.items.every((item) => item.status === 'New'));
     assert.equal(
       result.items.some((item) => item.name === 'Read Lead'),
