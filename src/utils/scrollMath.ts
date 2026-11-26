@@ -30,7 +30,7 @@ export interface ContactFormErrors {
 export type AppRoute =
   | { page: 'home' }
   | { page: 'about' }
-  | { page: 'upcoming-training' }
+  | { page: 'upcoming-batches' }
   | { page: 'training-course'; slug: string }
   | { page: 'it-services' }
   | { page: 'resources' }
@@ -294,53 +294,125 @@ export function computeStackedCardTransform(
   return { scale, y, dimOpacity };
 }
 
+export const PUBLIC_INPUT_LIMITS = {
+  nameMax: 120,
+  emailMax: 150,
+  phoneMinDigits: 7,
+  phoneMaxDigits: 15,
+  phoneMaxChars: 22,
+  serviceMax: 180,
+  messageMin: 10,
+  messageMax: 1500,
+  searchMax: 120,
+} as const;
+
+export function containsDangerousMarkup(value: string): boolean {
+  return /[<>]|javascript:|vbscript:|data\s*:\s*text\/html|\bon[a-z]+\s*=/i.test(
+    value
+  );
+}
+
+export function sanitizePhoneInput(raw: string): string {
+  const cleaned = raw.replace(/[^0-9+\s().-]/g, '');
+  let result = '';
+  let digitCount = 0;
+
+  for (let i = 0; i < cleaned.length; i += 1) {
+    const ch = cleaned[i];
+    if (ch === '+') {
+      if (result.length === 0) {
+        result += ch;
+      }
+      continue;
+    }
+    if (ch >= '0' && ch <= '9') {
+      if (digitCount >= PUBLIC_INPUT_LIMITS.phoneMaxDigits) {
+        continue;
+      }
+      digitCount += 1;
+    }
+    result += ch;
+    if (result.length >= PUBLIC_INPUT_LIMITS.phoneMaxChars) {
+      break;
+    }
+  }
+  return result;
+}
+
 export function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const trimmed = email.trim();
+  if (!trimmed || trimmed.length > PUBLIC_INPUT_LIMITS.emailMax) return false;
+  if (containsDangerousMarkup(trimmed)) return false;
+  return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(trimmed);
 }
 
 export function isValidPhone(phone: string): boolean {
-  return /^\+?(?:[0-9][\s().-]*){7,20}$/.test(phone.trim());
+  const trimmed = phone.trim();
+  if (!trimmed || trimmed.length > PUBLIC_INPUT_LIMITS.phoneMaxChars) {
+    return false;
+  }
+  const digits = trimmed.replace(/\D/g, '');
+  if (
+    digits.length < PUBLIC_INPUT_LIMITS.phoneMinDigits ||
+    digits.length > PUBLIC_INPUT_LIMITS.phoneMaxDigits
+  ) {
+    return false;
+  }
+  return /^\+?(?:[0-9][\s().-]*){7,15}$/.test(trimmed);
 }
 
 export function validateContactForm(values: ContactFormValues): ContactFormErrors {
   const errors: ContactFormErrors = {};
+  const cleanName = values.name.trim();
+  const cleanEmail = values.email.trim();
+  const cleanPhone = values.phone?.trim() ?? '';
+  const cleanService = values.service.trim();
+  const cleanMessage = values.message.trim();
 
-  if (!values.name.trim()) {
+  if (!cleanName) {
     errors.name = 'Please enter your name.';
-  } else if (values.name.trim().length < 2) {
+  } else if (cleanName.length < 2) {
     errors.name = 'Name must be at least 2 characters.';
-  } else if (values.name.trim().length > 300) {
-    errors.name = 'Name cannot exceed 300 characters.';
+  } else if (cleanName.length > PUBLIC_INPUT_LIMITS.nameMax) {
+    errors.name = `Name cannot exceed ${PUBLIC_INPUT_LIMITS.nameMax} characters.`;
+  } else if (containsDangerousMarkup(cleanName)) {
+    errors.name = 'Name cannot contain HTML tags or unsafe characters (< or >).';
   }
 
-  if (!values.email.trim()) {
+  if (!cleanEmail) {
     errors.email = 'Please enter your email address.';
-  } else if (values.email.trim().length > 300) {
-    errors.email = 'Email cannot exceed 300 characters.';
-  } else if (!isValidEmail(values.email)) {
+  } else if (cleanEmail.length > PUBLIC_INPUT_LIMITS.emailMax) {
+    errors.email = `Email cannot exceed ${PUBLIC_INPUT_LIMITS.emailMax} characters.`;
+  } else if (!isValidEmail(cleanEmail)) {
     errors.email = 'Please enter a valid email address.';
   }
 
-  if (values.phone && values.phone.trim()) {
-    if (values.phone.trim().length > 300) {
-      errors.phone = 'Phone number cannot exceed 300 characters.';
-    } else if (!isValidPhone(values.phone)) {
-      errors.phone = 'Please provide a valid phone number (digits and optional + prefix).';
+  if (cleanPhone) {
+    if (cleanPhone.length > PUBLIC_INPUT_LIMITS.phoneMaxChars) {
+      errors.phone = `Phone number cannot exceed ${PUBLIC_INPUT_LIMITS.phoneMaxChars} characters.`;
+    } else if (!isValidPhone(cleanPhone)) {
+      errors.phone =
+        'Please enter a valid phone number (7 to 15 digits max).';
     }
   }
 
-  if (!values.service.trim()) {
-    errors.service = 'Please select a service.';
-  } else if (values.service.trim().length > 300) {
-    errors.service = 'Service cannot exceed 300 characters.';
+  if (!cleanService) {
+    errors.service = 'Please select a course or service.';
+  } else if (cleanService.length > PUBLIC_INPUT_LIMITS.serviceMax) {
+    errors.service = `Service cannot exceed ${PUBLIC_INPUT_LIMITS.serviceMax} characters.`;
+  } else if (containsDangerousMarkup(cleanService)) {
+    errors.service = 'Service selection contains invalid characters.';
   }
 
-  if (!values.message.trim()) {
-    errors.message = 'Please tell me a bit about your project.';
-  } else if (values.message.trim().length < 10) {
-    errors.message = 'Please provide at least 10 characters of detail.';
-  } else if (values.message.trim().length > 3000) {
-    errors.message = 'Message cannot exceed 3000 characters.';
+  if (!cleanMessage) {
+    errors.message = 'Please enter your training inquiry or message.';
+  } else if (cleanMessage.length < PUBLIC_INPUT_LIMITS.messageMin) {
+    errors.message = `Please provide at least ${PUBLIC_INPUT_LIMITS.messageMin} characters of detail.`;
+  } else if (cleanMessage.length > PUBLIC_INPUT_LIMITS.messageMax) {
+    errors.message = `Message cannot exceed ${PUBLIC_INPUT_LIMITS.messageMax} characters.`;
+  } else if (containsDangerousMarkup(cleanMessage)) {
+    errors.message =
+      'Message cannot contain HTML tags, script snippets, or < > brackets.';
   }
 
   return errors;
@@ -348,6 +420,9 @@ export function validateContactForm(values: ContactFormValues): ContactFormError
 
 export function validateNewsletterEmail(email: string): string | null {
   if (!email.trim()) return 'Please enter your email address.';
+  if (email.trim().length > PUBLIC_INPUT_LIMITS.emailMax) {
+    return `Email cannot exceed ${PUBLIC_INPUT_LIMITS.emailMax} characters.`;
+  }
   if (!isValidEmail(email)) return 'Please enter a valid email address.';
   return null;
 }
@@ -360,8 +435,8 @@ export function parseRoute(pathname: string): AppRoute {
   if (clean === '/about') {
     return { page: 'about' };
   }
-  if (clean === '/upcoming-training' || clean === '/upcoming-batches') {
-    return { page: 'upcoming-training' };
+  if (clean === '/upcoming-batches' || clean === '/upcoming-training') {
+    return { page: 'upcoming-batches' };
   }
   if (clean.startsWith('/training/')) {
     const slug = clean.slice('/training/'.length);

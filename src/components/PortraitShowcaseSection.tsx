@@ -209,7 +209,7 @@ function TabletDesktopPortraitStage({
               <div className="mt-5 lg:mt-6 flex flex-wrap justify-end gap-2 lg:gap-2.5">
                 <button
                   type="button"
-                  onClick={() => onNavigate('/upcoming-training')}
+                  onClick={() => onNavigate('/upcoming-batches')}
                   className="rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] px-3.5 py-2 lg:px-5 lg:py-2.5 text-[12px] lg:text-[14px] font-medium text-white dark:text-[#1A1A1B] transition-colors hover:bg-[#303030] dark:hover:bg-white cursor-pointer"
                 >
                   Explore My Courses
@@ -555,7 +555,7 @@ function MobilePortraitStage({ onNavigate, onContactClick }: PortraitShowcaseSec
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <button
             type="button"
-            onClick={() => onNavigate('/upcoming-training')}
+            onClick={() => onNavigate('/upcoming-batches')}
             className="rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] px-6 py-3 text-[14px] font-medium text-white dark:text-[#1A1A1B] min-h-[44px] cursor-pointer"
           >
             Explore My Courses

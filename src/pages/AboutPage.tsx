@@ -2,7 +2,6 @@ import { motion } from 'motion/react';
 import {
   ASSETS,
   CORPORATE_PARTNERS,
-  EXPERTISE_DOMAINS,
   PROFILE,
   TRAINING_PHILOSOPHY,
   WHY_LEARN_ITEMS,
@@ -11,8 +10,14 @@ import { ContactSection } from '../components/ContactSection';
 import { SafeImage } from '../components/SafeImage';
 import { ServicesAccordion } from '../components/ServicesAccordion';
 import { SocialIcon } from '../components/SocialIcons';
+import { usePublicCourses } from '../hooks/usePublicCourses';
 
 export function AboutPage() {
+  const { courses } = usePublicCourses();
+  const visibleDomains = [...courses].sort(
+    (a, b) => a.displayOrder - b.displayOrder
+  );
+
   return (
     <main className="relative z-10">
       {/* Section 1: About Me Hero */}
@@ -73,33 +78,33 @@ export function AboutPage() {
         </div>
       </section>
 
-      {/* Section 2: 10 Core Domains */}
+      {/* Section 2: Core Course / Domains */}
       <section className="px-5 sm:px-8 py-16 sm:py-24">
         <div className="mx-auto max-w-[1120px]">
           <div className="max-w-[600px]">
             <h2 className="font-display text-[44px] sm:text-[56px] lg:text-[60px] font-bold leading-[1.12] uppercase text-[#303030] dark:text-white">
-              10 CORE DOMAINS
+              CORE COURSE DOMAINS
             </h2>
             <p className="mt-3 text-[18px] font-medium text-[#5E67E6] dark:text-[#D0FF71]">
-              Ten core enterprise domains. One goal: job-ready skills.
+              {visibleDomains.length} specialized enterprise tracks. One goal: job-ready skills.
             </p>
           </div>
 
           <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5">
-            {EXPERTISE_DOMAINS.map((domain) => (
+            {visibleDomains.map((domain, index) => (
               <div
-                key={domain.number}
+                key={domain.id}
                 className="rounded-[20px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-6 flex items-start gap-4"
               >
-                <span className="font-display text-[32px] font-bold leading-none text-[#5E67E6] dark:text-[#D0FF71] shrink-0">
-                  {domain.number}
+                <span className="font-display text-[32px] font-bold leading-none text-[#5E67E6] dark:text-[#D0FF71] shrink-0 tabular-nums">
+                  {String(index + 1).padStart(2, '0')}
                 </span>
                 <div>
                   <h3 className="font-display text-[24px] font-bold uppercase leading-[1.2] text-[#303030] dark:text-white">
                     {domain.title}
                   </h3>
                   <p className="mt-1.5 text-[15px] font-light leading-[1.6] text-[#5C5C5C] dark:text-white/75">
-                    {domain.description}
+                    {domain.shortDescription}
                   </p>
                 </div>
               </div>

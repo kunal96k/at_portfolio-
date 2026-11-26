@@ -9,6 +9,9 @@ import {
   computeMobileFlipTransform,
   getScrollRevealConfig,
   computeStackedCardTransform,
+  containsDangerousMarkup,
+  isValidPhone,
+  sanitizePhoneInput,
   validateContactForm,
   validateNewsletterEmail,
   parseRoute,
@@ -154,11 +157,31 @@ test('newsletter email validation rejects bad emails and accepts valid ones', ()
   assert.equal(validateNewsletterEmail('jane@framer.com'), null);
 });
 
+test('phone validation enforces 7 to 15 digits max and XSS protection rejects markup', () => {
+  assert.equal(isValidPhone('+91 88888 29652'), true);
+  assert.equal(isValidPhone('+123456789012345'), true);
+  assert.equal(isValidPhone('1234567890123456'), false);
+  assert.equal(isValidPhone('123456'), false);
+  assert.equal(sanitizePhoneInput('+91abc987654321012345'), '+919876543210123');
+  assert.equal(containsDangerousMarkup('<script>alert(1)</script>'), true);
+  assert.equal(containsDangerousMarkup('Normal text input'), false);
+
+  const xssErrors = validateContactForm({
+    name: '<script>x</script>',
+    email: 'valid@domain.com',
+    phone: '1234567890123456',
+    service: 'Red Hat',
+    message: 'Valid length inquiry message.',
+  });
+  assert.ok(xssErrors.name);
+  assert.ok(xssErrors.phone);
+});
+
 test('route parser resolves all Portavia routes cleanly', () => {
   assert.deepEqual(parseRoute('/'), { page: 'home' });
   assert.deepEqual(parseRoute('/about/'), { page: 'about' });
-  assert.deepEqual(parseRoute('/upcoming-training'), { page: 'upcoming-training' });
-  assert.deepEqual(parseRoute('/upcoming-batches'), { page: 'upcoming-training' });
+  assert.deepEqual(parseRoute('/upcoming-batches'), { page: 'upcoming-batches' });
+  assert.deepEqual(parseRoute('/upcoming-training'), { page: 'upcoming-batches' });
   assert.deepEqual(parseRoute('/it-services'), { page: 'it-services' });
   assert.deepEqual(parseRoute('/resources'), { page: 'resources' });
   assert.deepEqual(parseRoute('/testimonials'), { page: 'testimonials' });

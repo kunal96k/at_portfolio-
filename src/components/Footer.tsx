@@ -12,7 +12,7 @@ interface FooterProps {
 const QUICK_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'About Us', path: '/about' },
-  { label: 'Upcoming Batches', path: '/upcoming-training' },
+  { label: 'Upcoming Batches', path: '/upcoming-batches' },
   { label: 'Notes & Resources', path: '/resources' },
   { label: 'Student Testimonials', path: '/testimonials' },
   { label: 'Blogs & Guides', path: '/blogs' },
@@ -67,10 +67,10 @@ export function Footer({ onNavigate, onContactClick }: FooterProps) {
 
           <div className="flex flex-wrap items-center gap-3">
             <a
-              href="/upcoming-training"
+              href="/upcoming-batches"
               onClick={(e) => {
                 e.preventDefault();
-                handleNav('/upcoming-training');
+                handleNav('/upcoming-batches');
               }}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-white dark:bg-[#1A1A1B] text-[#303030] dark:text-white px-6 py-3 text-[14px] font-semibold hover:opacity-90 transition-opacity cursor-pointer min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white dark:focus-visible:ring-[#1A1A1B]"
             >

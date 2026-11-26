@@ -22,7 +22,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Home', href: '/', page: 'home' },
   { label: 'About Us', href: '/about', page: 'about' },
-  { label: 'Upcoming Batches', href: '/upcoming-training', page: 'upcoming-training' },
+  { label: 'Upcoming Batches', href: '/upcoming-batches', page: 'upcoming-batches' },
   { label: 'Notes', href: '/resources', page: 'resources' },
   { label: 'Testimonials', href: '/testimonials', page: 'testimonials' },
   { label: 'Blogs', href: '/blogs', page: 'blogs', matchPages: ['blogs', 'blog-detail'] },
@@ -51,11 +51,10 @@ function RollingNavLink({
       className="group relative block h-6 overflow-hidden px-0.5 text-[14px] xl:text-[15px] font-normal leading-6 cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4F58DF] dark:focus-visible:ring-[#D0FF71] rounded"
     >
       <span
-        className={`block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full ${
-          active
-            ? 'text-[#4F58DF] dark:text-[#D0FF71] font-semibold'
-            : 'text-[#303030] dark:text-white/90'
-        }`}
+        className={`block transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full ${active
+          ? 'text-[#4F58DF] dark:text-[#D0FF71] font-semibold'
+          : 'text-[#303030] dark:text-white/90'
+          }`}
       >
         {label}
       </span>
@@ -124,7 +123,7 @@ export function Navbar({ route, onNavigate, onContactClick }: NavbarProps) {
   return (
     <header>
       {/* Desktop Floating Dynamic Pill Navbar (lg+) */}
-      <div className="fixed top-5 left-0 right-0 z-40 hidden lg:flex justify-center pointer-events-none px-4">
+      <div className="fixed top-5 left-0 right-0 z-30 hidden lg:flex justify-center pointer-events-none px-4">
         <motion.nav
           ref={desktopNavRef}
           aria-label="Primary Navigation"
@@ -209,10 +208,10 @@ export function Navbar({ route, onNavigate, onContactClick }: NavbarProps) {
                     Contact
                   </button>
                   <a
-                    href="/upcoming-training"
+                    href="/upcoming-batches"
                     onClick={(e) => {
                       e.preventDefault();
-                      handleNavClick('/upcoming-training');
+                      handleNavClick('/upcoming-batches');
                     }}
                     className="rounded-full bg-[#4F58DF] dark:bg-[#D0FF71] px-4 xl:px-5 py-1.5 xl:py-2 text-[13.5px] xl:text-[14px] font-medium text-white dark:text-[#1A1A1B] transition-colors duration-200 hover:bg-[#303030] dark:hover:bg-white cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4F58DF] dark:focus-visible:ring-[#D0FF71]"
                   >
@@ -226,15 +225,14 @@ export function Navbar({ route, onNavigate, onContactClick }: NavbarProps) {
       </div>
 
       {/* Mobile & Tablet Floating Pill Navbar + Expanding Frosted Card (< lg) */}
-      <div className="fixed top-4 left-0 right-0 z-40 flex lg:hidden justify-center px-4 pointer-events-none">
+      <div className="fixed top-4 left-0 right-0 z-30 flex lg:hidden justify-center px-4 pointer-events-none">
         <div className="pointer-events-auto w-full max-w-[356px]">
           <motion.nav
             aria-label="Mobile Navigation"
             layout
             transition={{ type: 'spring', stiffness: 360, damping: 32 }}
-            className={`border border-[#E5E5E5] dark:border-[#343436] bg-white/94 dark:bg-[#1E1E1F]/94 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.45)] overflow-hidden ${
-              mobileMenuOpen ? 'rounded-[28px] p-3.5' : 'rounded-full p-2'
-            }`}
+            className={`border border-[#E5E5E5] dark:border-[#343436] bg-white/94 dark:bg-[#1E1E1F]/94 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.45)] overflow-hidden ${mobileMenuOpen ? 'rounded-[28px] p-3.5' : 'rounded-full p-2'
+              }`}
           >
             <div className="flex items-center justify-between gap-2">
               <a
@@ -307,11 +305,10 @@ export function Navbar({ route, onNavigate, onContactClick }: NavbarProps) {
                             e.preventDefault();
                             handleNavClick(item.href);
                           }}
-                          className={`flex items-center justify-center w-full text-center text-[16px] transition-colors py-2.5 min-h-[44px] rounded-[14px] cursor-pointer ${
-                            active
-                              ? 'text-[#4F58DF] dark:text-[#D0FF71] font-semibold bg-[#4F58DF]/10 dark:bg-[#D0FF71]/10'
-                              : 'text-[#303030] dark:text-white/90 font-normal hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2D]'
-                          }`}
+                          className={`flex items-center justify-center w-full text-center text-[16px] transition-colors py-2.5 min-h-[44px] rounded-[14px] cursor-pointer ${active
+                            ? 'text-[#4F58DF] dark:text-[#D0FF71] font-semibold bg-[#4F58DF]/10 dark:bg-[#D0FF71]/10'
+                            : 'text-[#303030] dark:text-white/90 font-normal hover:bg-[#F5F5F5] dark:hover:bg-[#2C2C2D]'
+                            }`}
                         >
                           {item.label}
                         </a>
@@ -331,10 +328,10 @@ export function Navbar({ route, onNavigate, onContactClick }: NavbarProps) {
                         Contact
                       </button>
                       <a
-                        href="/upcoming-training"
+                        href="/upcoming-batches"
                         onClick={(e) => {
                           e.preventDefault();
-                          handleNavClick('/upcoming-training');
+                          handleNavClick('/upcoming-batches');
                         }}
                         className="flex items-center justify-center rounded-full bg-[#4F58DF] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B] px-4 py-2.5 text-[14px] font-medium transition-opacity hover:opacity-90 cursor-pointer min-h-[44px]"
                       >

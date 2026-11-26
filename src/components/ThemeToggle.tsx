@@ -7,7 +7,7 @@ interface ThemeToggleProps {
 
 export function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
   return (
-    <div className="fixed bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-40">
+    <div className="fixed bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-30">
       <button
         type="button"
         role="switch"

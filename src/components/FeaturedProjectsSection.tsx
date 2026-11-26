@@ -171,7 +171,7 @@ export function FeaturedProjectsSection({
 
         {showBrowseButton && (
           <div className="mt-12 sm:mt-16 flex flex-wrap justify-center gap-4">
-            <OutlineButton onClick={() => onNavigate('/upcoming-training')}>
+            <OutlineButton onClick={() => onNavigate('/upcoming-batches')}>
               EXPLORE UPCOMING BATCHES
             </OutlineButton>
             <OutlineButton onClick={() => onNavigate('/projects')}>VIEW ALL TRACKS</OutlineButton>

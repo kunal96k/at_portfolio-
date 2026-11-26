@@ -9,6 +9,10 @@ import {
 } from 'lucide-react';
 import { useId, useRef, useState } from 'react';
 import {
+  resolveResourceUrl,
+  uploadProjectFileBackend,
+} from '../../src/services/resourcesService';
+import {
   formatFileSize,
   MAX_UPLOAD_BYTES,
   validateUploadFile,
@@ -32,6 +36,7 @@ interface ImageUploadZoneProps {
   helperText?: string;
   valueUrl: string;
   fileName?: string;
+  uploadFolder?: 'courses' | 'batches' | 'blogs' | 'gallery' | 'media' | 'testimonials';
   onChange: (url: string, fileName: string) => void;
   onRemove?: () => void;
 }
@@ -41,6 +46,7 @@ export function ImageUploadZone({
   helperText = 'JPG, PNG, or WebP · Max 5 MB · Recommended 16:9 (1200×675px)',
   valueUrl,
   fileName,
+  uploadFolder = 'media',
   onChange,
   onRemove,
 }: ImageUploadZoneProps) {
@@ -50,8 +56,12 @@ export function ImageUploadZone({
   const [imgError, setImgError] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const handleFile = (file: File | undefined) => {
+  const handleFile = async (file: File | undefined) => {
     if (!file) return;
+    if (file.size <= 0) {
+      setUploadError('Selected image file is empty (0 bytes).');
+      return;
+    }
     const check = validateUploadFile(file, ALLOWED_IMAGE_EXTS, MAX_UPLOAD_BYTES);
     if (!check.valid) {
       setUploadError(check.error ?? 'File exceeds 5 MB limit.');
@@ -59,18 +69,37 @@ export function ImageUploadZone({
     }
     setUploadError(null);
     setImgError(false);
-    setProgress(25);
+    setProgress(35);
+
+    try {
+      const saved = await uploadProjectFileBackend(file, uploadFolder);
+      setProgress(100);
+      onChange(saved.url || `/api/files/${saved.storedPath}`, saved.fileName);
+      window.setTimeout(() => setProgress(null), 250);
+      return;
+    } catch (err) {
+      if (!(err instanceof TypeError)) {
+        setUploadError(
+          err instanceof Error ? err.message : 'Unable to upload image file.'
+        );
+        setProgress(null);
+        return;
+      }
+    }
+
+    // Offline fallback when backend API is unreachable
     const reader = new FileReader();
     reader.onload = () => {
-      setProgress(75);
-      window.setTimeout(() => {
-        const result = typeof reader.result === 'string' ? reader.result : '';
-        if (result) {
-          onChange(result, file.name);
-        }
-        setProgress(100);
-        window.setTimeout(() => setProgress(null), 450);
-      }, 180);
+      const result = typeof reader.result === 'string' ? reader.result : '';
+      if (result) {
+        onChange(result, file.name);
+      }
+      setProgress(100);
+      window.setTimeout(() => setProgress(null), 250);
+    };
+    reader.onerror = () => {
+      setUploadError('Could not read image file.');
+      setProgress(null);
     };
     reader.readAsDataURL(file);
   };
@@ -113,7 +142,7 @@ export function ImageUploadZone({
           <div className="relative aspect-[16/9] w-full bg-[#0B1736]/5">
             {!imgError ? (
               <img
-                src={valueUrl}
+                src={resolveResourceUrl(valueUrl)}
                 alt={fileName || label}
                 referrerPolicy="no-referrer"
                 onError={() => setImgError(true)}
@@ -210,6 +239,7 @@ export interface UploadedDocItem {
   type: string;
   sizeBytes: number;
   url?: string;
+  storedPath?: string;
   uploadedAt: string;
 }
 
@@ -218,6 +248,8 @@ interface DocumentUploadListProps {
   helperText?: string;
   files: UploadedDocItem[];
   multiple?: boolean;
+  readContentAsDataUrl?: boolean;
+  uploadFolder?: 'resources' | 'courses' | 'batches' | 'blogs' | 'media';
   onAddFiles: (newFiles: UploadedDocItem[]) => void;
   onRemoveFile: (id: string) => void;
   onReplaceFile?: (id: string, replacement: UploadedDocItem) => void;
@@ -228,6 +260,8 @@ export function DocumentUploadList({
   helperText = 'PDF, DOCX, PPTX, TXT, PKT, or ZIP · Max 5 MB per file',
   files,
   multiple = true,
+  readContentAsDataUrl = false,
+  uploadFolder,
   onAddFiles,
   onRemoveFile,
   onReplaceFile,
@@ -235,16 +269,35 @@ export function DocumentUploadList({
   const inputId = useId();
   const addRef = useRef<HTMLInputElement | null>(null);
   const replaceRef = useRef<HTMLInputElement | null>(null);
-  const [replacingId, setReplacingId] = useState<string | null>(null);
+  const activeReplaceIdRef = useRef<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const simulateUpload = (selected: FileList | null, targetReplaceId?: string) => {
+  const readFileDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(typeof reader.result === 'string' ? reader.result : '');
+      };
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(file);
+    });
+
+  const handleFileSelection = async (
+    selected: FileList | null,
+    targetReplaceId?: string
+  ) => {
     if (!selected || selected.length === 0) return;
     const validFiles: File[] = [];
     const rejectedMessages: string[] = [];
 
     Array.from(selected).forEach((file) => {
+      if (file.size <= 0) {
+        rejectedMessages.push(
+          `"${file.name}" is empty (0 bytes). Please choose a valid non-empty file.`
+        );
+        return;
+      }
       const check = validateUploadFile(file, ALLOWED_DOC_EXTS, MAX_UPLOAD_BYTES);
       if (check.valid) {
         validFiles.push(file);
@@ -261,31 +314,74 @@ export function DocumentUploadList({
 
     if (validFiles.length === 0) return;
 
-    setUploadProgress(30);
-    const items: UploadedDocItem[] = validFiles.map((file, idx) => ({
-      id: `doc-${Date.now()}-${idx}`,
-      name: file.name,
-      type: file.type || 'application/octet-stream',
-      sizeBytes: file.size || 245760,
-      url: URL.createObjectURL(file),
-      uploadedAt: new Date().toISOString(),
-    }));
+    setUploadProgress(40);
+    const items: UploadedDocItem[] = [];
+    for (let idx = 0; idx < validFiles.length; idx++) {
+      const file = validFiles[idx];
+      let savedPath: string | undefined;
+      let savedUrl = '';
+      let savedName = file.name;
+      let savedMime = file.type || 'application/octet-stream';
+      let savedSize = file.size;
 
-    window.setTimeout(() => {
-      setUploadProgress(85);
-      window.setTimeout(() => {
-        if (targetReplaceId && onReplaceFile && items[0]) {
-          onReplaceFile(targetReplaceId, items[0]);
-        } else {
-          onAddFiles(items);
+      if (uploadFolder) {
+        try {
+          const uploaded = await uploadProjectFileBackend(file, uploadFolder);
+          savedPath = uploaded.storedPath;
+          savedUrl = uploaded.url;
+          savedName = uploaded.fileName;
+          savedMime = uploaded.mimeType;
+          savedSize = uploaded.sizeBytes;
+        } catch (err) {
+          if (!(err instanceof TypeError)) {
+            setUploadError(
+              err instanceof Error
+                ? err.message
+                : `Could not save "${file.name}" into project storage.`
+            );
+            setUploadProgress(null);
+            return;
+          }
+          // Network/offline fallback handled cleanly below
         }
-        setUploadProgress(100);
-        window.setTimeout(() => {
+      }
+
+      if (!savedPath) {
+        const fallbackUrl = readContentAsDataUrl
+          ? await readFileDataUrl(file)
+          : URL.createObjectURL(file);
+        if (readContentAsDataUrl && !fallbackUrl) {
+          setUploadError(
+            `Could not read "${file.name}". Please try selecting the file again.`
+          );
           setUploadProgress(null);
-          setReplacingId(null);
-        }, 350);
-      }, 150);
-    }, 150);
+          return;
+        }
+        savedUrl = fallbackUrl;
+      }
+
+      items.push({
+        id: `doc-${Date.now()}-${idx}`,
+        name: savedName,
+        type: savedMime,
+        sizeBytes: savedSize,
+        url: savedUrl,
+        storedPath: savedPath,
+        uploadedAt: new Date().toISOString(),
+      });
+    }
+
+    setUploadProgress(100);
+    if (targetReplaceId && onReplaceFile && items[0]) {
+      onReplaceFile(targetReplaceId, items[0]);
+    } else if (!multiple && files.length > 0 && onReplaceFile && items[0]) {
+      onReplaceFile(files[0].id, items[0]);
+    } else {
+      onAddFiles(items);
+    }
+    window.setTimeout(() => {
+      setUploadProgress(null);
+    }, 220);
   };
 
   return (
@@ -307,7 +403,7 @@ export function DocumentUploadList({
         accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md,.zip,.pkt"
         className="sr-only"
         onChange={(e) => {
-          simulateUpload(e.target.files);
+          void handleFileSelection(e.target.files);
           e.target.value = '';
         }}
       />
@@ -318,8 +414,10 @@ export function DocumentUploadList({
         accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md,.zip,.pkt"
         className="sr-only"
         onChange={(e) => {
-          if (replacingId) {
-            simulateUpload(e.target.files, replacingId);
+          const targetId = activeReplaceIdRef.current;
+          activeReplaceIdRef.current = null;
+          if (targetId) {
+            void handleFileSelection(e.target.files, targetId);
           }
           e.target.value = '';
         }}
@@ -335,17 +433,19 @@ export function DocumentUploadList({
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => addRef.current?.click()}
-        className="flex min-h-[88px] w-full flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-[#CBD5E1] bg-[#F5F7FC] px-4 py-4 text-center transition-colors hover:border-[#145BFF] hover:bg-[#EFF6FF]/60"
-      >
-        <div className="flex items-center gap-2 text-sm font-semibold text-[#145BFF]">
-          <Upload className="h-4 w-4 shrink-0" />
-          <span>Choose PDF, Notes or Document</span>
-        </div>
-        <span className="text-xs text-[#64748B]">{helperText}</span>
-      </button>
+      {(multiple || files.length === 0) && (
+        <button
+          type="button"
+          onClick={() => addRef.current?.click()}
+          className="flex min-h-[88px] w-full flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-[#CBD5E1] bg-[#F5F7FC] px-4 py-4 text-center transition-colors hover:border-[#145BFF] hover:bg-[#EFF6FF]/60"
+        >
+          <div className="flex items-center gap-2 text-sm font-semibold text-[#145BFF]">
+            <Upload className="h-4 w-4 shrink-0" />
+            <span>Choose PDF, Notes or Document</span>
+          </div>
+          <span className="text-xs text-[#64748B]">{helperText}</span>
+        </button>
+      )}
 
       {uploadProgress !== null && (
         <div className="rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] p-3">
@@ -387,7 +487,7 @@ export function DocumentUploadList({
                   <button
                     type="button"
                     onClick={() => {
-                      setReplacingId(file.id);
+                      activeReplaceIdRef.current = file.id;
                       replaceRef.current?.click();
                     }}
                     className="inline-flex min-h-[40px] items-center justify-center gap-1 rounded-lg border border-[#E2E8F0] bg-white px-2.5 text-xs font-semibold text-[#0B1736] hover:bg-[#F5F7FC]"
@@ -398,7 +498,10 @@ export function DocumentUploadList({
                 )}
                 <button
                   type="button"
-                  onClick={() => onRemoveFile(file.id)}
+                  onClick={() => {
+                    setUploadError(null);
+                    onRemoveFile(file.id);
+                  }}
                   aria-label={`Remove ${file.name}`}
                   className="inline-flex min-h-[40px] items-center justify-center gap-1 rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-2.5 text-xs font-semibold text-[#DC2626] hover:bg-[#FEE2E2]"
                 >

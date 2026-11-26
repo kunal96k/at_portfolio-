@@ -1,15 +1,20 @@
 import { motion } from 'motion/react';
-import { ASSETS, CORPORATE_PARTNERS, EXPERTISE_DOMAINS } from '../data/portfolioData';
+import { ASSETS, CORPORATE_PARTNERS } from '../data/portfolioData';
 import { ContactSection } from '../components/ContactSection';
 import { OutlineButton } from '../components/OutlineButton';
 import { SafeImage } from '../components/SafeImage';
 import { ServicesAccordion } from '../components/ServicesAccordion';
+import { usePublicCourses } from '../hooks/usePublicCourses';
 
 interface ItServicesPageProps {
   onNavigate: (path: string) => void;
 }
 
 export function ItServicesPage({ onNavigate }: ItServicesPageProps) {
+  const { courses } = usePublicCourses();
+  const visibleDomains = [...courses].sort(
+    (a, b) => a.displayOrder - b.displayOrder
+  );
   return (
     <main className="relative z-10">
       {/* Header + Core Infrastructure Services Accordion */}
@@ -30,7 +35,7 @@ export function ItServicesPage({ onNavigate }: ItServicesPageProps) {
             </p>
             <ServicesAccordion />
             <div className="mt-9 flex flex-wrap gap-3">
-              <OutlineButton onClick={() => onNavigate('/upcoming-training')}>
+              <OutlineButton onClick={() => onNavigate('/upcoming-batches')}>
                 EXPLORE UPCOMING BATCHES
               </OutlineButton>
               <OutlineButton onClick={() => onNavigate('/projects')}>VIEW LAB TRACKS</OutlineButton>
@@ -55,40 +60,55 @@ export function ItServicesPage({ onNavigate }: ItServicesPageProps) {
         </div>
       </section>
 
-      {/* All 10 Core Domains */}
+      {/* All Core Infrastructure Domains (Dynamic from Admin Dashboard) */}
       <section className="px-5 sm:px-8 py-12 sm:py-16">
         <div className="mx-auto max-w-[1120px]">
           <h2 className="font-display text-[40px] sm:text-[52px] font-bold leading-[1.12] uppercase text-[#303030] dark:text-white">
-            10 CORE INFRASTRUCTURE DOMAINS
+            {visibleDomains.length > 0
+              ? `${visibleDomains.length} CORE INFRASTRUCTURE DOMAINS`
+              : 'CORE INFRASTRUCTURE DOMAINS'}
           </h2>
           <p className="mt-2 text-[17px] font-medium text-[#5E67E6] dark:text-[#D0FF71]">
-            Ten core domains. One goal: job-ready skills.
+            {visibleDomains.length === 10
+              ? 'Ten core domains. One goal: job-ready skills.'
+              : `${visibleDomains.length} specialized enterprise domains. One goal: job-ready skills.`}
           </p>
 
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5">
-            {EXPERTISE_DOMAINS.map((domain, idx) => (
-              <motion.div
-                key={domain.number}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.45, delay: idx * 0.03 }}
-                className="rounded-[22px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-6 sm:p-7 flex items-start gap-4"
-              >
-                <span className="font-display text-[34px] font-bold leading-none text-[#5E67E6] dark:text-[#D0FF71]">
-                  {domain.number}
-                </span>
-                <div>
-                  <h3 className="font-display text-[24px] font-bold uppercase text-[#303030] dark:text-white">
-                    {domain.title}
-                  </h3>
-                  <p className="mt-2 text-[15px] font-light leading-[1.6] text-[#303030] dark:text-white/80">
-                    {domain.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          {visibleDomains.length === 0 ? (
+            <div className="mt-10 rounded-[22px] border border-dashed border-[#D4D4D8] dark:border-[#3A3A3D] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-8 text-center">
+              <p className="font-display text-[22px] font-bold uppercase text-[#303030] dark:text-white">
+                No Published Domains Yet
+              </p>
+              <p className="mt-2 text-[15px] font-light text-[#5C5C5C] dark:text-white/75">
+                Infrastructure domains published from the Course / Domain admin module will appear here automatically.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5">
+              {visibleDomains.map((domain, idx) => (
+                <motion.div
+                  key={domain.id}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.45, delay: idx * 0.03 }}
+                  className="rounded-[22px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-6 sm:p-7 flex items-start gap-4"
+                >
+                  <span className="font-display text-[34px] font-bold leading-none text-[#5E67E6] dark:text-[#D0FF71]">
+                    {String(domain.displayOrder || idx + 1).padStart(2, '0')}
+                  </span>
+                  <div>
+                    <h3 className="font-display text-[24px] font-bold uppercase text-[#303030] dark:text-white">
+                      {domain.title}
+                    </h3>
+                    <p className="mt-2 text-[15px] font-light leading-[1.6] text-[#303030] dark:text-white/80">
+                      {domain.shortDescription}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           {/* Corporate Delivery Summary */}
           <div className="mt-16 pt-12 border-t border-[#E5E5E5] dark:border-[#333335]">

@@ -22,7 +22,7 @@ import { buildRouteSeo, type RouteSeoMetadata } from './utils/seo';
 import { SITE_URL } from './config/site';
 
 function ServerApp({ route }: { route: AppRoute }) {
-  const noop = () => {};
+  const noop = () => { };
 
   return (
     <div className="relative min-h-screen bg-white dark:bg-[#1A1A1B] text-[#303030] dark:text-white transition-colors duration-350">
@@ -37,7 +37,9 @@ function ServerApp({ route }: { route: AppRoute }) {
 
       {route.page === 'home' && <HomePage onNavigate={noop} onContactClick={noop} />}
       {route.page === 'about' && <AboutPage />}
-      {route.page === 'upcoming-training' && <UpcomingTrainingPage onContactClick={noop} />}
+      {route.page === 'upcoming-batches' && (
+        <UpcomingTrainingPage onContactClick={noop} onNavigate={noop} />
+      )}
       {route.page === 'training-course' && (
         <CourseDetailPage slug={route.slug} onNavigate={noop} onContactClick={noop} />
       )}
@@ -45,7 +47,7 @@ function ServerApp({ route }: { route: AppRoute }) {
       {route.page === 'privacy-policy' && <PrivacyPolicyPage onNavigate={noop} />}
       {route.page === 'resources' && <ResourcesPage onNavigate={noop} />}
       {route.page === 'testimonials' && <TestimonialsPage onNavigate={noop} />}
-      {route.page === 'gallery' && <GalleryPage />}
+      {route.page === 'gallery' && <GalleryPage onNavigate={noop} />}
       {route.page === 'blogs' && <BlogsPage onNavigate={noop} />}
       {route.page === 'blog-detail' && <BlogDetailPage slug={route.slug} onNavigate={noop} />}
       {route.page === 'projects' && <ProjectsPage onNavigate={noop} />}

@@ -58,7 +58,7 @@ const NotFoundPage = lazy(() =>
 const PAGES_WITH_CONTACT_SECTION: ReadonlySet<AppRoute['page']> = new Set([
   'home',
   'about',
-  'upcoming-training',
+  'upcoming-batches',
   'training-course',
   'contact',
   'privacy-policy',
@@ -242,8 +242,11 @@ export default function App({ initialRoute }: { initialRoute?: AppRoute } = {}) 
           {route.page === 'blog-detail' && (
             <BlogDetailPage slug={route.slug} onNavigate={navigate} />
           )}
-          {route.page === 'upcoming-training' && (
-            <UpcomingTrainingPage onContactClick={scrollToContact} />
+          {route.page === 'upcoming-batches' && (
+            <UpcomingTrainingPage
+              onContactClick={scrollToContact}
+              onNavigate={navigate}
+            />
           )}
           {route.page === 'training-course' && (
             <CourseDetailPage
@@ -258,7 +261,7 @@ export default function App({ initialRoute }: { initialRoute?: AppRoute } = {}) 
           {route.page === 'it-services' && <ItServicesPage onNavigate={navigate} />}
           {route.page === 'resources' && <ResourcesPage onNavigate={navigate} />}
           {route.page === 'testimonials' && <TestimonialsPage onNavigate={navigate} />}
-          {route.page === 'gallery' && <GalleryPage />}
+          {route.page === 'gallery' && <GalleryPage onNavigate={navigate} />}
         </Suspense>
       )}
 

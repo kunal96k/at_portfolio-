@@ -1,13 +1,14 @@
 import { ArrowLeft, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
+import { isValidEmail, PUBLIC_INPUT_LIMITS } from '../../src/utils/scrollMath';
 
 interface AdminLoginViewProps {
   onSuccess: (email: string) => void;
 }
 
 export function AdminLoginView({ onSuccess }: AdminLoginViewProps) {
-  const [email, setEmail] = useState('arvindthaver@gmail.com');
-  const [password, setPassword] = useState('Admin@2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -15,7 +16,7 @@ export function AdminLoginView({ onSuccess }: AdminLoginViewProps) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (submitting) return;
-    if (!email.trim() || !email.includes('@')) {
+    if (!isValidEmail(email)) {
       setError('Please enter a valid admin email address.');
       return;
     }
@@ -43,7 +44,6 @@ export function AdminLoginView({ onSuccess }: AdminLoginViewProps) {
         </a>
 
         <div className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-sm">
-          {/* Navy Brand Header */}
           <div className="bg-[#0B1736] px-6 py-6 text-white">
             <div className="flex items-center gap-3.5">
               <img
@@ -67,7 +67,7 @@ export function AdminLoginView({ onSuccess }: AdminLoginViewProps) {
                 Sign in to Admin Dashboard
               </h2>
               <p className="mt-1 text-xs leading-relaxed text-[#64748B]">
-                Frontend preview login. Use the pre-filled demo credentials or enter any valid email to explore the dashboard.
+                Enter your administrator email and password to manage batches, courses, notes, and enquiries.
               </p>
             </div>
 
@@ -95,6 +95,7 @@ export function AdminLoginView({ onSuccess }: AdminLoginViewProps) {
                 <input
                   id="admin-login-email"
                   type="email"
+                  maxLength={PUBLIC_INPUT_LIMITS.emailMax}
                   autoComplete="email"
                   inputMode="email"
                   value={email}
@@ -102,7 +103,7 @@ export function AdminLoginView({ onSuccess }: AdminLoginViewProps) {
                     setEmail(e.target.value);
                     setError(null);
                   }}
-                  placeholder="arvindthaver@gmail.com"
+                  placeholder="Enter your email address"
                   className="min-h-[46px] w-full rounded-xl border border-[#E2E8F0] bg-white py-2 pr-3.5 pl-10 text-sm text-[#0B1736] focus:border-[#145BFF] focus:outline-none"
                 />
               </div>
@@ -123,13 +124,14 @@ export function AdminLoginView({ onSuccess }: AdminLoginViewProps) {
                 <input
                   id="admin-login-password"
                   type={showPassword ? 'text' : 'password'}
+                  maxLength={128}
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
                     setError(null);
                   }}
-                  placeholder="Enter password"
+                  placeholder="Enter your password"
                   className="min-h-[46px] w-full rounded-xl border border-[#E2E8F0] bg-white py-2 pr-12 pl-10 text-sm text-[#0B1736] focus:border-[#145BFF] focus:outline-none"
                 />
                 <button
@@ -159,7 +161,7 @@ export function AdminLoginView({ onSuccess }: AdminLoginViewProps) {
       </div>
 
       <p className="mt-6 text-center text-xs text-[#64748B]">
-        Arvind Thevar Admin · Frontend Preview Mode (Mock Data)
+        Arvind Thevar Admin Workspace
       </p>
     </div>
   );

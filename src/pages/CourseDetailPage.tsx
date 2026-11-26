@@ -38,10 +38,10 @@ export function CourseDetailPage({ slug, onNavigate, onContactClick }: CourseDet
           </a>
           <ChevronRight className="w-3.5 h-3.5 opacity-50" aria-hidden="true" />
           <a
-            href="/upcoming-training"
+            href="/upcoming-batches"
             onClick={(e) => {
               e.preventDefault();
-              onNavigate('/upcoming-training');
+              onNavigate('/upcoming-batches');
             }}
             className="hover:text-[#4F58DF] dark:hover:text-[#D0FF71] transition-colors"
           >
@@ -135,7 +135,7 @@ export function CourseDetailPage({ slug, onNavigate, onContactClick }: CourseDet
               }}
               className="inline-flex items-center justify-center gap-2 rounded-full border border-[#303030]/25 dark:border-white/25 px-6 py-3.5 text-[15px] font-medium text-[#303030] dark:text-white hover:bg-[#F5F5F7] dark:hover:bg-[#2A2A2C] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4F58DF]"
             >
-              <span>Download Lab Notes</span>
+              <span>Preview Lab Notes &amp; Resources</span>
             </a>
           </div>
         </motion.header>
@@ -269,10 +269,10 @@ export function CourseDetailPage({ slug, onNavigate, onContactClick }: CourseDet
               </h2>
             </div>
             <a
-              href="/upcoming-training"
+              href="/upcoming-batches"
               onClick={(e) => {
                 e.preventDefault();
-                onNavigate('/upcoming-training');
+                onNavigate('/upcoming-batches');
               }}
               className="text-[14px] font-medium text-[#4F58DF] dark:text-[#D0FF71] hover:underline"
             >

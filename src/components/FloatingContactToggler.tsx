@@ -60,7 +60,7 @@ export function FloatingContactToggler({ onContactClick }: FloatingContactToggle
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 24, scale: 0.85 }}
           transition={{ type: 'spring', stiffness: 320, damping: 26 }}
-          className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end"
+          className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-30 flex flex-col items-end"
         >
           {/* Expanded Contact Us Popover Card */}
           <AnimatePresence>

@@ -1,8 +1,10 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { CheckCircle2, ChevronDown, AlertCircle } from 'lucide-react';
 import { ASSETS, PROFILE } from '../data/portfolioData';
 import {
+  PUBLIC_INPUT_LIMITS,
+  sanitizePhoneInput,
   validateContactForm,
   type ContactFormErrors,
   type ContactFormValues,
@@ -13,17 +15,24 @@ import { OutlineButton } from './OutlineButton';
 import { SafeImage } from './SafeImage';
 import { trackEnquirySubmit } from '../utils/analytics';
 import { submitContactEnquiry } from '../services/enquiryApi';
+import { usePublicCourses } from '../hooks/usePublicCourses';
 
-const SERVICE_OPTIONS = [
-  'Red Hat Linux (RHEL / RHCSA & RHCE)',
-  'Cisco CCNA / CCNP Training',
-  'AWS Solutions Architect / Cloud Computing',
-  'Windows Server, Security & Virtualization',
+const GENERAL_SERVICE_OPTIONS = [
   'Corporate / Institutional Training',
   'Free Career Consultation',
 ];
 
-export function ContactSection() {
+export interface ContactPrefillData {
+  id: number;
+  service?: string;
+  message: string;
+}
+
+export function ContactSection({
+  prefillData,
+}: {
+  prefillData?: ContactPrefillData | null;
+} = {}) {
   const [values, setValues] = useState<ContactFormValues>({
     name: '',
     email: '',
@@ -37,6 +46,28 @@ export function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const reveal = useResponsiveReveal(0.2, 0.65);
+  const { courses: publicCourses } = usePublicCourses();
+
+  const serviceOptions = Array.from(
+    new Set([
+      ...publicCourses.map((c) => c.title.trim()).filter(Boolean),
+      ...GENERAL_SERVICE_OPTIONS,
+      ...(prefillData?.service ? [prefillData.service] : []),
+      ...(values.service ? [values.service] : []),
+    ])
+  );
+
+  useEffect(() => {
+    if (!prefillData) return;
+    setSubmitted(false);
+    setSubmitError(null);
+    setErrors((prev) => ({ ...prev, message: undefined }));
+    setValues((prev) => ({
+      ...prev,
+      service: prefillData.service || prev.service,
+      message: prefillData.message,
+    }));
+  }, [prefillData]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -198,13 +229,13 @@ export function ContactSection() {
                   <input
                     id="contact-name"
                     type="text"
-                    maxLength={300}
+                    maxLength={PUBLIC_INPUT_LIMITS.nameMax}
                     value={values.name}
                     onChange={(e) => {
                       setValues((v) => ({ ...v, name: e.target.value }));
                       if (errors.name) setErrors((err) => ({ ...err, name: undefined }));
                     }}
-                    placeholder="Your full name"
+                    placeholder="Enter your full name"
                     className="w-full rounded-full bg-[#F5F5F5] dark:bg-[#333335] px-5 py-3.5 text-[15px] font-light text-[#303030] dark:text-white placeholder:text-[#9A9A9A] dark:placeholder:text-white/45 focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71] transition-shadow"
                   />
                   {errors.name && (
@@ -224,13 +255,13 @@ export function ContactSection() {
                   <input
                     id="contact-email"
                     type="email"
-                    maxLength={300}
+                    maxLength={PUBLIC_INPUT_LIMITS.emailMax}
                     value={values.email}
                     onChange={(e) => {
                       setValues((v) => ({ ...v, email: e.target.value }));
                       if (errors.email) setErrors((err) => ({ ...err, email: undefined }));
                     }}
-                    placeholder="you@example.com"
+                    placeholder="Enter your email address"
                     className="w-full rounded-full bg-[#F5F5F5] dark:bg-[#333335] px-5 py-3.5 text-[15px] font-light text-[#303030] dark:text-white placeholder:text-[#9A9A9A] dark:placeholder:text-white/45 focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71] transition-shadow"
                   />
                   {errors.email && (
@@ -248,18 +279,20 @@ export function ContactSection() {
                     htmlFor="contact-phone"
                     className="block text-[14px] font-light text-[#5E67E6] dark:text-[#D0FF71] mb-2"
                   >
-                    Phone / WhatsApp <span className="text-[12px] opacity-70">(Optional)</span>
+                    Phone / WhatsApp <span className="text-[12px] opacity-70">(Optional · Max 15 digits)</span>
                   </label>
                   <input
                     id="contact-phone"
                     type="tel"
-                    maxLength={300}
+                    inputMode="tel"
+                    maxLength={PUBLIC_INPUT_LIMITS.phoneMaxChars}
                     value={values.phone || ''}
                     onChange={(e) => {
-                      setValues((v) => ({ ...v, phone: e.target.value }));
+                      const nextPhone = sanitizePhoneInput(e.target.value);
+                      setValues((v) => ({ ...v, phone: nextPhone }));
                       if (errors.phone) setErrors((err) => ({ ...err, phone: undefined }));
                     }}
-                    placeholder="+91 98230 11204"
+                    placeholder="Enter your phone number"
                     className="w-full rounded-full bg-[#F5F5F5] dark:bg-[#333335] px-5 py-3.5 text-[15px] font-light text-[#303030] dark:text-white placeholder:text-[#9A9A9A] dark:placeholder:text-white/45 focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71] transition-shadow"
                   />
                   {errors.phone && (
@@ -291,9 +324,9 @@ export function ContactSection() {
                       }`}
                     >
                       <option value="" disabled>
-                        Select a course or service…
+                        Select a course, domain, or service…
                       </option>
-                      {SERVICE_OPTIONS.map((opt) => (
+                      {serviceOptions.map((opt) => (
                         <option
                           key={opt}
                           value={opt}
@@ -318,21 +351,27 @@ export function ContactSection() {
 
               {/* Row 3: Message */}
               <div>
-                <label
-                  htmlFor="contact-message"
-                  className="block text-[14px] font-light text-[#5E67E6] dark:text-[#D0FF71] mb-2"
-                >
-                  How Can I Help You?
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label
+                    htmlFor="contact-message"
+                    className="block text-[14px] font-light text-[#5E67E6] dark:text-[#D0FF71]"
+                  >
+                    How Can I Help You?
+                  </label>
+                  <span className="text-[12px] font-light text-[#7A7A7A] dark:text-white/50 tabular-nums">
+                    {values.message.length}/{PUBLIC_INPUT_LIMITS.messageMax}
+                  </span>
+                </div>
                 <textarea
                   id="contact-message"
                   rows={5}
+                  maxLength={PUBLIC_INPUT_LIMITS.messageMax}
                   value={values.message}
                   onChange={(e) => {
                     setValues((v) => ({ ...v, message: e.target.value }));
                     if (errors.message) setErrors((err) => ({ ...err, message: undefined }));
                   }}
-                  placeholder="Share your background, target certification (RHEL, CCNA, CCNP, AWS), or team training requirements..."
+                  placeholder="Enter your training requirements, certification goal, or consultation query..."
                   className="w-full rounded-[22px] bg-[#F5F5F5] dark:bg-[#333335] px-5 py-4 text-[15px] font-light text-[#303030] dark:text-white placeholder:text-[#9A9A9A] dark:placeholder:text-white/45 focus:outline-none focus:ring-2 focus:ring-[#5E67E6] dark:focus:ring-[#D0FF71] transition-shadow resize-y"
                 />
                 {errors.message && (

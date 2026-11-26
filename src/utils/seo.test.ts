@@ -13,7 +13,7 @@ import type { AppRoute } from './scrollMath';
 const ALL_TEST_ROUTES: AppRoute[] = [
   { page: 'home' },
   { page: 'about' },
-  { page: 'upcoming-training' },
+  { page: 'upcoming-batches' },
   { page: 'it-services' },
   { page: 'resources' },
   { page: 'testimonials' },

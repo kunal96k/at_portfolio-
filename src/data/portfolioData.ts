@@ -111,14 +111,6 @@ export interface StudyResource {
   fileType: string;
 }
 
-export interface GalleryPhoto {
-  id: string;
-  title: string;
-  category: 'Training' | 'Labs' | 'Infrastructure';
-  image: string;
-  caption: string;
-}
-
 export const ASSETS = {
   avatar: '/assets/aistudio/image_e26475f0.png',
   portraitFront: '/assets/aistudio/image_e26475f0.png',
@@ -687,77 +679,6 @@ export const BLOGS: BlogPost[] = [
   },
 ];
 
-export const INITIAL_UPCOMING_BATCHES: TrainingBatch[] = [
-  {
-    id: 'redhat-linux-batch',
-    title: 'Red Hat Linux (RHEL)',
-    category: 'Linux',
-    batchDate: 'Date to be announced (Editable below)',
-    batchTime: 'Weekday / Weekend Slots',
-    mode: 'Live Lab-Driven Training',
-    summary:
-      'Install, configure and manage Red Hat Enterprise Linux systems with practical Linux System Administration and focused preparation for RHCSA and RHCE certification.',
-    modules: [
-      'RHEL Installation, Users, Groups & Permissions',
-      'Storage Management, Services & System Administration',
-      'Shell Scripting & Live Troubleshooting Labs',
-      'RHCSA & RHCE Exam-Focused Practical Preparation',
-    ],
-    coverImage: '/assets/images/linux_rhel_lab_1795164484674.jpg',
-  },
-  {
-    id: 'cisco-ccna-batch',
-    title: 'Cisco Certified Network Associate (CCNA)',
-    category: 'Networking',
-    batchDate: 'Date to be announced (Editable below)',
-    batchTime: 'Weekday / Weekend Slots',
-    mode: 'Live Lab-Driven Training',
-    summary:
-      'Master networking fundamentals, IP addressing, subnetting, switching, routing, Cisco IOS configuration and practical fault troubleshooting.',
-    modules: [
-      'Networking Fundamentals, IP Addressing & Subnetting',
-      'Enterprise Switching, VLANs & Cisco IOS CLI',
-      'Routing Protocols, ACLs & Network Security Basics',
-      'Live Network Troubleshooting, CCNA Prep & Mock Interviews',
-    ],
-    coverImage: '/assets/images/cisco_network_lab_1795164486189.jpg',
-  },
-  {
-    id: 'aws-saa-batch',
-    title: 'Amazon Web Services Solutions Architect Associate (AWS)',
-    category: 'Cloud',
-    batchDate: 'Date to be announced (Editable below)',
-    batchTime: 'Weekday / Weekend Slots',
-    mode: 'Live Lab-Driven Training',
-    summary:
-      'Learn cloud concepts, service models, deploying and managing AWS workloads, and migrating enterprise infrastructure to the cloud with hands-on labs.',
-    modules: [
-      'Cloud Concepts, IAM & Core AWS Networking (VPC)',
-      'Compute, Storage & Resilient Workload Deployment',
-      'Security Hardening, Monitoring & High Availability',
-      'Infrastructure Migration & Solutions Architect Exam Prep',
-    ],
-    coverImage: '/assets/images/aws_cloud_infra_1795164482369.jpg',
-  },
-  {
-    id: 'devops-batch',
-    title: 'DevOps & Infrastructure Automation',
-    category: 'DevOps',
-    batchDate: 'Date to be announced (Editable below)',
-    batchTime: 'Weekday / Weekend Slots',
-    mode: 'Live Lab-Driven Training',
-    summary:
-      'Master modern DevOps workflows with Docker containers, Kubernetes cluster orchestration, Ansible configuration management, CI/CD pipelines, and Terraform IaC.',
-    modules: [
-      'Linux Containers & Multi-Stage Dockerfile Packaging',
-      'Kubernetes (K8s) Pods, Services, Deployments & Ingress',
-      'Ansible Automation Playbooks, Roles & Inventory Control',
-      'CI/CD Pipelines, GitOps & Terraform Infrastructure as Code',
-    ],
-    coverImage: '/assets/images/corporate_it_workshop_1795164484663.jpg',
-  },
-];
-
 export const INITIAL_STUDENT_TESTIMONIALS: StudentTestimonialItem[] = [
   {
     id: 'placed-kalyani-bachhav',
@@ -884,50 +805,5 @@ export const STUDY_RESOURCES: StudyResource[] = [
     fileUrl: '/study-materials/virtualization-aws-lab-workbook.pdf',
     fileName: 'virtualization-aws-lab-workbook.pdf',
     fileType: 'PDF Lab Workbook · 100% Free',
-  },
-];
-
-export const GALLERY_ITEMS: GalleryPhoto[] = [
-  {
-    id: 'g-1',
-    title: 'Arvind Thevar — IT Trainer & Infrastructure Professional',
-    category: 'Training',
-    image: '/assets/aistudio/image_e26475f0.png',
-    caption: '15+ years of real-world IT infrastructure experience brought into hands-on training.',
-  },
-  {
-    id: 'g-2',
-    title: 'Enterprise Cisco Networking Rack & Lab',
-    category: 'Labs',
-    image: '/assets/images/cisco_network_lab_1795164486189.jpg',
-    caption: 'Managed switches, routers and structured Ethernet patch cabling for live CCNA & CCNP topologies.',
-  },
-  {
-    id: 'g-3',
-    title: 'Corporate & Institutional IT Training Workshop',
-    category: 'Training',
-    image: '/assets/images/corporate_it_workshop_1795164484663.jpg',
-    caption: 'Step-by-step live lab guidance: understand the concept, build it, break it, fix it.',
-  },
-  {
-    id: 'g-4',
-    title: 'Red Hat Enterprise Linux (RHEL) Server Lab',
-    category: 'Infrastructure',
-    image: '/assets/images/linux_rhel_lab_1795164484674.jpg',
-    caption: 'Enterprise Linux server racks and administration workstation built for RHCSA & RHCE practice.',
-  },
-  {
-    id: 'g-5',
-    title: 'Hands-On Fault Injection & Troubleshooting Lab',
-    category: 'Labs',
-    image: '/assets/images/hands_on_troubleshooting_1795164485759.jpg',
-    caption: 'Practical diagnostic assignments reinforcing every module for day-one job readiness.',
-  },
-  {
-    id: 'g-6',
-    title: 'AWS Cloud & Virtualization Architecture Desk',
-    category: 'Infrastructure',
-    image: '/assets/images/aws_cloud_infra_1795164482369.jpg',
-    caption: 'Designing hybrid lab networks, hypervisor clusters and resilient AWS cloud architectures.',
   },
 ];

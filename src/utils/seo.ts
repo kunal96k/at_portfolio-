@@ -7,9 +7,7 @@ import {
 import {
   BLOGS,
   FAQS,
-  GALLERY_ITEMS,
   INITIAL_STUDENT_TESTIMONIALS,
-  INITIAL_UPCOMING_BATCHES,
   PROFILE,
   PROJECTS,
   STUDY_RESOURCES,
@@ -152,8 +150,8 @@ export function buildRouteSeo(
       };
     }
 
-    case 'upcoming-training': {
-      const pathname = '/upcoming-training';
+    case 'upcoming-batches': {
+      const pathname = '/upcoming-batches';
       return {
         title: 'Upcoming IT Batches | Red Hat Linux, CCNA, AWS & DevOps',
         description:
@@ -172,16 +170,16 @@ export function buildRouteSeo(
             {
               '@type': 'ItemList',
               name: 'Upcoming IT Infrastructure Training Batches',
-              itemListElement: INITIAL_UPCOMING_BATCHES.map((batch, index) => ({
+              itemListElement: TRAINING_COURSES.map((course, index) => ({
                 '@type': 'ListItem',
                 position: index + 1,
                 item: {
                   '@type': 'Course',
-                  name: batch.title,
-                  description: batch.summary,
+                  name: course.title,
+                  description: course.summary,
                   provider: orgRef,
-                  courseMode: batch.mode,
-                  educationalLevel: 'Beginner to Advanced',
+                  courseMode: 'Live Lab-Driven Training',
+                  educationalLevel: course.experienceLevel || 'Beginner to Advanced',
                 },
               })),
             },
@@ -240,21 +238,21 @@ export function buildRouteSeo(
       return {
         title: 'Free RHEL, CCNA, AWS & DevOps Notes & Lab Manuals',
         description:
-          'Download 100% free Red Hat Linux (RHEL), Cisco CCNA, AWS Cloud, and DevOps study notes, lab workbooks, and troubleshooting guides with zero hidden charges.',
+          'Preview Red Hat Linux (RHEL), Cisco CCNA, AWS Cloud, and DevOps study notes, lab workbooks, and troubleshooting guides online.',
         canonicalUrl: toAbsoluteUrl(cleanOrigin, pathname),
         pathname,
         ogType: 'website',
         ogImage: toAbsoluteUrl(cleanOrigin, DEFAULT_OG_IMAGE),
         ogImageAlt: 'Free RHEL, Cisco CCNA, and AWS study notes and lab workbooks',
         keywords:
-          'Free RHEL notes PDF, Cisco CCNA study material, AWS lab workbook free, DevOps Docker Kubernetes notes, RHCSA lab manual',
+          'Free RHEL notes preview, Cisco CCNA study material, AWS lab workbook, DevOps Docker Kubernetes notes, RHCSA lab manual',
         jsonLd: {
           '@context': 'https://schema.org',
           '@graph': [
             ...baseEntities,
             {
               '@type': 'CollectionPage',
-              name: 'Free IT Infrastructure Study Notes & Lab Manuals',
+              name: 'IT Infrastructure Study Notes & Lab Manuals',
               url: toAbsoluteUrl(cleanOrigin, pathname),
               mainEntity: {
                 '@type': 'ItemList',
@@ -267,7 +265,7 @@ export function buildRouteSeo(
                     description: res.summary,
                     learningResourceType: res.sectionType,
                     isAccessibleForFree: true,
-                    url: toAbsoluteUrl(cleanOrigin, res.fileUrl),
+                    url: toAbsoluteUrl(cleanOrigin, pathname),
                     author: personRef,
                   },
                 })),
@@ -524,13 +522,16 @@ export function buildRouteSeo(
             {
               '@type': 'ImageGallery',
               name: 'Arvind Thevar Training & Enterprise Lab Gallery',
+              description:
+                'Snapshots of Cisco networking racks, Red Hat Enterprise Linux server labs, troubleshooting desks, and corporate training workshops.',
               url: toAbsoluteUrl(cleanOrigin, pathname),
-              associatedMedia: GALLERY_ITEMS.map((item) => ({
+              primaryImageOfPage: {
                 '@type': 'ImageObject',
-                name: item.title,
-                caption: item.caption,
-                contentUrl: toAbsoluteUrl(cleanOrigin, item.image),
-              })),
+                contentUrl: toAbsoluteUrl(
+                  cleanOrigin,
+                  '/assets/optimized/cisco_network_lab_1795164486189.webp'
+                ),
+              },
             },
             buildBreadcrumbList(cleanOrigin, [
               { name: 'Home', path: '/' },
@@ -587,7 +588,7 @@ export function buildRouteSeo(
             },
             buildBreadcrumbList(cleanOrigin, [
               { name: 'Home', path: '/' },
-              { name: 'Upcoming Batches', path: '/upcoming-training' },
+              { name: 'Upcoming Batches', path: '/upcoming-batches' },
               { name: course.shortTitle, path: pathname },
             ]),
           ],
@@ -722,7 +723,7 @@ export function getAllPublicSitemapPaths(): string[] {
   return [
     '/',
     '/about',
-    '/upcoming-training',
+    '/upcoming-batches',
     ...TRAINING_COURSES.map((c) => `/training/${c.slug}`),
     '/resources',
     '/testimonials',

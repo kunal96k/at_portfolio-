@@ -1,15 +1,14 @@
 import {
   Bell,
   BookOpen,
+  CalendarRange,
   Check,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
   FileText,
-  FolderOpen,
   GraduationCap,
   Image as ImageIcon,
-  Layers,
   LayoutDashboard,
   LogOut,
   Mail,
@@ -56,7 +55,12 @@ interface AdminShellProps {
   onMarkAllRead: () => void;
   onNotificationClick: (item: NotificationItem) => void;
   unreadEnquiriesCount: number;
-  topicsCount: number;
+  batchesCount: number;
+  coursesCount?: number;
+  resourcesCount?: number;
+  blogsCount?: number;
+  galleryCount?: number;
+  testimonialsCount?: number;
   onSignOut?: () => void;
   children: ReactNode;
 }
@@ -69,7 +73,7 @@ const SIDEBAR_GROUPS_META: SidebarGroupMeta[] = [
 
 const PRIMARY_BOTTOM_TABS: AdminSectionId[] = [
   'overview',
-  'topics',
+  'batches',
   'courses',
   'enquiries',
 ];
@@ -79,7 +83,6 @@ const MORE_SHEET_SECTIONS: AdminSectionId[] = [
   'resources',
   'gallery',
   'testimonials',
-  'media',
 ];
 
 export function AdminShell({
@@ -89,7 +92,12 @@ export function AdminShell({
   onMarkAllRead,
   onNotificationClick,
   unreadEnquiriesCount,
-  topicsCount,
+  batchesCount,
+  coursesCount,
+  resourcesCount,
+  blogsCount,
+  galleryCount,
+  testimonialsCount,
   onSignOut,
   children,
 }: AdminShellProps) {
@@ -127,23 +135,24 @@ export function AdminShell({
         icon: LayoutDashboard,
       },
       {
-        id: 'topics',
-        label: 'Topics',
-        shortLabel: 'Topics',
-        description: 'Manage syllabus topics, order, tags, and lab PDFs',
+        id: 'batches',
+        label: 'Batches',
+        shortLabel: 'Batches',
+        description: 'Manage upcoming batches, schedules, mode, and brochures',
         group: 'curriculum',
-        keywords: ['syllabus', 'modules', 'labs', 'linux', 'cisco'],
-        icon: Layers,
-        badgeCount: topicsCount,
+        keywords: ['batches', 'schedules', 'upcoming', 'classes', 'linux', 'cisco', 'aws'],
+        icon: CalendarRange,
+        badgeCount: batchesCount,
       },
       {
         id: 'courses',
-        label: 'Courses',
-        shortLabel: 'Courses',
-        description: 'Upcoming batches, schedules, and delivery modes',
+        label: 'Course / Domain',
+        shortLabel: 'Domains',
+        description: 'Manage website core domains, syllabus tracks, and PDFs',
         group: 'curriculum',
-        keywords: ['training', 'batches', 'schedules', 'classes'],
+        keywords: ['course', 'domain', 'training', 'syllabus', 'tracks', 'curriculum'],
         icon: GraduationCap,
+        badgeCount: coursesCount,
       },
       {
         id: 'resources',
@@ -153,6 +162,7 @@ export function AdminShell({
         group: 'curriculum',
         keywords: ['pdfs', 'notes', 'downloads', 'manuals'],
         icon: FileText,
+        badgeCount: resourcesCount,
       },
       {
         id: 'blogs',
@@ -162,6 +172,7 @@ export function AdminShell({
         group: 'publishing',
         keywords: ['articles', 'posts', 'guides', 'writing'],
         icon: BookOpen,
+        badgeCount: blogsCount,
       },
       {
         id: 'gallery',
@@ -171,15 +182,7 @@ export function AdminShell({
         group: 'publishing',
         keywords: ['photos', 'images', 'events', 'workshops'],
         icon: ImageIcon,
-      },
-      {
-        id: 'media',
-        label: 'Media Library',
-        shortLabel: 'Media',
-        description: 'Uploaded images, portraits, and PDF assets',
-        group: 'publishing',
-        keywords: ['files', 'assets', 'uploads', 'storage'],
-        icon: FolderOpen,
+        badgeCount: galleryCount,
       },
       {
         id: 'enquiries',
@@ -200,9 +203,10 @@ export function AdminShell({
         group: 'engagement',
         keywords: ['reviews', 'students', 'feedback', 'placements'],
         icon: MessageSquareQuote,
+        badgeCount: testimonialsCount,
       },
     ],
-    [topicsCount, unreadEnquiriesCount]
+    [batchesCount, coursesCount, resourcesCount, blogsCount, galleryCount, testimonialsCount, unreadEnquiriesCount]
   );
 
   const sidebarGroups: SidebarGroupDef<NavItemConfig>[] = useMemo(
@@ -502,7 +506,12 @@ export function AdminShell({
 
             {renderSidebarLinks(true)}
 
-            <div className="flex shrink-0 items-center gap-1.5 border-t border-white/[0.08] px-3 py-2.5 pb-safe">
+            <div
+              style={{
+                paddingBottom: 'calc(0.625rem + env(safe-area-inset-bottom, 0px))',
+              }}
+              className="flex shrink-0 items-center gap-1.5 border-t border-white/[0.08] px-3 pt-2.5"
+            >
               <a
                 href="/"
                 className="flex min-h-[38px] min-w-0 flex-1 items-center justify-between gap-2 rounded-lg bg-white/[0.06] px-2.5 text-[12px] font-medium text-white/85 hover:bg-white/[0.12]"
@@ -683,10 +692,10 @@ export function AdminShell({
                     <div className="mt-2 space-y-1">
                       <button
                         type="button"
-                        onClick={() => handleNavigate('topics')}
+                        onClick={() => handleNavigate('batches')}
                         className="flex min-h-[42px] w-full items-center justify-between rounded-lg px-2.5 text-left text-xs font-semibold text-[#0B1736] hover:bg-[#F5F7FC]"
                       >
-                        <span>Manage Topics</span>
+                        <span>Manage Batches</span>
                         <ChevronRight className="h-4 w-4 text-[#94A3B8]" />
                       </button>
                       <button

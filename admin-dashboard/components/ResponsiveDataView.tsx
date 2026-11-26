@@ -2,8 +2,9 @@ import {
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
+  MoreVertical,
 } from 'lucide-react';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { MobileModalShell } from './MobileModalShell';
 import { StatusBadge } from './StatusBadge';
 
@@ -22,8 +23,10 @@ export interface CardField<T> {
 
 export interface RowAction<T> {
   id: string;
-  label: string;
+  label: string | ((item: T) => string);
   destructive?: boolean;
+  icon?: ReactNode;
+  hidden?: (item: T) => boolean;
   onClick: (item: T) => void;
 }
 
@@ -34,6 +37,8 @@ interface ResponsiveDataViewProps<T extends { id: string }> {
   emptyDescription: string;
   emptyActionLabel?: string;
   onEmptyAction?: () => void;
+  secondaryEmptyActionLabel?: string;
+  onSecondaryEmptyAction?: () => void;
   columns: TableColumn<T>[];
   getCardTitle: (item: T) => string;
   getCardSubtitle?: (item: T) => string;
@@ -60,6 +65,8 @@ export function ResponsiveDataView<T extends { id: string }>({
   emptyDescription,
   emptyActionLabel,
   onEmptyAction,
+  secondaryEmptyActionLabel,
+  onSecondaryEmptyAction,
   columns,
   getCardTitle,
   getCardSubtitle,
@@ -79,8 +86,61 @@ export function ResponsiveDataView<T extends { id: string }>({
   onPageChange,
 }: ResponsiveDataViewProps<T>) {
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
-  const [desktopMenuId, setDesktopMenuId] = useState<string | null>(null);
+  const [desktopMenuState, setDesktopMenuState] = useState<{
+    id: string;
+    top: number;
+    right: number;
+    openUp: boolean;
+  } | null>(null);
   const [mobileActionItem, setMobileActionItem] = useState<T | null>(null);
+  const desktopMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!desktopMenuState) return;
+    const onPointerDown = (e: MouseEvent) => {
+      if (
+        desktopMenuRef.current &&
+        !desktopMenuRef.current.contains(e.target as Node)
+      ) {
+        setDesktopMenuState(null);
+      }
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setDesktopMenuState(null);
+      }
+    };
+    const onScrollOrResize = () => {
+      setDesktopMenuState(null);
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    window.addEventListener('resize', onScrollOrResize);
+    window.addEventListener('scroll', onScrollOrResize, true);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('resize', onScrollOrResize);
+      window.removeEventListener('scroll', onScrollOrResize, true);
+    };
+  }, [desktopMenuState]);
+
+  const toggleDesktopMenu = (id: string, buttonEl: HTMLButtonElement) => {
+    if (desktopMenuState?.id === id) {
+      setDesktopMenuState(null);
+      return;
+    }
+    const rect = buttonEl.getBoundingClientRect();
+    const estimatedMenuHeight = actions.length * 36 + 16;
+    const spaceBelow = window.innerHeight - rect.bottom - 64;
+    const openUp = spaceBelow < estimatedMenuHeight && rect.top > estimatedMenuHeight;
+    setDesktopMenuState({
+      id,
+      top: openUp ? rect.top - 6 : rect.bottom + 6,
+      right: Math.max(12, window.innerWidth - rect.right),
+      openUp,
+    });
+  };
 
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -117,15 +177,29 @@ export function ResponsiveDataView<T extends { id: string }>({
         <p className="mx-auto mt-1.5 max-w-md text-sm text-[#475569]">
           {emptyDescription}
         </p>
-        {emptyActionLabel && onEmptyAction && (
-          <button
-            type="button"
-            onClick={onEmptyAction}
-            className="mt-5 inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#145BFF] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0F4AD6]"
-          >
-            {emptyActionLabel}
-          </button>
-        )}
+        {((emptyActionLabel && onEmptyAction) ||
+          (secondaryEmptyActionLabel && onSecondaryEmptyAction)) && (
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+              {emptyActionLabel && onEmptyAction && (
+                <button
+                  type="button"
+                  onClick={onEmptyAction}
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#145BFF] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0F4AD6]"
+                >
+                  {emptyActionLabel}
+                </button>
+              )}
+              {secondaryEmptyActionLabel && onSecondaryEmptyAction && (
+                <button
+                  type="button"
+                  onClick={onSecondaryEmptyAction}
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[#CBD5E1] bg-white px-4 py-2.5 text-sm font-semibold text-[#0B1736] transition-colors hover:bg-[#F8FAFC]"
+                >
+                  {secondaryEmptyActionLabel}
+                </button>
+              )}
+            </div>
+          )}
       </div>
     );
   }
@@ -142,23 +216,20 @@ export function ResponsiveDataView<T extends { id: string }>({
                   <th
                     key={col.key}
                     scope="col"
-                    className={`px-4 py-3 text-xs font-semibold text-[#475569] ${
-                      col.align === 'right' ? 'text-right' : 'text-left'
-                    }`}
+                    className={`px-4 py-3 text-xs font-semibold text-[#475569] ${col.align === 'right' ? 'text-right' : 'text-left'
+                      }`}
                   >
                     {col.sortable && onSort ? (
                       <button
                         type="button"
                         onClick={() => onSort(col.key)}
-                        className={`inline-flex items-center gap-1.5 font-semibold text-[#475569] hover:text-[#0B1736] ${
-                          col.align === 'right' ? 'flex-row-reverse' : ''
-                        }`}
+                        className={`inline-flex items-center gap-1.5 font-semibold text-[#475569] hover:text-[#0B1736] ${col.align === 'right' ? 'flex-row-reverse' : ''
+                          }`}
                       >
                         <span>{col.header}</span>
                         <ArrowUpDown
-                          className={`h-3.5 w-3.5 ${
-                            sortBy === col.key ? 'text-[#145BFF]' : 'text-[#94A3B8]'
-                          }`}
+                          className={`h-3.5 w-3.5 ${sortBy === col.key ? 'text-[#145BFF]' : 'text-[#94A3B8]'
+                            }`}
                           aria-hidden="true"
                         />
                         {sortBy === col.key && (
@@ -189,97 +260,73 @@ export function ResponsiveDataView<T extends { id: string }>({
                   {columns.map((col) => (
                     <td
                       key={col.key}
-                      className={`px-4 py-3.5 align-middle text-[#0B1736] ${
-                        col.align === 'right' ? 'text-right tabular-nums' : 'text-left'
-                      }`}
+                      className={`px-4 py-3.5 align-middle text-[#0B1736] ${col.align === 'right' ? 'text-right tabular-nums' : 'text-left'
+                        }`}
                     >
                       {col.render(item)}
                     </td>
                   ))}
                   <td className="px-4 py-3.5 text-right align-middle">
-                    <div className="relative inline-flex items-center justify-end gap-1">
-                      {(actions.length <= 3 ? actions : actions.slice(0, 2)).map(
-                        (action) => (
-                          <button
-                            key={action.id}
-                            type="button"
-                            onClick={() => action.onClick(item)}
-                            aria-label={`${action.label} ${getCardTitle(item)}`}
-                            className={`min-h-[36px] rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors whitespace-nowrap ${
-                              action.destructive
-                                ? 'text-[#DC2626] hover:bg-[#FEF2F2]'
-                                : 'text-[#145BFF] hover:bg-[#EFF6FF]'
-                            }`}
-                          >
-                            {action.label}
-                          </button>
-                        )
-                      )}
+                    <div
+                      className="relative inline-flex items-center justify-end"
+                      ref={desktopMenuState?.id === item.id ? desktopMenuRef : undefined}
+                    >
+                      <button
+                        type="button"
+                        onClick={(e) => toggleDesktopMenu(item.id, e.currentTarget)}
+                        aria-expanded={desktopMenuState?.id === item.id}
+                        aria-haspopup="menu"
+                        aria-label={`Actions for ${getCardTitle(item)}`}
+                        className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${desktopMenuState?.id === item.id
+                            ? 'border-[#145BFF] bg-[#EFF6FF] text-[#145BFF]'
+                            : 'border-transparent text-[#64748B] hover:border-[#E2E8F0] hover:bg-slate-100 hover:text-[#0B1736]'
+                          }`}
+                      >
+                        <MoreVertical className="h-4 w-4" aria-hidden="true" />
+                      </button>
 
-                      {actions.length > 3 && (
-                        <>
+                      {desktopMenuState?.id === item.id && (
+                        <div
+                          role="menu"
+                          style={{
+                            position: 'fixed',
+                            top: desktopMenuState.top,
+                            right: desktopMenuState.right,
+                            transform: desktopMenuState.openUp
+                              ? 'translateY(-100%)'
+                              : undefined,
+                          }}
+                          className="z-50 w-52 rounded-xl border border-[#E2E8F0] bg-white p-1.5 text-left shadow-xl ring-1 ring-black/5"
+                        >
                           {actions
-                            .filter((a) => a.destructive)
-                            .slice(0, 1)
-                            .map((delAction) => (
-                              <button
-                                key={delAction.id}
-                                type="button"
-                                onClick={() => delAction.onClick(item)}
-                                aria-label={`${delAction.label} ${getCardTitle(item)}`}
-                                className="min-h-[36px] rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[#DC2626] transition-colors hover:bg-[#FEF2F2] whitespace-nowrap"
-                              >
-                                {delAction.label}
-                              </button>
-                            ))}
-
-                          <div className="relative">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setDesktopMenuId(
-                                  desktopMenuId === item.id ? null : item.id
-                                )
-                              }
-                              aria-expanded={desktopMenuId === item.id}
-                              aria-haspopup="menu"
-                              aria-label={`More actions for ${getCardTitle(item)}`}
-                              className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white text-[#475569] hover:border-[#145BFF] hover:bg-[#EFF6FF] hover:text-[#145BFF]"
-                            >
-                              <ChevronRight
-                                className={`h-4 w-4 transition-transform ${
-                                  desktopMenuId === item.id ? 'rotate-90' : ''
-                                }`}
-                              />
-                            </button>
-
-                            {desktopMenuId === item.id && (
-                              <div
-                                role="menu"
-                                className="absolute top-10 right-0 z-30 w-44 rounded-xl border border-[#E2E8F0] bg-white p-1.5 text-left shadow-lg"
-                              >
-                                {actions
-                                  .slice(2)
-                                  .filter((a) => !a.destructive)
-                                  .map((extraAction) => (
-                                    <button
-                                      key={extraAction.id}
-                                      type="button"
-                                      role="menuitem"
-                                      onClick={() => {
-                                        setDesktopMenuId(null);
-                                        extraAction.onClick(item);
-                                      }}
-                                      className="flex min-h-[38px] w-full items-center justify-between rounded-lg px-3 text-left text-xs font-semibold text-[#0B1736] hover:bg-[#F5F7FC]"
-                                    >
-                                      <span>{extraAction.label}</span>
-                                      <ChevronRight className="h-3.5 w-3.5 text-[#94A3B8]" />
-                                    </button>
-                                  ))}
-                              </div>
-                            )}
-                          </div>
-                        </>
+                            .filter((action) => !action.hidden?.(item))
+                            .map((action) => {
+                              const resolvedLabel =
+                                typeof action.label === 'function'
+                                  ? action.label(item)
+                                  : action.label;
+                              return (
+                                <button
+                                  key={action.id}
+                                  type="button"
+                                  role="menuitem"
+                                  onClick={() => {
+                                    setDesktopMenuState(null);
+                                    action.onClick(item);
+                                  }}
+                                  className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors text-left ${action.destructive
+                                      ? 'text-[#DC2626] hover:bg-[#FEF2F2]'
+                                      : 'text-[#0B1736] hover:bg-[#F8FAFC]'
+                                    }`}
+                                >
+                                  {action.icon && (
+                                    <span className="shrink-0">{action.icon}</span>
+                                  )}
+                                  <span className="truncate">{resolvedLabel}</span>
+                                </button>
+                              );
+                            })}
+                        </div>
                       )}
                     </div>
                   </td>
@@ -329,15 +376,15 @@ export function ResponsiveDataView<T extends { id: string }>({
                   </div>
                 </div>
 
-                {/* Tactile '>' Chevron Action Sheet Trigger */}
+                {/* Mobile Tactile Kebab Menu Action Trigger */}
                 <button
                   type="button"
                   onClick={() => setMobileActionItem(item)}
                   aria-haspopup="dialog"
                   aria-label={`Actions for ${title}`}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] text-[#145BFF] transition-colors hover:bg-[#DBEAFE]"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E2E8F0] bg-white text-[#475569] shadow-xs transition-colors hover:border-[#145BFF] hover:bg-[#EFF6FF] hover:text-[#145BFF]"
                 >
-                  <ChevronRight className="h-5 w-5 stroke-[2.2]" aria-hidden="true" />
+                  <MoreVertical className="h-4.5 w-4.5" aria-hidden="true" />
                 </button>
               </div>
 
@@ -366,9 +413,8 @@ export function ResponsiveDataView<T extends { id: string }>({
                   >
                     <span>{isExpanded ? 'Hide details' : 'Show more details'}</span>
                     <ChevronRight
-                      className={`h-4 w-4 transition-transform duration-200 ${
-                        isExpanded ? 'rotate-90' : ''
-                      }`}
+                      className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''
+                        }`}
                     />
                   </button>
 
@@ -404,25 +450,35 @@ export function ResponsiveDataView<T extends { id: string }>({
       >
         {mobileActionItem && (
           <div className="space-y-2">
-            {actions.map((action) => (
-              <button
-                key={action.id}
-                type="button"
-                onClick={() => {
-                  const target = mobileActionItem;
-                  setMobileActionItem(null);
-                  action.onClick(target);
-                }}
-                className={`flex min-h-[48px] w-full items-center justify-between rounded-xl border px-4 text-left text-sm font-semibold transition-colors ${
-                  action.destructive
-                    ? 'border-[#FECACA] bg-[#FEF2F2] text-[#DC2626] hover:bg-[#FEE2E2]'
-                    : 'border-[#E2E8F0] bg-[#F5F7FC] text-[#0B1736] hover:bg-[#EFF6FF] hover:text-[#145BFF]'
-                }`}
-              >
-                <span>{action.label}</span>
-                <ChevronRight className="h-4 w-4 shrink-0 opacity-75" />
-              </button>
-            ))}
+            {actions
+              .filter((action) => !action.hidden?.(mobileActionItem))
+              .map((action) => {
+                const resolvedLabel =
+                  typeof action.label === 'function'
+                    ? action.label(mobileActionItem)
+                    : action.label;
+                return (
+                  <button
+                    key={action.id}
+                    type="button"
+                    onClick={() => {
+                      const target = mobileActionItem;
+                      setMobileActionItem(null);
+                      action.onClick(target);
+                    }}
+                    className={`flex min-h-[46px] w-full items-center justify-between rounded-xl border px-3.5 text-left text-xs font-semibold transition-colors ${action.destructive
+                        ? 'border-[#FECACA] bg-[#FEF2F2] text-[#DC2626] hover:bg-[#FEE2E2]'
+                        : 'border-[#E2E8F0] bg-[#F5F7FC] text-[#0B1736] hover:bg-[#EFF6FF] hover:text-[#145BFF]'
+                      }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {action.icon && <span className="shrink-0">{action.icon}</span>}
+                      <span>{resolvedLabel}</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
+                  </button>
+                );
+              })}
           </div>
         )}
       </MobileModalShell>
@@ -434,7 +490,7 @@ export function ResponsiveDataView<T extends { id: string }>({
       >
         <div className="mx-auto flex max-w-[1360px] flex-col items-center justify-between gap-1.5 min-[420px]:flex-row min-[420px]:gap-3">
           <p className="text-center text-[12px] font-medium text-[#475569] tabular-nums min-[420px]:text-left">
-            Showing <span className="font-semibold text-[#0F172A]">{startIndex + 1}–{endIndex}</span> of{' '}
+            Showing <span className="font-semibold text-[#0F172A]">{totalItems === 0 ? 0 : startIndex + 1}–{endIndex}</span> of{' '}
             <span className="font-semibold text-[#0F172A]">{totalItems}</span> {totalItems === 1 ? 'record' : 'records'}
           </p>
 

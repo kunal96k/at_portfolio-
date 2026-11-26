@@ -29,7 +29,6 @@ async function main() {
   const routes = [
     '/',
     '/about',
-    '/upcoming-training',
     '/upcoming-batches',
     '/training/rhel-linux',
     '/training/cisco-ccna-ccnp',

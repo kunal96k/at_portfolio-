@@ -1,5 +1,11 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { BLOGS } from '../data/portfolioData';
+import {
+  BLOGS_STORAGE_KEY,
+  BLOGS_UPDATED_EVENT,
+  fetchPublicBlogsAsync,
+  type BlogArticle,
+} from '../services/blogsService';
 import { useResponsiveReveal } from '../hooks/useResponsiveReveal';
 import { OutlineButton } from './OutlineButton';
 import { SafeImage } from './SafeImage';
@@ -9,9 +15,34 @@ interface BlogsPreviewSectionProps {
 }
 
 export function BlogsPreviewSection({ onNavigate }: BlogsPreviewSectionProps) {
-  const previewPosts = BLOGS.slice(0, 2);
+  const [posts, setPosts] = useState<BlogArticle[]>([]);
   const headerReveal = useResponsiveReveal(0.25, 0.6);
   const cardReveal = useResponsiveReveal(0.15, 0.6);
+
+  useEffect(() => {
+    let active = true;
+    const loadPosts = () => {
+      void fetchPublicBlogsAsync().then((res) => {
+        if (active) {
+          setPosts(res.items.slice(0, 2));
+        }
+      });
+    };
+    loadPosts();
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === null || e.key === BLOGS_STORAGE_KEY) {
+        loadPosts();
+      }
+    };
+    window.addEventListener(BLOGS_UPDATED_EVENT, loadPosts);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      active = false;
+      window.removeEventListener(BLOGS_UPDATED_EVENT, loadPosts);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
 
   return (
     <section
@@ -30,61 +61,73 @@ export function BlogsPreviewSection({ onNavigate }: BlogsPreviewSectionProps) {
             INFRASTRUCTURE INSIGHTS &amp; GUIDES
           </h2>
           <p className="mt-4 text-[16px] sm:text-[18px] font-light leading-[1.55] text-[#303030] dark:text-white/80">
-            Practical guides on Linux administration, Cisco networking, cloud migration and live
-            troubleshooting methodology.
+            Practical guides on Linux administration, Cisco networking, cloud
+            migration and live troubleshooting methodology.
           </p>
         </motion.div>
 
-        {/* 2-Column Blog Cards */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
-          {previewPosts.map((post, idx) => (
-            <motion.a
-              key={post.slug}
-              href={`/blogs/${post.slug}`}
-              onClick={(e) => {
-                e.preventDefault();
-                onNavigate(`/blogs/${post.slug}`);
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={cardReveal.viewport}
-              transition={{
-                duration: cardReveal.duration,
-                delay: cardReveal.isCompactViewport ? 0 : idx * 0.08,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E67E6] dark:focus-visible:ring-[#D0FF71] rounded-[20px]"
-            >
-              <div className="overflow-hidden rounded-[20px] aspect-[16/10] bg-[#ECECEE] dark:bg-[#2C2C2D]">
-                <SafeImage
-                  src={post.coverImage}
-                  alt={post.title}
-                  className="w-full h-full object-cover transition-transform duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
-                />
-              </div>
+        {posts.length === 0 ? (
+          <div className="mt-10 rounded-[20px] border border-dashed border-[#D4D4D8] dark:border-[#3A3A3D] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-8 text-center">
+            <p className="text-[15px] font-light text-[#5C5C5C] dark:text-white/75">
+              Publish blog guides from the Admin Dashboard to showcase featured articles here.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
+            {posts.map((post, idx) => (
+              <motion.a
+                key={post.id || post.slug}
+                href={`/blogs/${post.slug}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigate(`/blogs/${post.slug}`);
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={cardReveal.viewport}
+                transition={{
+                  duration: cardReveal.duration,
+                  delay: cardReveal.isCompactViewport ? 0 : idx * 0.08,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E67E6] dark:focus-visible:ring-[#D0FF71] rounded-[20px]"
+              >
+                <div className="overflow-hidden rounded-[20px] aspect-[16/10] bg-[#ECECEE] dark:bg-[#2C2C2D]">
+                  <SafeImage
+                    src={
+                      post.coverImage ||
+                      '/assets/images/cisco_network_lab_1795164486189.jpg'
+                    }
+                    alt={post.title}
+                    className="w-full h-full object-cover transition-transform duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                  />
+                </div>
 
-              <div className="mt-5 flex items-center gap-3">
-                <span className="inline-flex items-center rounded-full border border-[#5E67E6] dark:border-[#D0FF71] px-3.5 py-0.5 text-[13px] font-light text-[#5E67E6] dark:text-[#D0FF71]">
-                  {post.category}
-                </span>
-                <span className="text-[14px] font-light text-[#5C5C5C] dark:text-white/70">
-                  {post.date}
-                </span>
-              </div>
+                <div className="mt-5 flex items-center gap-3">
+                  <span className="inline-flex items-center rounded-full border border-[#5E67E6] dark:border-[#D0FF71] px-3.5 py-0.5 text-[13px] font-light text-[#5E67E6] dark:text-[#D0FF71]">
+                    {post.category}
+                  </span>
+                  <span className="text-[14px] font-light text-[#5C5C5C] dark:text-white/70">
+                    {post.guideLabel}
+                  </span>
+                </div>
 
-              <h3 className="mt-3.5 font-display text-[28px] sm:text-[32px] font-bold uppercase leading-[1.2] text-[#303030] dark:text-white group-hover:text-[#5E67E6] dark:group-hover:text-[#D0FF71] transition-colors">
-                {post.title}
-              </h3>
+                <h3 className="mt-3.5 font-display text-[28px] sm:text-[32px] font-bold uppercase leading-[1.2] text-[#303030] dark:text-white group-hover:text-[#5E67E6] dark:group-hover:text-[#D0FF71] transition-colors">
+                  {post.title}
+                </h3>
 
-              <p className="mt-2.5 text-[15px] sm:text-[16px] font-light leading-[1.6] text-[#303030] dark:text-white/75">
-                {post.excerpt}
-              </p>
-            </motion.a>
-          ))}
-        </div>
+                <p className="mt-2.5 text-[15px] sm:text-[16px] font-light leading-[1.6] text-[#303030] dark:text-white/75">
+                  {post.excerpt}
+                </p>
+              </motion.a>
+            ))}
+          </div>
+        )}
 
         <div className="mt-12 sm:mt-14 flex flex-wrap justify-center gap-4">
-          <OutlineButton onClick={() => onNavigate('/blogs')}>BROWSE ALL GUIDES</OutlineButton>
+          <OutlineButton onClick={() => onNavigate('/blogs')}>
+            BROWSE ALL GUIDES
+          </OutlineButton>
           <OutlineButton onClick={() => onNavigate('/resources')}>
             NOTES &amp; LAB SECTIONS
           </OutlineButton>
