@@ -2,7 +2,7 @@ import {
   createBlogBackend,
   deleteBlogBackend,
   fetchAdminBlogsPageBackend,
-  fetchAllBlogsFromApiOrStorage,
+  fetchAllBlogsBackend,
   fetchNextBlogCodeBackend,
   patchBlogFeaturedBackend,
   patchBlogStatusBackend,
@@ -25,16 +25,11 @@ export const blogService = {
   },
 
   async listBlogs(): Promise<BlogArticle[]> {
-    const res = await fetchAllBlogsFromApiOrStorage();
-    return res.items;
+    return fetchAllBlogsBackend();
   },
 
   async getNextBlogCode(): Promise<string> {
-    try {
-      return await fetchNextBlogCodeBackend();
-    } catch {
-      return 'BLOG-001';
-    }
+    return fetchNextBlogCodeBackend();
   },
 
   async createBlog(payload: BlogFormPayload): Promise<BlogArticle> {

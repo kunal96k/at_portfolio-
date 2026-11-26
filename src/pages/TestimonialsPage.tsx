@@ -295,11 +295,6 @@ export function TestimonialsPage({ onNavigate }: TestimonialsPageProps) {
                         &ldquo;{item.quote}&rdquo;
                       </blockquote>
                     </div>
-
-                    <div className="mt-6 pt-4 border-t border-[#E5E5E5] dark:border-[#38383A] flex items-center justify-between text-[12.5px] font-light text-[#5C5C5C] dark:text-white/60">
-                      <span>Verified Learner</span>
-                      <span className="font-mono text-[11.5px]">{item.testimonialCode}</span>
-                    </div>
                   </article>
                 ))}
               </div>

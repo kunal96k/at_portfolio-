@@ -276,7 +276,6 @@ export function ResourceFileUploadModal({
           label="Upload, Replace, or Remove File (saved in project folder · max 5 MB)"
           multiple={false}
           uploadFolder="resources"
-          readContentAsDataUrl
           files={uploadedDocs}
           onAddFiles={handleAttach}
           onReplaceFile={(_, replacement) => handleAttach([replacement])}

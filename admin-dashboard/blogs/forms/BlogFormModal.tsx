@@ -63,29 +63,6 @@ const DEFAULT_BLOG_CATEGORIES = [
   'Career Guidance',
 ];
 
-const SAMPLE_COVER_PRESETS = [
-  {
-    label: 'Troubleshooting Lab',
-    url: '/assets/images/hands_on_troubleshooting_1795164485759.jpg',
-    name: 'hands_on_troubleshooting_1795164485759.jpg',
-  },
-  {
-    label: 'RHEL Server Lab',
-    url: '/assets/images/linux_rhel_lab_1795164484674.jpg',
-    name: 'linux_rhel_lab_1795164484674.jpg',
-  },
-  {
-    label: 'Cisco Rack Lab',
-    url: '/assets/images/cisco_network_lab_1795164486189.jpg',
-    name: 'cisco_network_lab_1795164486189.jpg',
-  },
-  {
-    label: 'AWS Cloud Lab',
-    url: '/assets/images/aws_cloud_infra_1795164482369.jpg',
-    name: 'aws_cloud_infra_1795164482369.jpg',
-  },
-];
-
 function getCounterTone(current: number, max: number): string {
   if (current >= max) return 'text-[#DC2626] font-semibold';
   if (current >= Math.floor(max * 0.85)) return 'text-[#D97706] font-semibold';
@@ -153,8 +130,8 @@ function buildInitialValues(
     excerpt: '',
     sections: [{ heading: '', body: '', images: [] }],
     tags: [],
-    coverImage: '/assets/images/cisco_network_lab_1795164486189.jpg',
-    coverImageName: 'cisco_network_lab_1795164486189.jpg',
+    coverImage: '',
+    coverImageName: '',
     attachments: [],
     featured: false,
     displayOrder: defaultDisplayOrder,
@@ -1249,24 +1226,6 @@ export function BlogFormModal({
                     updateField('coverImageName', '');
                   }}
                 />
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-[11px] font-medium text-[#64748B]">
-                    Quick presets:
-                  </span>
-                  {SAMPLE_COVER_PRESETS.map((preset) => (
-                    <button
-                      key={preset.url}
-                      type="button"
-                      onClick={() => {
-                        updateField('coverImage', preset.url);
-                        updateField('coverImageName', preset.name);
-                      }}
-                      className="rounded-md border border-[#CBD5E1] bg-white px-2 py-0.5 text-[11px] font-medium text-[#475569] hover:border-[#145BFF] hover:text-[#145BFF]"
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               <div className="space-y-4">

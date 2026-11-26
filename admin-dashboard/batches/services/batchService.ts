@@ -2,7 +2,7 @@ import {
   createBatchBackend,
   deleteBatchBackend,
   fetchAdminBatchesPageBackend,
-  fetchAllBatchesFromApiOrStorage,
+  fetchAllBatchesBackend,
   fetchNextBatchCodeBackend,
   patchBatchFeaturedBackend,
   patchBatchStatusBackend,
@@ -21,16 +21,11 @@ export const batchService = {
   },
 
   async listBatches(): Promise<Batch[]> {
-    const res = await fetchAllBatchesFromApiOrStorage();
-    return res.items;
+    return fetchAllBatchesBackend();
   },
 
   async getNextBatchCode(): Promise<string> {
-    try {
-      return await fetchNextBatchCodeBackend();
-    } catch {
-      return 'BATCH-001';
-    }
+    return fetchNextBatchCodeBackend();
   },
 
   async createBatch(values: BatchFormValues): Promise<Batch> {

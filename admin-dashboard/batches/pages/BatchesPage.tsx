@@ -13,8 +13,7 @@ import {
 } from '../../../src/services/batchesService';
 import {
   COURSES_UPDATED_EVENT,
-  fetchAllCoursesFromApiOrStorage,
-  loadPublicCoursesFromStorage,
+  fetchAllCoursesBackend,
 } from '../../../src/services/coursesService';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import type { ToastItem } from '../../types/admin';
@@ -74,28 +73,30 @@ export function BatchesPage({
   const [liveCourseTracks, setLiveCourseTracks] = useState<string[]>(() =>
     availableCourseTracks && availableCourseTracks.length > 0
       ? availableCourseTracks
-      : loadPublicCoursesFromStorage().map((c) => c.title)
+      : []
   );
-  const [liveCourseCategories, setLiveCourseCategories] = useState<string[]>(() =>
-    loadPublicCoursesFromStorage().map((c) => c.category)
+  const [liveCourseCategories, setLiveCourseCategories] = useState<string[]>(
+    []
   );
 
   useEffect(() => {
     let active = true;
     const syncCourses = () => {
-      void fetchAllCoursesFromApiOrStorage().then((res) => {
-        if (!active) return;
-        const fromBackend = res.items.map((c) => c.title.trim()).filter(Boolean);
-        const categoriesFromBackend = res.items
-          .map((c) => c.category.trim())
-          .filter(Boolean);
-        if (res.fromBackend || fromBackend.length > 0) {
+      void fetchAllCoursesBackend()
+        .then((items) => {
+          if (!active) return;
+          const fromBackend = items.map((c) => c.title.trim()).filter(Boolean);
+          const categoriesFromBackend = items
+            .map((c) => c.category.trim())
+            .filter(Boolean);
           setLiveCourseTracks(fromBackend);
           setLiveCourseCategories(categoriesFromBackend);
-        } else if (availableCourseTracks && availableCourseTracks.length > 0) {
-          setLiveCourseTracks(availableCourseTracks);
-        }
-      });
+        })
+        .catch(() => {
+          if (active && availableCourseTracks && availableCourseTracks.length > 0) {
+            setLiveCourseTracks(availableCourseTracks);
+          }
+        });
     };
     syncCourses();
     window.addEventListener(COURSES_UPDATED_EVENT, syncCourses);

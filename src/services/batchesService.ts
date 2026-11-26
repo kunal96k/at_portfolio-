@@ -494,6 +494,19 @@ export async function fetchPublicBatchesPageAsync(
   return { page: buildEmptyPublicBatchPage(params), fromApi: false };
 }
 
+export async function fetchAllBatchesBackend(): Promise<ManagedBatch[]> {
+  const response = await fetch(batchesApiBase(), {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
+  }
+  const json = (await response.json()) as { data?: ManagedBatch[] };
+  return Array.isArray(json.data) ? json.data.map(sanitizeBatchRecord) : [];
+}
+
 export async function fetchAllBatchesFromApiOrStorage(): Promise<{
   items: ManagedBatch[];
   fromApi: boolean;

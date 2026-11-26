@@ -76,32 +76,16 @@ export function ImageUploadZone({
       setProgress(100);
       onChange(saved.url || `/api/files/${saved.storedPath}`, saved.fileName);
       window.setTimeout(() => setProgress(null), 250);
-      return;
     } catch (err) {
-      if (!(err instanceof TypeError)) {
-        setUploadError(
-          err instanceof Error ? err.message : 'Unable to upload image file.'
-        );
-        setProgress(null);
-        return;
-      }
-    }
-
-    // Offline fallback when backend API is unreachable
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : '';
-      if (result) {
-        onChange(result, file.name);
-      }
-      setProgress(100);
-      window.setTimeout(() => setProgress(null), 250);
-    };
-    reader.onerror = () => {
-      setUploadError('Could not read image file.');
+      setUploadError(
+        err instanceof TypeError
+          ? 'Unable to upload file to Spring Boot backend (/api/files/upload). Please verify the backend server is running.'
+          : err instanceof Error
+            ? err.message
+            : 'Unable to upload image file.'
+      );
       setProgress(null);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -248,7 +232,6 @@ interface DocumentUploadListProps {
   helperText?: string;
   files: UploadedDocItem[];
   multiple?: boolean;
-  readContentAsDataUrl?: boolean;
   uploadFolder?: 'resources' | 'courses' | 'batches' | 'blogs' | 'media';
   onAddFiles: (newFiles: UploadedDocItem[]) => void;
   onRemoveFile: (id: string) => void;
@@ -260,7 +243,6 @@ export function DocumentUploadList({
   helperText = 'PDF, DOCX, PPTX, TXT, PKT, or ZIP · Max 5 MB per file',
   files,
   multiple = true,
-  readContentAsDataUrl = false,
   uploadFolder,
   onAddFiles,
   onRemoveFile,
@@ -272,16 +254,6 @@ export function DocumentUploadList({
   const activeReplaceIdRef = useRef<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
-
-  const readFileDataUrl = (file: File): Promise<string> =>
-    new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        resolve(typeof reader.result === 'string' ? reader.result : '');
-      };
-      reader.onerror = () => resolve('');
-      reader.readAsDataURL(file);
-    });
 
   const handleFileSelection = async (
     selected: FileList | null,
@@ -324,40 +296,39 @@ export function DocumentUploadList({
       let savedMime = file.type || 'application/octet-stream';
       let savedSize = file.size;
 
-      if (uploadFolder) {
-        try {
-          const uploaded = await uploadProjectFileBackend(file, uploadFolder);
-          savedPath = uploaded.storedPath;
-          savedUrl = uploaded.url;
-          savedName = uploaded.fileName;
-          savedMime = uploaded.mimeType;
-          savedSize = uploaded.sizeBytes;
-        } catch (err) {
-          if (!(err instanceof TypeError)) {
-            setUploadError(
-              err instanceof Error
-                ? err.message
-                : `Could not save "${file.name}" into project storage.`
-            );
-            setUploadProgress(null);
-            return;
-          }
-          // Network/offline fallback handled cleanly below
-        }
+      if (!uploadFolder) {
+        setUploadError(
+          `Backend upload folder is required to save "${file.name}".`
+        );
+        setUploadProgress(null);
+        return;
+      }
+
+      try {
+        const uploaded = await uploadProjectFileBackend(file, uploadFolder);
+        savedPath = uploaded.storedPath;
+        savedUrl = uploaded.url;
+        savedName = uploaded.fileName;
+        savedMime = uploaded.mimeType;
+        savedSize = uploaded.sizeBytes;
+      } catch (err) {
+        setUploadError(
+          err instanceof TypeError
+            ? `Unable to upload "${file.name}" to Spring Boot backend (/api/files/upload).`
+            : err instanceof Error
+              ? err.message
+              : `Could not save "${file.name}" into backend storage.`
+        );
+        setUploadProgress(null);
+        return;
       }
 
       if (!savedPath) {
-        const fallbackUrl = readContentAsDataUrl
-          ? await readFileDataUrl(file)
-          : URL.createObjectURL(file);
-        if (readContentAsDataUrl && !fallbackUrl) {
-          setUploadError(
-            `Could not read "${file.name}". Please try selecting the file again.`
-          );
-          setUploadProgress(null);
-          return;
-        }
-        savedUrl = fallbackUrl;
+        setUploadError(
+          `Could not save "${file.name}" into backend storage.`
+        );
+        setUploadProgress(null);
+        return;
       }
 
       items.push({

@@ -21,8 +21,7 @@ import {
 } from '../../utils/adminLogic';
 import {
   COURSES_UPDATED_EVENT,
-  fetchAllCoursesFromApiOrStorage,
-  loadPublicCoursesFromStorage,
+  fetchAllCoursesBackend,
 } from '../../../src/services/coursesService';
 import { galleryAdminService } from '../services/galleryService';
 import type {
@@ -51,29 +50,6 @@ const DEFAULT_GALLERY_CATEGORIES = [
   'Labs',
   'Infrastructure',
   'Events',
-];
-
-const SAMPLE_GALLERY_PRESETS = [
-  {
-    label: 'Cisco Switch Rack',
-    url: '/assets/images/cisco_network_lab_1795164486189.jpg',
-    name: 'cisco_network_lab_1795164486189.jpg',
-  },
-  {
-    label: 'Corporate IT Workshop',
-    url: '/assets/images/corporate_it_workshop_1795164484663.jpg',
-    name: 'corporate_it_workshop_1795164484663.jpg',
-  },
-  {
-    label: 'RHEL Server Lab',
-    url: '/assets/images/linux_rhel_lab_1795164484674.jpg',
-    name: 'linux_rhel_lab_1795164484674.jpg',
-  },
-  {
-    label: 'AWS Cloud Desk',
-    url: '/assets/images/aws_cloud_infra_1795164482369.jpg',
-    name: 'aws_cloud_infra_1795164482369.jpg',
-  },
 ];
 
 function getCounterTone(current: number, max: number): string {
@@ -139,20 +115,22 @@ export function GalleryFormModal({
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState<GalleryValidationErrors>({});
   const [liveCourseCategories, setLiveCourseCategories] = useState<string[]>(
-    () => loadPublicCoursesFromStorage().map((c) => c.category)
+    []
   );
   const activeSessionKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     let active = true;
     const syncCourses = () => {
-      void fetchAllCoursesFromApiOrStorage().then((res) => {
-        if (!active) return;
-        const cats = res.items.map((c) => c.category.trim()).filter(Boolean);
-        if (res.fromBackend || cats.length > 0) {
+      void fetchAllCoursesBackend()
+        .then((items) => {
+          if (!active) return;
+          const cats = items.map((c) => c.category.trim()).filter(Boolean);
           setLiveCourseCategories(cats);
-        }
-      });
+        })
+        .catch(() => {
+          if (active) setLiveCourseCategories([]);
+        });
     };
     syncCourses();
     window.addEventListener(COURSES_UPDATED_EVENT, syncCourses);
@@ -808,25 +786,6 @@ export function GalleryFormModal({
                     {errors.imageUrl}
                   </p>
                 )}
-
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-[11px] font-medium text-[#64748B]">
-                    Quick presets:
-                  </span>
-                  {SAMPLE_GALLERY_PRESETS.map((preset) => (
-                    <button
-                      key={preset.url}
-                      type="button"
-                      onClick={() => {
-                        updateField('imageUrl', preset.url);
-                        updateField('imageName', preset.name);
-                      }}
-                      className="rounded-md border border-[#CBD5E1] bg-white px-2 py-0.5 text-[11px] font-medium text-[#475569] hover:border-[#145BFF] hover:text-[#145BFF]"
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
-                </div>
 
                 <div>
                   <label

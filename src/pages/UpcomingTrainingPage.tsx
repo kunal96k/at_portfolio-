@@ -300,18 +300,13 @@ export function UpcomingTrainingPage({
                               </span>
                             )}
                           </div>
-                          <div className="flex flex-wrap items-center gap-2 text-[12px] font-medium text-[#5C5C5C] dark:text-white/70">
-                            {program.learningLevel && (
+                          {program.learningLevel && (
+                            <div className="flex flex-wrap items-center gap-2 text-[12px] font-medium text-[#5C5C5C] dark:text-white/70">
                               <span className="rounded-full bg-white/80 dark:bg-[#1F1F21] px-2.5 py-0.5">
                                 {program.learningLevel}
                               </span>
-                            )}
-                            {program.batchCode && (
-                              <span className="font-mono opacity-80">
-                                {program.batchCode}
-                              </span>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
 
                         <h2 className="mt-4 font-display text-[32px] sm:text-[40px] font-bold leading-[1.1] uppercase text-[#303030] dark:text-white">

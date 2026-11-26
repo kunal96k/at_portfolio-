@@ -16,7 +16,7 @@ import {
   type BlogArticle,
 } from '../src/services/blogsService';
 import {
-  fetchAllCoursesFromApiOrStorage,
+  fetchAllCoursesBackend,
   type CourseDomain,
 } from '../src/services/coursesService';
 import {
@@ -153,11 +153,17 @@ export default function AdminApp() {
 
   useEffect(() => {
     let cancelled = false;
-    void fetchAllCoursesFromApiOrStorage().then((res) => {
-      if (!cancelled) {
-        setCourses(res.items);
-      }
-    });
+    void fetchAllCoursesBackend()
+      .then((items) => {
+        if (!cancelled) {
+          setCourses(items);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCourses([]);
+        }
+      });
     void fetchAdminResourcesPageBackend({
       page: 0,
       size: 5,

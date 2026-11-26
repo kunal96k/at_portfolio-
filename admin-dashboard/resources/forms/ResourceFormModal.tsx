@@ -27,8 +27,7 @@ import {
 } from '../../utils/adminLogic';
 import {
   COURSES_UPDATED_EVENT,
-  fetchAllCoursesFromApiOrStorage,
-  loadPublicCoursesFromStorage,
+  fetchAllCoursesBackend,
 } from '../../../src/services/coursesService';
 import { resourceService } from '../services/resourceService';
 import type {
@@ -157,22 +156,21 @@ export function ResourceFormModal({
   );
   const [errors, setErrors] = useState<ResourceValidationErrors>({});
   const [activeTab, setActiveTab] = useState<ResourceFormTabId>('identity');
-  const [liveCourseDomains, setLiveCourseDomains] = useState<string[]>(() =>
-    loadPublicCoursesFromStorage().map((c) => c.title)
-  );
+  const [liveCourseDomains, setLiveCourseDomains] = useState<string[]>([]);
   const [customDomainMode, setCustomDomainMode] = useState(false);
   const activeSessionKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     let active = true;
     const syncDomains = () => {
-      void fetchAllCoursesFromApiOrStorage().then((res) => {
-        if (!active) return;
-        const titles = res.items.map((c) => c.title.trim()).filter(Boolean);
-        if (titles.length > 0) {
-          setLiveCourseDomains(titles);
-        }
-      });
+      void fetchAllCoursesBackend()
+        .then((items) => {
+          if (!active) return;
+          setLiveCourseDomains(items.map((c) => c.title.trim()).filter(Boolean));
+        })
+        .catch(() => {
+          if (active) setLiveCourseDomains([]);
+        });
     };
     syncDomains();
     window.addEventListener(COURSES_UPDATED_EVENT, syncDomains);
@@ -1066,7 +1064,6 @@ export function ResourceFormModal({
               label="Upload Study Note / Workbook (max 5 MB)"
               uploadFolder="resources"
               multiple={false}
-              readContentAsDataUrl
               files={uploadedDocs}
               onAddFiles={handleAttachFile}
               onRemoveFile={handleRemoveFile}

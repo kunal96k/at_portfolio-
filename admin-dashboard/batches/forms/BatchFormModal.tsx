@@ -13,8 +13,7 @@ import {
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import {
   COURSES_UPDATED_EVENT,
-  fetchAllCoursesFromApiOrStorage,
-  loadPublicCoursesFromStorage,
+  fetchAllCoursesBackend,
   type CourseDomain,
 } from '../../../src/services/coursesService';
 import {
@@ -66,29 +65,6 @@ const DEFAULT_BATCH_CATEGORIES: string[] = [
   'Networking',
   'Cloud',
   'DevOps',
-];
-
-const SAMPLE_COVER_PRESETS = [
-  {
-    label: 'Linux RHEL Lab',
-    url: '/assets/images/linux_rhel_lab_1795164484674.jpg',
-    name: 'linux_rhel_lab_1795164484674.jpg',
-  },
-  {
-    label: 'Cisco Network Rack',
-    url: '/assets/images/cisco_network_lab_1795164486189.jpg',
-    name: 'cisco_network_lab_1795164486189.jpg',
-  },
-  {
-    label: 'AWS Cloud Desk',
-    url: '/assets/images/aws_cloud_infra_1795164482369.jpg',
-    name: 'aws_cloud_infra_1795164482369.jpg',
-  },
-  {
-    label: 'DevOps Workshop',
-    url: '/assets/images/corporate_it_workshop_1795164484663.jpg',
-    name: 'corporate_it_workshop_1795164484663.jpg',
-  },
 ];
 
 const MODE_OPTIONS = [
@@ -158,8 +134,8 @@ function buildInitialValues(
     mode: 'Online Live',
     seatsTotal: 20,
     location: 'Online Live / Nashik Classroom',
-    coverImage: SAMPLE_COVER_PRESETS[0].url,
-    coverImageName: SAMPLE_COVER_PRESETS[0].name,
+    coverImage: '',
+    coverImageName: '',
     tags: [],
     learningLevel: 'Intermediate',
     attachments: [],
@@ -182,9 +158,7 @@ export function BatchFormModal({
   onSubmit,
   onPreviewDraft,
 }: BatchFormModalProps) {
-  const [liveCourses, setLiveCourses] = useState<CourseDomain[]>(() =>
-    loadPublicCoursesFromStorage()
-  );
+  const [liveCourses, setLiveCourses] = useState<CourseDomain[]>([]);
   const [activeTab, setActiveTab] = useState<BatchFormTabId>('identity');
   const [values, setValues] = useState<BatchFormValues>(() =>
     buildInitialValues(
@@ -206,12 +180,17 @@ export function BatchFormModal({
   useEffect(() => {
     let active = true;
     const syncCourses = () => {
-      void fetchAllCoursesFromApiOrStorage().then((res) => {
-        if (!active) return;
-        if (res.fromBackend || res.items.length > 0) {
-          setLiveCourses(res.items);
-        }
-      });
+      void fetchAllCoursesBackend()
+        .then((items) => {
+          if (active) {
+            setLiveCourses(items);
+          }
+        })
+        .catch(() => {
+          if (active) {
+            setLiveCourses([]);
+          }
+        });
     };
     syncCourses();
     window.addEventListener(COURSES_UPDATED_EVENT, syncCourses);
@@ -1241,24 +1220,6 @@ export function BatchFormModal({
                       updateField('coverImageName', '');
                     }}
                   />
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] font-medium text-[#64748B]">
-                      Quick presets:
-                    </span>
-                    {SAMPLE_COVER_PRESETS.map((preset) => (
-                      <button
-                        key={preset.url}
-                        type="button"
-                        onClick={() => {
-                          updateField('coverImage', preset.url);
-                          updateField('coverImageName', preset.name);
-                        }}
-                        className="rounded-md border border-[#CBD5E1] bg-white px-2 py-0.5 text-[11px] font-medium text-[#475569] transition-colors hover:border-[#145BFF] hover:text-[#145BFF]"
-                      >
-                        {preset.label}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 <div className="space-y-4">

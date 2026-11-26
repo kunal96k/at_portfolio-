@@ -4,9 +4,7 @@ import {
   fetchAdminCoursesPageBackend,
   fetchAllCoursesBackend,
   fetchNextDomainCodeBackend,
-  loadAllCoursesFromStorage,
   patchCourseStatusBackend,
-  saveCoursesToStorage,
   updateCourseBackend,
   type CourseDomainPage,
   type CourseSearchParams,
@@ -20,7 +18,7 @@ import type {
 function formatConnectionError(err: unknown): Error {
   if (err instanceof TypeError) {
     return new Error(
-      'Unable to reach Spring Boot backend at http://localhost:8080/api/courses. Start the backend server so DataInitializer can manage Course / Domains.'
+      'Unable to reach Spring Boot backend at http://localhost:8080/api/courses. Start the backend server to manage Course / Domains.'
     );
   }
   return err instanceof Error ? err : new Error('Request failed.');
@@ -59,12 +57,7 @@ export const courseService = {
 
   async createCourse(values: CourseDomainFormPayload): Promise<CourseDomain> {
     try {
-      const created = await createCourseBackend(values);
-      const existing = loadAllCoursesFromStorage().filter(
-        (c) => !String(c.id).startsWith('default-')
-      );
-      saveCoursesToStorage([created, ...existing]);
-      return created;
+      return await createCourseBackend(values);
     } catch (err) {
       throw formatConnectionError(err);
     }
@@ -75,12 +68,7 @@ export const courseService = {
     values: CourseDomainFormPayload
   ): Promise<CourseDomain> {
     try {
-      const updated = await updateCourseBackend(id, values);
-      const existing = loadAllCoursesFromStorage();
-      saveCoursesToStorage(
-        existing.map((c) => (c.id === id ? updated : c))
-      );
-      return updated;
+      return await updateCourseBackend(id, values);
     } catch (err) {
       throw formatConnectionError(err);
     }
@@ -91,12 +79,7 @@ export const courseService = {
     status: CourseDomainStatus
   ): Promise<CourseDomain> {
     try {
-      const updated = await patchCourseStatusBackend(id, status);
-      const existing = loadAllCoursesFromStorage();
-      saveCoursesToStorage(
-        existing.map((c) => (c.id === id ? updated : c))
-      );
-      return updated;
+      return await patchCourseStatusBackend(id, status);
     } catch (err) {
       throw formatConnectionError(err);
     }
@@ -105,8 +88,6 @@ export const courseService = {
   async deleteCourse(id: string): Promise<void> {
     try {
       await deleteCourseBackend(id);
-      const existing = loadAllCoursesFromStorage();
-      saveCoursesToStorage(existing.filter((c) => c.id !== id));
     } catch (err) {
       throw formatConnectionError(err);
     }

@@ -32,24 +32,6 @@ interface TestimonialFormModalProps {
 
 type FormTabId = 'student' | 'quoteMedia';
 
-const STUDENT_PHOTO_PRESETS = [
-  {
-    label: 'Kalyani B.',
-    url: '/assets/students/kalyani_bachhav.jpg',
-    name: 'kalyani_bachhav.jpg',
-  },
-  {
-    label: 'Chetana S.',
-    url: '/assets/students/chetana_sonawane.jpg',
-    name: 'chetana_sonawane.jpg',
-  },
-  {
-    label: 'Tejas T.',
-    url: '/assets/students/tejas_thakur.jpg',
-    name: 'tejas_thakur.jpg',
-  },
-];
-
 function generateNextCodeLocal(existingCodes: string[]): string {
   const nums = existingCodes
     .map((c) => /TEST-(\d+)$/i.exec(c.trim()))
@@ -572,7 +554,7 @@ export function TestimonialFormModal({
               <div className="space-y-3">
                 <ImageUploadZone
                   label="Student Portrait Photo"
-                  helperText="JPG, PNG, or WebP · Uploaded into /uploads/testimonials/ or select verified alumni portrait preset below"
+                  helperText="JPG, PNG, or WebP · Uploaded into /uploads/testimonials/"
                   valueUrl={values.avatarUrl}
                   fileName={values.avatarName}
                   uploadFolder="testimonials"
@@ -591,32 +573,6 @@ export function TestimonialFormModal({
                     }))
                   }
                 />
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-wide text-[#64748B]">
-                    Verified Portrait Assets:
-                  </span>
-                  {STUDENT_PHOTO_PRESETS.map((preset) => (
-                    <button
-                      key={preset.url}
-                      type="button"
-                      onClick={() =>
-                        setValues((v) => ({
-                          ...v,
-                          avatarUrl: preset.url,
-                          avatarName: preset.name,
-                        }))
-                      }
-                      className={`rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors ${
-                        values.avatarUrl === preset.url
-                          ? 'border-[#145BFF] bg-[#EFF6FF] text-[#145BFF]'
-                          : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#475569] hover:border-[#CBD5E1]'
-                      }`}
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               <div className="grid grid-cols-1 gap-4 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 sm:grid-cols-2">

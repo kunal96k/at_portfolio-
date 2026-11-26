@@ -95,7 +95,7 @@ export function ResourcesPage({ onNavigate }: ResourcesPageProps) {
     setContactPrefill({
       id: Date.now(),
       service: resolveContactService(resource.domain),
-      message: `Hello Arvind Sir, I would like to request download access for the study material "${resource.title}" (${resource.noteCode}).`,
+      message: `Hello Arvind Sir, I would like to request download access for the study material "${resource.title}".`,
     });
     if (typeof document !== 'undefined') {
       window.setTimeout(() => {
@@ -340,7 +340,7 @@ export function ResourcesPage({ onNavigate }: ResourcesPageProps) {
                   resource.downloadEnabled &&
                   !blockedNoteIds[resource.id];
                 const whatsappHref = `https://wa.me/91${PROFILE.whatsappNumber}?text=${encodeURIComponent(
-                  `Hello Arvind Sir, I would like to request download access for study note ${resource.noteCode}: ${resource.title}.`
+                  `Hello Arvind Sir, I would like to request download access for study note: ${resource.title}.`
                 )}`;
 
                 return (

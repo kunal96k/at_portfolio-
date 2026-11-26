@@ -200,7 +200,9 @@ export function ProtectedResourcePreviewModal({
   const allowAdminDownload = !isPublic && resourceHasFile;
   const showDownloadAction = Boolean(onDownload && (canDownload || allowAdminDownload));
   const whatsappHref = `https://wa.me/91${PROFILE.whatsappNumber}?text=${encodeURIComponent(
-    `Hello Arvind Sir, I would like to request download access for study note ${effective.noteCode}: ${effective.title}.`
+    isPublic
+      ? `Hello Arvind Sir, I would like to request download access for study note: ${effective.title}.`
+      : `Hello Arvind Sir, I would like to request download access for study note ${effective.noteCode}: ${effective.title}.`
   )}`;
 
   const pageImageUrl =
@@ -230,7 +232,9 @@ export function ProtectedResourcePreviewModal({
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-[#5E67E6]/10 dark:bg-[#D0FF71]/15 px-2.5 py-0.5 text-[11px] font-semibold text-[#5E67E6] dark:text-[#D0FF71]">
-                {effective.noteCode} · {effective.sectionType}
+                {isPublic
+                  ? effective.sectionType
+                  : `${effective.noteCode} · ${effective.sectionType}`}
               </span>
               {canDownload && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
@@ -512,7 +516,9 @@ export function ProtectedResourcePreviewModal({
                 </a>
                 <a
                   href={`mailto:${PROFILE.email}?subject=${encodeURIComponent(
-                    `Download Request: ${effective.noteCode} - ${effective.title}`
+                    isPublic
+                      ? `Download Request: ${effective.title}`
+                      : `Download Request: ${effective.noteCode} - ${effective.title}`
                   )}`}
                   className="inline-flex h-9 items-center gap-1.5 rounded-full border border-black/15 dark:border-white/20 px-3.5 text-xs font-semibold text-[#334155] dark:text-white"
                 >

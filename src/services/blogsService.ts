@@ -330,6 +330,19 @@ export async function fetchPublicBlogsPageAsync(
   return { page: buildEmptyPublicBlogPage(params), fromApi: false };
 }
 
+export async function fetchAllBlogsBackend(): Promise<BlogArticle[]> {
+  const response = await fetch(blogsApiBase(), {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
+  }
+  const json = (await response.json()) as { data?: BlogArticle[] };
+  return Array.isArray(json.data) ? json.data.map(sanitizeBlogRecord) : [];
+}
+
 export async function fetchAllBlogsFromApiOrStorage(): Promise<{
   items: BlogArticle[];
   fromApi: boolean;
