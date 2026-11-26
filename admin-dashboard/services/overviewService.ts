@@ -1,3 +1,5 @@
+import { adminFetch } from '../../src/services/authService';
+
 const API_BASE_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
   'http://localhost:8080';
@@ -167,7 +169,7 @@ export async function fetchDashboardOverviewBackend(
   signal?: AbortSignal
 ): Promise<DashboardOverviewData> {
   const endpoint = `${API_BASE_URL.replace(/\/+$/, '')}/api/dashboard/overview`;
-  const response = await fetch(endpoint, {
+  const response = await adminFetch(endpoint, {
     headers: { Accept: 'application/json' },
     signal,
   });

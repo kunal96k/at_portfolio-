@@ -15,6 +15,12 @@ import {
   type DashboardOverviewData,
 } from './services/overviewService';
 import {
+  ADMIN_SESSION_EXPIRED_EVENT,
+  fetchAdminSessionBackend,
+  logoutAdminBackend,
+  type AdminSessionState,
+} from '../src/services/authService';
+import {
   fetchAllCoursesBackend,
   type CourseDomain,
 } from '../src/services/coursesService';
@@ -33,17 +39,20 @@ import type {
   ToastItem,
 } from './types/admin';
 
-function shouldStartOnLogin(): boolean {
+type AuthStatus = 'checking' | 'authenticated' | 'unauthenticated';
+
+function shouldForceLoginView(): boolean {
   if (typeof window === 'undefined') return false;
   const params = new URLSearchParams(window.location.search);
   return params.get('view') === 'login';
 }
 
 export default function AdminApp() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    () => !shouldStartOnLogin()
+  const [authStatus, setAuthStatus] = useState<AuthStatus>('checking');
+  const [sessionState, setSessionState] = useState<AdminSessionState | null>(
+    null
   );
-  const [adminEmail, setAdminEmail] = useState<string>('');
+  const [sessionNotice, setSessionNotice] = useState<string | null>(null);
 
   useEffect(() => {
     let link = document.querySelector<HTMLLinkElement>("link[rel*='icon']");
@@ -54,6 +63,58 @@ export default function AdminApp() {
     }
     link.type = 'image/png';
     link.href = '/favicon.png';
+  }, []);
+
+  // Verify live backend HttpOnly session on mount (no client-side bypass)
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+
+    void fetchAdminSessionBackend(controller.signal)
+      .then((session) => {
+        if (!active) return;
+        if (session.authenticated && session.user && !shouldForceLoginView()) {
+          setSessionState(session);
+          setSessionNotice(null);
+          setAuthStatus('authenticated');
+        } else {
+          setSessionState(session.authenticated ? session : null);
+          setAuthStatus('unauthenticated');
+        }
+      })
+      .catch((err) => {
+        if (!active || (err instanceof DOMException && err.name === 'AbortError')) {
+          return;
+        }
+        setSessionState(null);
+        setAuthStatus('unauthenticated');
+      });
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, []);
+
+  // Global listener for 401 session expiry across any admin service call
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      setSessionState(null);
+      setSessionNotice(
+        'Your admin session expired or reached the 10 concurrent session limit. Please sign in again.'
+      );
+      setAuthStatus('unauthenticated');
+    };
+    window.addEventListener(
+      ADMIN_SESSION_EXPIRED_EVENT,
+      handleSessionExpired
+    );
+    return () => {
+      window.removeEventListener(
+        ADMIN_SESSION_EXPIRED_EVENT,
+        handleSessionExpired
+      );
+    };
   }, []);
 
   const [activeSection, setActiveSection] = useState<AdminSectionId>('overview');
@@ -90,7 +151,7 @@ export default function AdminApp() {
         setUnreadEnquiriesList(res.items.slice(0, NOTIFICATION_LIMIT));
       })
       .catch(() => {
-        // Offline backend handled cleanly
+        // Session/offline handled gracefully by adminFetch & view states
       });
   }, []);
 
@@ -98,11 +159,14 @@ export default function AdminApp() {
     void fetchDashboardOverviewBackend()
       .then(applyOverviewSidebarStats)
       .catch(() => {
-        // Offline backend surfaced cleanly inside active modules
+        // Offline / session expiry surfaced cleanly
       });
   }, [applyOverviewSidebarStats]);
 
+  // Only load protected admin API data once backend session is confirmed
   useEffect(() => {
+    if (authStatus !== 'authenticated') return;
+
     let cancelled = false;
     void fetchAllCoursesBackend()
       .then((items) => {
@@ -138,7 +202,7 @@ export default function AdminApp() {
         handleGlobalRefresh
       );
     };
-  }, [syncSidebarCountsFromBackend, syncEnquiryHeaderNotifications]);
+  }, [authStatus, syncSidebarCountsFromBackend, syncEnquiryHeaderNotifications]);
 
   const availableCourseTracks = useMemo(
     () => courses.map((c) => c.title),
@@ -235,32 +299,57 @@ export default function AdminApp() {
     }
   };
 
-  const handleLoginSuccess = (email: string) => {
-    setIsAuthenticated(true);
-    setAdminEmail(email);
+  const handleLoginSuccess = (session: AdminSessionState) => {
+    setSessionState(session);
+    setSessionNotice(null);
+    setAuthStatus('authenticated');
     if (
       typeof window !== 'undefined' &&
       window.location.search.includes('view=login')
     ) {
       window.history.replaceState({}, '', '/admin-dashboard/');
     }
+    const label = session.user?.name || session.user?.email || session.user?.username || 'Admin';
     pushToast({
       tone: 'success',
       title: 'Signed in to Admin Dashboard',
-      description: `Welcome back, ${email}`,
+      description: `Welcome back, ${label} (Session ${session.activeSessions}/${session.maxSessions})`,
     });
   };
 
   const handleSignOut = () => {
-    setIsAuthenticated(false);
-    setAdminEmail('');
-    if (typeof window !== 'undefined') {
-      window.history.replaceState({}, '', '/admin-dashboard/?view=login');
-    }
+    void logoutAdminBackend().finally(() => {
+      setSessionState(null);
+      setSessionNotice('You have signed out cleanly.');
+      setAuthStatus('unauthenticated');
+      setUnreadEnquiriesList([]);
+      setUnreadEnquiriesCount(0);
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({}, '', '/admin-dashboard/?view=login');
+      }
+    });
   };
 
-  if (!isAuthenticated) {
-    return <AdminLoginView onSuccess={handleLoginSuccess} />;
+  if (authStatus === 'checking') {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#F5F7FC] px-4 text-[#0B1736]">
+        <div className="flex items-center gap-3 rounded-2xl border border-[#E2E8F0] bg-white px-5 py-4 shadow-sm">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#145BFF] border-t-transparent" />
+          <span className="text-sm font-semibold text-[#0B1736]">
+            Verifying administrator session…
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  if (authStatus !== 'authenticated') {
+    return (
+      <AdminLoginView
+        onSuccess={handleLoginSuccess}
+        sessionNotice={sessionNotice}
+      />
+    );
   }
 
   return (
@@ -268,7 +357,11 @@ export default function AdminApp() {
       <AdminShell
         activeSection={activeSection}
         onSelectSection={setActiveSection}
-        adminEmail={adminEmail || undefined}
+        adminName={sessionState?.user?.name}
+        adminUsername={sessionState?.user?.username}
+        adminEmail={sessionState?.user?.email}
+        activeSessions={sessionState?.activeSessions}
+        maxSessions={sessionState?.maxSessions}
         notifications={liveNotifications}
         onMarkAllRead={handleMarkAllRead}
         onNotificationClick={handleNotificationClick}

@@ -1,3 +1,4 @@
+import { adminFetch } from './authService';
 import {
   resolveResourceUrl,
   uploadProjectFileBackend,
@@ -246,7 +247,7 @@ export async function fetchAdminGalleryPageBackend(
   params: GallerySearchParams = {},
   signal?: AbortSignal
 ): Promise<GalleryPageResult> {
-  const response = await fetch(buildSearchUrl('', params, 5), {
+  const response = await adminFetch(buildSearchUrl('', params, 5), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     cache: 'no-store',
@@ -264,7 +265,7 @@ export async function fetchAdminGalleryPageBackend(
 
 export async function fetchAllGalleryItemsBackend(): Promise<GalleryItem[]> {
   try {
-    const response = await fetch(`${galleryApiBase()}/all`, {
+    const response = await adminFetch(`${galleryApiBase()}/all`, {
       method: 'GET',
       headers: { Accept: 'application/json' },
       cache: 'no-store',
@@ -283,7 +284,7 @@ export async function fetchAllGalleryItemsBackend(): Promise<GalleryItem[]> {
 }
 
 export async function fetchNextGalleryCodeBackend(): Promise<string> {
-  const response = await fetch(`${galleryApiBase()}/next-code`, {
+  const response = await adminFetch(`${galleryApiBase()}/next-code`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
     cache: 'no-store',
@@ -308,7 +309,7 @@ export async function createGalleryItemBackend(
     ...payload,
     takenAt: payload.takenAt && payload.takenAt.trim() ? payload.takenAt.trim() : null,
   };
-  const response = await fetch(galleryApiBase(), {
+  const response = await adminFetch(galleryApiBase(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -334,7 +335,7 @@ export async function updateGalleryItemBackend(
     ...payload,
     takenAt: payload.takenAt && payload.takenAt.trim() ? payload.takenAt.trim() : null,
   };
-  const response = await fetch(
+  const response = await adminFetch(
     `${galleryApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'PUT',
@@ -359,7 +360,7 @@ export async function toggleGalleryStatusBackend(
   id: string,
   status?: GalleryStatus
 ): Promise<GalleryItem> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${galleryApiBase()}/${encodeURIComponent(id)}/status`,
     {
       method: 'PATCH',
@@ -384,7 +385,7 @@ export async function toggleGalleryFeaturedBackend(
   id: string,
   featured?: boolean
 ): Promise<GalleryItem> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${galleryApiBase()}/${encodeURIComponent(id)}/featured`,
     {
       method: 'PATCH',
@@ -406,7 +407,7 @@ export async function toggleGalleryFeaturedBackend(
 }
 
 export async function deleteGalleryItemBackend(id: string): Promise<void> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${galleryApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'DELETE',

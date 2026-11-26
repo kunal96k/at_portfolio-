@@ -1,4 +1,5 @@
 import { STUDY_RESOURCES } from '../data/portfolioData';
+import { adminFetch } from './authService';
 
 export type ResourceSectionType = 'Notes' | 'Lab Sections';
 
@@ -156,7 +157,7 @@ export async function uploadProjectFileBackend(
   const formData = new FormData();
   formData.append('file', file);
   const base = API_BASE_URL.replace(/\/+$/, '');
-  const response = await fetch(
+  const response = await adminFetch(
     `${base}/api/files/upload?folder=${encodeURIComponent(folder)}`,
     {
       method: 'POST',
@@ -428,7 +429,7 @@ export async function fetchAdminResourcesPageBackend(
   signal?: AbortSignal
 ): Promise<StudyResourcePage> {
   const qs = buildQueryString(params);
-  const response = await fetch(`${resourcesApiBase()}?${qs}`, {
+  const response = await adminFetch(`${resourcesApiBase()}?${qs}`, {
     headers: { Accept: 'application/json' },
     signal,
   });
@@ -482,7 +483,7 @@ export async function fetchPublicResourcesPageAsync(
 }
 
 export async function fetchNextNoteCodeBackend(): Promise<string> {
-  const response = await fetch(`${resourcesApiBase()}/next-code`, {
+  const response = await adminFetch(`${resourcesApiBase()}/next-code`, {
     headers: { Accept: 'application/json' },
   });
   if (!response.ok) {
@@ -495,7 +496,7 @@ export async function fetchNextNoteCodeBackend(): Promise<string> {
 export async function createResourceBackend(
   payload: StudyResourceFormPayload
 ): Promise<StudyResourceNote> {
-  const response = await fetch(resourcesApiBase(), {
+  const response = await adminFetch(resourcesApiBase(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify(payload),
@@ -512,7 +513,7 @@ export async function updateResourceBackend(
   id: string,
   payload: StudyResourceFormPayload
 ): Promise<StudyResourceNote> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${resourcesApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'PUT',
@@ -535,7 +536,7 @@ export async function patchResourceStatusBackend(
   id: string,
   status: ResourceStatus
 ): Promise<StudyResourceNote> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${resourcesApiBase()}/${encodeURIComponent(id)}/status`,
     {
       method: 'PATCH',
@@ -558,7 +559,7 @@ export async function patchResourceDownloadAccessBackend(
   id: string,
   downloadEnabled: boolean
 ): Promise<StudyResourceNote> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${resourcesApiBase()}/${encodeURIComponent(id)}/download-access`,
     {
       method: 'PATCH',
@@ -581,7 +582,7 @@ export async function patchResourceFileAttachmentBackend(
   id: string,
   payload: StudyResourceFilePatchPayload
 ): Promise<StudyResourceNote> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${resourcesApiBase()}/${encodeURIComponent(id)}/file-attachment`,
     {
       method: 'PATCH',
@@ -608,7 +609,8 @@ export async function fetchResourcePreviewInfo(
   const path = isPublic
     ? `${resourcesApiBase()}/public/${encodeURIComponent(id)}/preview-info`
     : `${resourcesApiBase()}/${encodeURIComponent(id)}/preview-info`;
-  const response = await fetch(path, {
+  const requestFn = isPublic ? fetch : adminFetch;
+  const response = await requestFn(path, {
     headers: { Accept: 'application/json' },
     signal,
   });
@@ -663,7 +665,8 @@ export async function recordResourceDownloadBackend(
     const endpoint = isAdmin
       ? `${resourcesApiBase()}/admin/${encodeURIComponent(id)}/download`
       : `${resourcesApiBase()}/${encodeURIComponent(id)}/download`;
-    const response = await fetch(endpoint, {
+    const requestFn = isAdmin ? adminFetch : fetch;
+    const response = await requestFn(endpoint, {
       method: 'POST',
       headers: { Accept: 'application/json' },
     });
@@ -728,7 +731,8 @@ export async function downloadResourceSafely(
     const downloadUrl = targetUrl.includes('?')
       ? targetUrl
       : `${targetUrl}?download=true`;
-    const response = await fetch(downloadUrl, { method: 'GET' });
+    const requestFn = isAdmin ? adminFetch : fetch;
+    const response = await requestFn(downloadUrl, { method: 'GET' });
     if (response.status === 403) {
       return {
         blocked: true,
@@ -764,7 +768,7 @@ export async function downloadResourceSafely(
 }
 
 export async function deleteResourceBackend(id: string): Promise<void> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${resourcesApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'DELETE',

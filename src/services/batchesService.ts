@@ -1,4 +1,5 @@
 import { ASSETS } from '../data/portfolioData';
+import { adminFetch } from './authService';
 import { resolveResourceUrl } from './resourcesService';
 
 export type BatchCategory = 'Linux' | 'Networking' | 'Cloud' | 'DevOps' | (string & {});
@@ -444,7 +445,7 @@ export async function fetchAdminBatchesPageBackend(
   params: BatchSearchParams = {},
   signal?: AbortSignal
 ): Promise<BatchPageResult> {
-  const response = await fetch(buildSearchUrl('/search', params), {
+  const response = await adminFetch(buildSearchUrl('/search', params), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     cache: 'no-store',
@@ -495,7 +496,7 @@ export async function fetchPublicBatchesPageAsync(
 }
 
 export async function fetchAllBatchesBackend(): Promise<ManagedBatch[]> {
-  const response = await fetch(batchesApiBase(), {
+  const response = await adminFetch(batchesApiBase(), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     cache: 'no-store',
@@ -512,7 +513,7 @@ export async function fetchAllBatchesFromApiOrStorage(): Promise<{
   fromApi: boolean;
 }> {
   try {
-    const response = await fetch(batchesApiBase(), {
+    const response = await adminFetch(batchesApiBase(), {
       method: 'GET',
       headers: { Accept: 'application/json' },
       cache: 'no-store',
@@ -566,7 +567,7 @@ export async function fetchPublicBatches(): Promise<ManagedBatch[]> {
 }
 
 export async function fetchNextBatchCodeBackend(): Promise<string> {
-  const response = await fetch(`${batchesApiBase()}/next-code`, {
+  const response = await adminFetch(`${batchesApiBase()}/next-code`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
     cache: 'no-store',
@@ -581,7 +582,7 @@ export async function fetchNextBatchCodeBackend(): Promise<string> {
 export async function createBatchBackend(
   payload: BatchFormPayload
 ): Promise<ManagedBatch> {
-  const response = await fetch(batchesApiBase(), {
+  const response = await adminFetch(batchesApiBase(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -605,7 +606,7 @@ export async function updateBatchBackend(
   id: string,
   payload: BatchFormPayload
 ): Promise<ManagedBatch> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${batchesApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'PUT',
@@ -632,7 +633,7 @@ export async function patchBatchStatusBackend(
   id: string,
   status: BatchStatus
 ): Promise<ManagedBatch> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${batchesApiBase()}/${encodeURIComponent(id)}/status`,
     {
       method: 'PATCH',
@@ -659,7 +660,7 @@ export async function patchBatchFeaturedBackend(
   id: string,
   featured: boolean
 ): Promise<ManagedBatch> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${batchesApiBase()}/${encodeURIComponent(id)}/featured`,
     {
       method: 'PATCH',
@@ -683,7 +684,7 @@ export async function patchBatchFeaturedBackend(
 }
 
 export async function deleteBatchBackend(id: string): Promise<void> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${batchesApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'DELETE',

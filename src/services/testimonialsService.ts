@@ -1,3 +1,4 @@
+import { adminFetch } from './authService';
 import {
   resolveResourceUrl,
   uploadProjectFileBackend,
@@ -233,7 +234,7 @@ export async function fetchAdminTestimonialsPageBackend(
   signal?: AbortSignal
 ): Promise<TestimonialPageResult> {
   const url = buildSearchUrl('/search', params, params.size ?? 5);
-  const response = await fetch(url, {
+  const response = await adminFetch(url, {
     headers: { Accept: 'application/json' },
     signal,
   });
@@ -248,7 +249,7 @@ export async function fetchAdminTestimonialsPageBackend(
 }
 
 export async function fetchAllTestimonialsBackend(): Promise<StudentTestimonial[]> {
-  const response = await fetch(`${testimonialsApiBase()}/all`, {
+  const response = await adminFetch(`${testimonialsApiBase()}/all`, {
     headers: { Accept: 'application/json' },
   });
   if (!response.ok) {
@@ -261,7 +262,7 @@ export async function fetchAllTestimonialsBackend(): Promise<StudentTestimonial[
 }
 
 export async function fetchNextTestimonialCodeBackend(): Promise<string> {
-  const response = await fetch(`${testimonialsApiBase()}/next-code`, {
+  const response = await adminFetch(`${testimonialsApiBase()}/next-code`, {
     headers: { Accept: 'application/json' },
   });
   if (!response.ok) {
@@ -282,7 +283,7 @@ export async function uploadTestimonialPhotoBackend(
 export async function createTestimonialBackend(
   payload: TestimonialFormPayload
 ): Promise<StudentTestimonial> {
-  const response = await fetch(testimonialsApiBase(), {
+  const response = await adminFetch(testimonialsApiBase(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -303,7 +304,7 @@ export async function updateTestimonialBackend(
   id: string,
   payload: TestimonialFormPayload
 ): Promise<StudentTestimonial> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${testimonialsApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'PUT',
@@ -327,7 +328,7 @@ export async function toggleTestimonialStatusBackend(
   id: string,
   status?: TestimonialStatus
 ): Promise<StudentTestimonial> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${testimonialsApiBase()}/${encodeURIComponent(id)}/status`,
     {
       method: 'PATCH',
@@ -351,7 +352,7 @@ export async function toggleTestimonialFeaturedBackend(
   id: string,
   featured?: boolean
 ): Promise<StudentTestimonial> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${testimonialsApiBase()}/${encodeURIComponent(id)}/featured`,
     {
       method: 'PATCH',
@@ -374,7 +375,7 @@ export async function toggleTestimonialFeaturedBackend(
 }
 
 export async function deleteTestimonialBackend(id: string): Promise<void> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${testimonialsApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'DELETE',

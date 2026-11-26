@@ -351,6 +351,7 @@ export function ProtectedResourcePreviewModal({
                     <img
                       src={pageImageUrl}
                       alt={`${effective.title} — Page ${pageNumber}`}
+                      crossOrigin={!isPublic ? 'use-credentials' : undefined}
                       draggable={false}
                       onContextMenu={(e) => e.preventDefault()}
                       onError={() => setImageError(true)}

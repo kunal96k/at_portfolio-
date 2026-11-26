@@ -54,7 +54,11 @@ interface SidebarGroupMeta {
 interface AdminShellProps {
   activeSection: AdminSectionId;
   onSelectSection: (section: AdminSectionId) => void;
+  adminName?: string;
+  adminUsername?: string;
   adminEmail?: string;
+  activeSessions?: number;
+  maxSessions?: number;
   notifications: NotificationItem[];
   onMarkAllRead: () => void;
   onNotificationClick: (item: NotificationItem) => void;
@@ -92,7 +96,11 @@ const MORE_SHEET_SECTIONS: AdminSectionId[] = [
 export function AdminShell({
   activeSection,
   onSelectSection,
+  adminName,
+  adminUsername,
   adminEmail,
+  activeSessions,
+  maxSessions,
   notifications,
   onMarkAllRead,
   onNotificationClick,
@@ -271,11 +279,10 @@ export function AdminShell({
               aria-label={overviewItem.label}
               title={overviewItem.label}
               aria-current={isOverviewActive ? 'page' : undefined}
-              className={`mx-auto flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${
-                isOverviewActive
-                  ? 'bg-[#145BFF]/24 text-[#60A5FA] ring-1 ring-inset ring-[#60A5FA]/35'
-                  : 'text-white/65 hover:bg-white/[0.07] hover:text-white'
-              }`}
+              className={`mx-auto flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${isOverviewActive
+                ? 'bg-[#145BFF]/24 text-[#60A5FA] ring-1 ring-inset ring-[#60A5FA]/35'
+                : 'text-white/65 hover:bg-white/[0.07] hover:text-white'
+                }`}
             >
               <OverviewIcon className="h-[18px] w-[18px]" aria-hidden="true" />
             </button>
@@ -301,11 +308,10 @@ export function AdminShell({
                       aria-label={tooltip}
                       title={tooltip}
                       aria-current={isActive ? 'page' : undefined}
-                      className={`relative mx-auto flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${
-                        isActive
-                          ? 'bg-[#145BFF]/24 text-[#60A5FA] ring-1 ring-inset ring-[#60A5FA]/35'
-                          : 'text-white/65 hover:bg-white/[0.07] hover:text-white'
-                      }`}
+                      className={`relative mx-auto flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${isActive
+                        ? 'bg-[#145BFF]/24 text-[#60A5FA] ring-1 ring-inset ring-[#60A5FA]/35'
+                        : 'text-white/65 hover:bg-white/[0.07] hover:text-white'
+                        }`}
                     >
                       <Icon className="h-[17px] w-[17px]" aria-hidden="true" />
                       {item.highlightBadge && (
@@ -336,19 +342,17 @@ export function AdminShell({
             type="button"
             onClick={() => handleNavigate(overviewItem.id)}
             aria-current={isOverviewActive ? 'page' : undefined}
-            className={`group flex ${isMobileDrawer ? 'min-h-[40px]' : 'h-[34px]'} w-full items-center justify-between gap-2 rounded-lg px-2.5 text-[12.5px] font-medium transition-colors ${
-              isOverviewActive
-                ? 'bg-[#145BFF]/22 text-white ring-1 ring-inset ring-[#60A5FA]/30'
-                : 'text-white/75 hover:bg-white/[0.06] hover:text-white'
-            }`}
+            className={`group flex ${isMobileDrawer ? 'min-h-[40px]' : 'h-[34px]'} w-full items-center justify-between gap-2 rounded-lg px-2.5 text-[12.5px] font-medium transition-colors ${isOverviewActive
+              ? 'bg-[#145BFF]/22 text-white ring-1 ring-inset ring-[#60A5FA]/30'
+              : 'text-white/75 hover:bg-white/[0.06] hover:text-white'
+              }`}
           >
             <span className="flex min-w-0 items-center gap-2.5">
               <OverviewIcon
-                className={`h-[15px] w-[15px] shrink-0 transition-colors ${
-                  isOverviewActive
-                    ? 'text-[#60A5FA]'
-                    : 'text-white/50 group-hover:text-white/80'
-                }`}
+                className={`h-[15px] w-[15px] shrink-0 transition-colors ${isOverviewActive
+                  ? 'text-[#60A5FA]'
+                  : 'text-white/50 group-hover:text-white/80'
+                  }`}
                 aria-hidden="true"
               />
               <span className="truncate">{overviewItem.label}</span>
@@ -377,96 +381,90 @@ export function AdminShell({
                 0
               );
 
-                return (
-                  <div key={group.id}>
-                    <button
-                      type="button"
-                      onClick={() => handleToggleGroup(group.id)}
-                      aria-expanded={isExpanded}
-                      className={`group flex ${groupHeight} w-full items-center justify-between gap-2 rounded-lg px-2.5 text-[12px] font-medium transition-colors ${
-                        hasActiveChild && !isExpanded
-                          ? 'bg-white/[0.07] text-white'
-                          : 'text-white/75 hover:bg-white/[0.05] hover:text-white'
+              return (
+                <div key={group.id}>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleGroup(group.id)}
+                    aria-expanded={isExpanded}
+                    className={`group flex ${groupHeight} w-full items-center justify-between gap-2 rounded-lg px-2.5 text-[12px] font-medium transition-colors ${hasActiveChild && !isExpanded
+                      ? 'bg-white/[0.07] text-white'
+                      : 'text-white/75 hover:bg-white/[0.05] hover:text-white'
                       }`}
-                    >
-                      <span className="flex min-w-0 items-center gap-2.5">
-                        <GroupIcon
-                          className={`h-[14px] w-[14px] shrink-0 transition-colors ${
-                            hasActiveChild
-                              ? 'text-[#60A5FA]'
-                              : 'text-white/45 group-hover:text-white/75'
+                  >
+                    <span className="flex min-w-0 items-center gap-2.5">
+                      <GroupIcon
+                        className={`h-[14px] w-[14px] shrink-0 transition-colors ${hasActiveChild
+                          ? 'text-[#60A5FA]'
+                          : 'text-white/45 group-hover:text-white/75'
                           }`}
-                          aria-hidden="true"
-                        />
-                        <span className="truncate">{group.label}</span>
-                      </span>
+                        aria-hidden="true"
+                      />
+                      <span className="truncate">{group.label}</span>
+                    </span>
 
-                      <span className="flex shrink-0 items-center gap-1.5">
-                        {!isExpanded && groupAlertCount > 0 && (
-                          <span className="text-[10.5px] font-semibold tabular-nums text-[#60A5FA]">
-                            {groupAlertCount}
-                          </span>
-                        )}
-                        <ChevronRight
-                          className={`h-3.5 w-3.5 text-white/40 transition-transform duration-150 group-hover:text-white/70 ${
-                            isExpanded ? 'rotate-90 text-white/65' : ''
+                    <span className="flex shrink-0 items-center gap-1.5">
+                      {!isExpanded && groupAlertCount > 0 && (
+                        <span className="text-[10.5px] font-semibold tabular-nums text-[#60A5FA]">
+                          {groupAlertCount}
+                        </span>
+                      )}
+                      <ChevronRight
+                        className={`h-3.5 w-3.5 text-white/40 transition-transform duration-150 group-hover:text-white/70 ${isExpanded ? 'rotate-90 text-white/65' : ''
                           }`}
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </button>
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </button>
 
-                    {isExpanded && (
-                      <div className="mt-0.5 ml-[17px] space-y-0.5 border-l border-white/[0.09] pl-2.5">
-                        {group.items.map((item) => {
-                          const Icon = item.icon;
-                          const isActive = activeSection === item.id;
-                          return (
-                            <button
-                              key={item.id}
-                              type="button"
-                              onClick={() => handleNavigate(item.id)}
-                              aria-current={isActive ? 'page' : undefined}
-                              className={`group flex ${rowHeight} w-full items-center justify-between gap-2 rounded-lg px-2.5 text-[12px] transition-colors ${
-                                isActive
-                                  ? 'bg-[#145BFF]/22 font-medium text-white ring-1 ring-inset ring-[#60A5FA]/30'
-                                  : 'font-normal text-white/68 hover:bg-white/[0.05] hover:text-white'
+                  {isExpanded && (
+                    <div className="mt-0.5 ml-[17px] space-y-0.5 border-l border-white/[0.09] pl-2.5">
+                      {group.items.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = activeSection === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => handleNavigate(item.id)}
+                            aria-current={isActive ? 'page' : undefined}
+                            className={`group flex ${rowHeight} w-full items-center justify-between gap-2 rounded-lg px-2.5 text-[12px] transition-colors ${isActive
+                              ? 'bg-[#145BFF]/22 font-medium text-white ring-1 ring-inset ring-[#60A5FA]/30'
+                              : 'font-normal text-white/68 hover:bg-white/[0.05] hover:text-white'
                               }`}
-                            >
-                              <span className="flex min-w-0 items-center gap-2">
-                                <Icon
-                                  className={`h-[14px] w-[14px] shrink-0 transition-colors ${
-                                    isActive
-                                      ? 'text-[#60A5FA]'
-                                      : 'text-white/40 group-hover:text-white/75'
+                          >
+                            <span className="flex min-w-0 items-center gap-2">
+                              <Icon
+                                className={`h-[14px] w-[14px] shrink-0 transition-colors ${isActive
+                                  ? 'text-[#60A5FA]'
+                                  : 'text-white/40 group-hover:text-white/75'
                                   }`}
-                                  aria-hidden="true"
-                                />
-                                <span className="truncate">{item.label}</span>
-                              </span>
+                                aria-hidden="true"
+                              />
+                              <span className="truncate">{item.label}</span>
+                            </span>
 
-                              {item.badgeCount !== undefined && (
-                                <span
-                                  className={`shrink-0 text-[10.5px] font-medium tabular-nums ${
-                                    item.highlightBadge
-                                      ? 'text-[#93C5FD]'
-                                      : isActive
-                                        ? 'text-white/85'
-                                        : 'text-white/42'
+                            {item.badgeCount !== undefined && (
+                              <span
+                                className={`shrink-0 text-[10.5px] font-medium tabular-nums ${item.highlightBadge
+                                  ? 'text-[#93C5FD]'
+                                  : isActive
+                                    ? 'text-white/85'
+                                    : 'text-white/42'
                                   }`}
-                                >
-                                  {item.badgeCount}
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                              >
+                                {item.badgeCount}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </nav>
       </div>
     );
@@ -480,9 +478,8 @@ export function AdminShell({
         className={`hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:shrink-0 lg:flex-col lg:border-r lg:border-white/[0.08] lg:bg-[#0B1736] lg:text-white transition-[width] duration-200 ease-out overflow-hidden ${shellLayout.asideWidthClass}`}
       >
         <div
-          className={`flex h-14 shrink-0 items-center border-b border-white/[0.08] ${
-            sidebarCollapsed ? 'justify-center px-2' : 'gap-2.5 px-3.5'
-          }`}
+          className={`flex h-14 shrink-0 items-center border-b border-white/[0.08] ${sidebarCollapsed ? 'justify-center px-2' : 'gap-2.5 px-3.5'
+            }`}
         >
           <img
             src="/favicon.png"
@@ -725,31 +722,31 @@ export function AdminShell({
                         </p>
                       ) : (
                         unreadNotifications.map((n) => (
-                        <button
-                          key={n.id}
-                          type="button"
-                          onClick={() => {
-                            onNotificationClick(n);
-                            setNotifOpen(false);
-                          }}
-                          className="flex w-full items-start justify-between gap-2 py-2.5 text-left transition-colors hover:bg-[#F5F7FC]"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs font-semibold text-[#0B1736]">
-                                {n.title}
-                              </span>
-                              <span className="shrink-0 text-[11px] text-[#64748B]">
-                                {n.timeAgo}
-                              </span>
+                          <button
+                            key={n.id}
+                            type="button"
+                            onClick={() => {
+                              onNotificationClick(n);
+                              setNotifOpen(false);
+                            }}
+                            className="flex w-full items-start justify-between gap-2 py-2.5 text-left transition-colors hover:bg-[#F5F7FC]"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-xs font-semibold text-[#0B1736]">
+                                  {n.title}
+                                </span>
+                                <span className="shrink-0 text-[11px] text-[#64748B]">
+                                  {n.timeAgo}
+                                </span>
+                              </div>
+                              <p className="mt-0.5 text-xs text-[#475569]">
+                                {n.detail}
+                              </p>
                             </div>
-                            <p className="mt-0.5 text-xs text-[#475569]">
-                              {n.detail}
-                            </p>
-                          </div>
-                          <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-[#94A3B8]" />
-                        </button>
-                      ))
+                            <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-[#94A3B8]" />
+                          </button>
+                        ))
                       )}
                     </div>
                   </div>
@@ -776,7 +773,7 @@ export function AdminShell({
                   className="h-7 w-7 rounded-lg object-cover"
                 />
                 <span className="hidden text-xs font-semibold text-[#0B1736] sm:inline">
-                  Arvind Thevar
+                  {adminName || 'Arvind Thevar'}
                 </span>
               </button>
 
@@ -797,11 +794,20 @@ export function AdminShell({
                       </div>
                       <div className="min-w-0">
                         <p className="truncate text-sm font-bold text-[#0B1736]">
-                          Arvind Thevar
+                          {adminName || 'Arvind Thevar'}
                         </p>
                         <p className="truncate text-xs text-[#64748B]">
                           {adminEmail || PROFILE.email}
                         </p>
+                        {(adminUsername || (activeSessions && maxSessions)) && (
+                          <p className="mt-0.5 truncate text-[11px] font-medium text-[#145BFF]">
+                            {adminUsername ? `@${adminUsername}` : ''}
+                            {adminUsername && activeSessions && maxSessions ? ' · ' : ''}
+                            {activeSessions && maxSessions
+                              ? `Sessions ${activeSessions}/${maxSessions}`
+                              : ''}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="mt-2 space-y-1">
@@ -837,7 +843,7 @@ export function AdminShell({
                           }}
                           className="flex min-h-[42px] w-full items-center justify-between rounded-lg px-2.5 text-xs font-semibold text-[#DC2626] hover:bg-[#FEF2F2]"
                         >
-                          <span>Sign Out (Login View)</span>
+                          <span>Sign Out</span>
                           <LogOut className="h-3.5 w-3.5" />
                         </button>
                       )}
@@ -873,9 +879,8 @@ export function AdminShell({
                 type="button"
                 onClick={() => handleNavigate(item.id)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`relative flex h-full min-h-[44px] flex-col items-center justify-center gap-0.5 px-1 transition-colors ${
-                  isActive ? 'text-[#145BFF]' : 'text-[#64748B]'
-                }`}
+                className={`relative flex h-full min-h-[44px] flex-col items-center justify-center gap-0.5 px-1 transition-colors ${isActive ? 'text-[#145BFF]' : 'text-[#64748B]'
+                  }`}
               >
                 <Icon className="h-5 w-5" aria-hidden="true" />
                 <span className="truncate text-[10px] font-semibold">
@@ -893,11 +898,10 @@ export function AdminShell({
             onClick={() => setMoreSheetOpen(true)}
             aria-expanded={moreSheetOpen}
             aria-label="More management modules"
-            className={`flex h-full min-h-[44px] flex-col items-center justify-center gap-0.5 px-1 transition-colors ${
-              isMoreSectionActive || moreSheetOpen
-                ? 'text-[#145BFF]'
-                : 'text-[#64748B]'
-            }`}
+            className={`flex h-full min-h-[44px] flex-col items-center justify-center gap-0.5 px-1 transition-colors ${isMoreSectionActive || moreSheetOpen
+              ? 'text-[#145BFF]'
+              : 'text-[#64748B]'
+              }`}
           >
             <MoreHorizontal className="h-5 w-5" aria-hidden="true" />
             <span className="text-[10px] font-semibold">More</span>
@@ -924,19 +928,17 @@ export function AdminShell({
                 key={item.id}
                 type="button"
                 onClick={() => handleNavigate(item.id)}
-                className={`flex min-h-[56px] w-full items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-left transition-colors ${
-                  isActive
-                    ? 'border-[#145BFF] bg-[#EFF6FF] text-[#145BFF]'
-                    : 'border-[#E2E8F0] bg-[#F5F7FC] text-[#0B1736] hover:bg-white'
-                }`}
+                className={`flex min-h-[56px] w-full items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-left transition-colors ${isActive
+                  ? 'border-[#145BFF] bg-[#EFF6FF] text-[#145BFF]'
+                  : 'border-[#E2E8F0] bg-[#F5F7FC] text-[#0B1736] hover:bg-white'
+                  }`}
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-                      isActive
-                        ? 'bg-[#145BFF] text-white'
-                        : 'border border-[#E2E8F0] bg-white text-[#145BFF]'
-                    }`}
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isActive
+                      ? 'bg-[#145BFF] text-white'
+                      : 'border border-[#E2E8F0] bg-white text-[#145BFF]'
+                      }`}
                   >
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </div>

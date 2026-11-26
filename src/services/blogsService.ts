@@ -1,4 +1,5 @@
 import type { CourseAttachment } from './coursesService';
+import { adminFetch } from './authService';
 import { resolveResourceUrl } from './resourcesService';
 
 export type BlogStatus = 'Published' | 'Draft' | 'Scheduled';
@@ -284,7 +285,7 @@ export async function fetchAdminBlogsPageBackend(
   params: BlogSearchParams = {},
   signal?: AbortSignal
 ): Promise<BlogPageResult> {
-  const response = await fetch(buildSearchUrl('/search', params), {
+  const response = await adminFetch(buildSearchUrl('/search', params), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     cache: 'no-store',
@@ -331,7 +332,7 @@ export async function fetchPublicBlogsPageAsync(
 }
 
 export async function fetchAllBlogsBackend(): Promise<BlogArticle[]> {
-  const response = await fetch(blogsApiBase(), {
+  const response = await adminFetch(blogsApiBase(), {
     method: 'GET',
     headers: { Accept: 'application/json' },
     cache: 'no-store',
@@ -348,7 +349,7 @@ export async function fetchAllBlogsFromApiOrStorage(): Promise<{
   fromApi: boolean;
 }> {
   try {
-    const response = await fetch(blogsApiBase(), {
+    const response = await adminFetch(blogsApiBase(), {
       method: 'GET',
       headers: { Accept: 'application/json' },
       cache: 'no-store',
@@ -438,7 +439,7 @@ export async function fetchPublicBlogBySlugAsync(
 }
 
 export async function fetchNextBlogCodeBackend(): Promise<string> {
-  const response = await fetch(`${blogsApiBase()}/next-code`, {
+  const response = await adminFetch(`${blogsApiBase()}/next-code`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
     cache: 'no-store',
@@ -453,7 +454,7 @@ export async function fetchNextBlogCodeBackend(): Promise<string> {
 export async function createBlogBackend(
   payload: BlogFormPayload
 ): Promise<BlogArticle> {
-  const response = await fetch(blogsApiBase(), {
+  const response = await adminFetch(blogsApiBase(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -477,7 +478,7 @@ export async function updateBlogBackend(
   id: string,
   payload: BlogFormPayload
 ): Promise<BlogArticle> {
-  const response = await fetch(`${blogsApiBase()}/${encodeURIComponent(id)}`, {
+  const response = await adminFetch(`${blogsApiBase()}/${encodeURIComponent(id)}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -506,7 +507,7 @@ export async function patchBlogStatusBackend(
   if (scheduledAt) {
     body.scheduledAt = scheduledAt;
   }
-  const response = await fetch(
+  const response = await adminFetch(
     `${blogsApiBase()}/${encodeURIComponent(id)}/status`,
     {
       method: 'PATCH',
@@ -533,7 +534,7 @@ export async function patchBlogFeaturedBackend(
   id: string,
   featured: boolean
 ): Promise<BlogArticle> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${blogsApiBase()}/${encodeURIComponent(id)}/featured`,
     {
       method: 'PATCH',
@@ -576,7 +577,7 @@ export async function recordBlogViewBackend(
 }
 
 export async function deleteBlogBackend(id: string): Promise<void> {
-  const response = await fetch(`${blogsApiBase()}/${encodeURIComponent(id)}`, {
+  const response = await adminFetch(`${blogsApiBase()}/${encodeURIComponent(id)}`, {
     method: 'DELETE',
     headers: { Accept: 'application/json' },
   });

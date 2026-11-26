@@ -3,6 +3,8 @@
  * server-side paginated Enquiry management.
  */
 
+import { adminFetch } from './authService';
+
 const API_BASE_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
   'http://localhost:8080';
@@ -242,7 +244,7 @@ export async function fetchAdminEnquiriesPageBackend(
   url.searchParams.set('sortBy', params.sortBy ?? 'createdAt');
   url.searchParams.set('sortDir', params.sortDir ?? 'desc');
 
-  const response = await fetch(url.toString(), {
+  const response = await adminFetch(url.toString(), {
     headers: { Accept: 'application/json' },
     signal,
   });
@@ -257,7 +259,7 @@ export async function createManualEnquiryBackend(
   payload: ManualEnquiryPayload
 ): Promise<ContactEnquiryItem> {
   const cleanPhone = payload.phone?.trim();
-  const response = await fetch(`${enquiriesApiBase()}/manual`, {
+  const response = await adminFetch(`${enquiriesApiBase()}/manual`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -289,7 +291,7 @@ export async function updateEnquiryAdminBackend(
   id: string,
   payload: { status?: EnquiryStatus; adminNotes?: string }
 ): Promise<ContactEnquiryItem> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${enquiriesApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'PUT',
@@ -313,7 +315,7 @@ export async function updateEnquiryStatusBackend(
   id: string,
   status: EnquiryStatus
 ): Promise<ContactEnquiryItem> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${enquiriesApiBase()}/${encodeURIComponent(id)}/status`,
     {
       method: 'PATCH',
@@ -334,7 +336,7 @@ export async function updateEnquiryStatusBackend(
 }
 
 export async function deleteEnquiryBackend(id: string): Promise<void> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${enquiriesApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'DELETE',
@@ -371,7 +373,7 @@ export async function fetchUnreadNotificationsBackend(
 }
 
 export async function markAllNewEnquiriesReadBackend(): Promise<number> {
-  const response = await fetch(`${enquiriesApiBase()}/mark-all-read`, {
+  const response = await adminFetch(`${enquiriesApiBase()}/mark-all-read`, {
     method: 'PATCH',
     headers: { Accept: 'application/json' },
   });

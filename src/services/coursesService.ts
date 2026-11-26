@@ -1,4 +1,5 @@
 import { ASSETS, EXPERTISE_DOMAINS } from '../data/portfolioData';
+import { adminFetch } from './authService';
 
 export type CourseDomainStatus = 'Published' | 'Draft';
 
@@ -283,7 +284,7 @@ export async function fetchAdminCoursesPageBackend(
   signal?: AbortSignal
 ): Promise<CourseDomainPage> {
   const qs = buildCourseQueryString(params);
-  const response = await fetch(`${coursesApiBase()}/search?${qs}`, {
+  const response = await adminFetch(`${coursesApiBase()}/search?${qs}`, {
     headers: { Accept: 'application/json' },
     signal,
   });
@@ -358,7 +359,7 @@ export async function fetchPublicCoursesAsync(): Promise<CourseDomain[]> {
 }
 
 export async function fetchAllCoursesBackend(): Promise<CourseDomain[]> {
-  const response = await fetch(coursesApiBase(), {
+  const response = await adminFetch(coursesApiBase(), {
     headers: { Accept: 'application/json' },
   });
   if (!response.ok) {
@@ -388,7 +389,7 @@ export async function fetchAllCoursesFromApiOrStorage(): Promise<{
 }
 
 export async function fetchNextDomainCodeBackend(): Promise<string> {
-  const response = await fetch(`${coursesApiBase()}/next-code`, {
+  const response = await adminFetch(`${coursesApiBase()}/next-code`, {
     headers: { Accept: 'application/json' },
   });
   if (!response.ok) {
@@ -403,7 +404,7 @@ export async function fetchNextDomainCodeBackend(): Promise<string> {
 export async function createCourseBackend(
   payload: CourseDomainFormPayload
 ): Promise<CourseDomain> {
-  const response = await fetch(coursesApiBase(), {
+  const response = await adminFetch(coursesApiBase(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify(payload),
@@ -420,7 +421,7 @@ export async function updateCourseBackend(
   id: string,
   payload: CourseDomainFormPayload
 ): Promise<CourseDomain> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${coursesApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'PUT',
@@ -443,7 +444,7 @@ export async function patchCourseStatusBackend(
   id: string,
   status: CourseDomainStatus
 ): Promise<CourseDomain> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${coursesApiBase()}/${encodeURIComponent(id)}/status`,
     {
       method: 'PATCH',
@@ -463,7 +464,7 @@ export async function patchCourseStatusBackend(
 }
 
 export async function deleteCourseBackend(id: string): Promise<void> {
-  const response = await fetch(
+  const response = await adminFetch(
     `${coursesApiBase()}/${encodeURIComponent(id)}`,
     {
       method: 'DELETE',
