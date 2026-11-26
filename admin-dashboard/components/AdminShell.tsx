@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   LogOut,
   Mail,
+  Menu,
   MessageSquareQuote,
   MoreHorizontal,
   PenSquare,
@@ -25,6 +26,7 @@ import type { AdminSectionId, NotificationItem } from '../types/admin';
 import {
   ALL_SIDEBAR_GROUP_IDS,
   findSidebarGroupForSection,
+  getSidebarShellLayout,
   toggleSidebarGroup,
   type SidebarGroupDef,
   type SidebarGroupId,
@@ -105,6 +107,7 @@ export function AdminShell({
   children,
 }: AdminShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -230,6 +233,7 @@ export function AdminShell({
   );
 
   const overviewItem = navItems[0];
+  const shellLayout = getSidebarShellLayout(sidebarCollapsed);
   const unreadNotifications = notifications.filter((n) => !n.read).slice(0, 5);
   const unreadNotifCount = unreadNotifications.length;
   const isMoreSectionActive = MORE_SHEET_SECTIONS.includes(activeSection);
@@ -247,11 +251,78 @@ export function AdminShell({
     setExpandedGroups((prev) => toggleSidebarGroup(prev, groupId));
   };
 
-  const renderSidebarLinks = (isMobileDrawer = false) => {
+  const renderSidebarLinks = (isMobileDrawer = false, isCollapsed = false) => {
     const rowHeight = isMobileDrawer ? 'min-h-[38px]' : 'h-[32px]';
     const groupHeight = isMobileDrawer ? 'min-h-[38px]' : 'h-[32px]';
     const OverviewIcon = overviewItem.icon;
     const isOverviewActive = activeSection === overviewItem.id;
+
+    if (isCollapsed) {
+      return (
+        <div className="flex min-h-0 flex-1 flex-col">
+          <nav
+            aria-label="Collapsed sidebar icons"
+            className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain px-2 pt-3 pb-4 admin-scroll"
+          >
+            {/* Overview Icon Only */}
+            <button
+              type="button"
+              onClick={() => handleNavigate(overviewItem.id)}
+              aria-label={overviewItem.label}
+              title={overviewItem.label}
+              aria-current={isOverviewActive ? 'page' : undefined}
+              className={`mx-auto flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${
+                isOverviewActive
+                  ? 'bg-[#145BFF]/24 text-[#60A5FA] ring-1 ring-inset ring-[#60A5FA]/35'
+                  : 'text-white/65 hover:bg-white/[0.07] hover:text-white'
+              }`}
+            >
+              <OverviewIcon className="h-[18px] w-[18px]" aria-hidden="true" />
+            </button>
+
+            {/* Module Icons Only (grouped by subtle divider) */}
+            {sidebarGroups.map((group) => (
+              <div
+                key={group.id}
+                className="space-y-1.5 border-t border-white/[0.08] pt-2"
+              >
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeSection === item.id;
+                  const tooltip =
+                    item.badgeCount !== undefined
+                      ? `${item.label} (${item.badgeCount})`
+                      : item.label;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => handleNavigate(item.id)}
+                      aria-label={tooltip}
+                      title={tooltip}
+                      aria-current={isActive ? 'page' : undefined}
+                      className={`relative mx-auto flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${
+                        isActive
+                          ? 'bg-[#145BFF]/24 text-[#60A5FA] ring-1 ring-inset ring-[#60A5FA]/35'
+                          : 'text-white/65 hover:bg-white/[0.07] hover:text-white'
+                      }`}
+                    >
+                      <Icon className="h-[17px] w-[17px]" aria-hidden="true" />
+                      {item.highlightBadge && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#60A5FA]"
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </nav>
+        </div>
+      );
+    }
 
     return (
       <div className="flex min-h-0 flex-1 flex-col">
@@ -406,47 +477,78 @@ export function AdminShell({
       {/* Desktop Navy Sidebar (#0B1736) */}
       <aside
         aria-label="Admin sidebar navigation"
-        className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[244px] lg:shrink-0 lg:flex-col lg:border-r lg:border-white/[0.08] lg:bg-[#0B1736] lg:text-white"
+        className={`hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:shrink-0 lg:flex-col lg:border-r lg:border-white/[0.08] lg:bg-[#0B1736] lg:text-white transition-[width] duration-200 ease-out overflow-hidden ${shellLayout.asideWidthClass}`}
       >
-        <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-white/[0.08] px-3.5">
+        <div
+          className={`flex h-14 shrink-0 items-center border-b border-white/[0.08] ${
+            sidebarCollapsed ? 'justify-center px-2' : 'gap-2.5 px-3.5'
+          }`}
+        >
           <img
             src="/favicon.png"
             alt="Arvind Thevar"
+            title="Arvind Thevar · Admin Console"
             referrerPolicy="no-referrer"
             className="h-8 w-8 shrink-0 rounded-lg border border-white/15 object-cover"
           />
-          <div className="min-w-0">
-            <p className="truncate text-[13px] font-semibold leading-tight tracking-[-0.01em] text-white">
-              Arvind Thevar
-            </p>
-            <p className="truncate text-[10.5px] text-white/48">
-              Admin Console
-            </p>
-          </div>
-        </div>
-
-        {renderSidebarLinks(false)}
-
-        <div className="flex shrink-0 items-center gap-1.5 border-t border-white/[0.08] px-3 py-2.5">
-          <a
-            href="/"
-            className="flex h-8 min-w-0 flex-1 items-center justify-between gap-2 rounded-lg bg-white/[0.05] px-2.5 text-[11.5px] font-medium text-white/75 transition-colors hover:bg-white/[0.10] hover:text-white"
-          >
-            <span className="truncate">Open Website</span>
-            <ExternalLink className="h-3 w-3 shrink-0 opacity-70" aria-hidden="true" />
-          </a>
-          {onSignOut && (
-            <button
-              type="button"
-              onClick={onSignOut}
-              aria-label="Sign out of admin console"
-              title="Sign Out"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.05] text-white/65 transition-colors hover:bg-[#EF4444]/15 hover:text-[#FCA5A5]"
-            >
-              <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
-            </button>
+          {shellLayout.showLabels && (
+            <div className="min-w-0">
+              <p className="truncate text-[13px] font-semibold leading-tight tracking-[-0.01em] text-white">
+                Arvind Thevar
+              </p>
+              <p className="truncate text-[10.5px] text-white/48">
+                Admin Console
+              </p>
+            </div>
           )}
         </div>
+
+        {renderSidebarLinks(false, sidebarCollapsed)}
+
+        {sidebarCollapsed ? (
+          <div className="flex shrink-0 flex-col items-center gap-1.5 border-t border-white/[0.08] px-2 py-2.5">
+            <a
+              href="/"
+              aria-label="Open Website"
+              title="Open Website"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.05] text-white/75 transition-colors hover:bg-white/[0.10] hover:text-white"
+            >
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+            {onSignOut && (
+              <button
+                type="button"
+                onClick={onSignOut}
+                aria-label="Sign out of admin console"
+                title="Sign Out"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.05] text-white/65 transition-colors hover:bg-[#EF4444]/15 hover:text-[#FCA5A5]"
+              >
+                <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="flex shrink-0 items-center gap-1.5 border-t border-white/[0.08] px-3 py-2.5">
+            <a
+              href="/"
+              className="flex h-8 min-w-0 flex-1 items-center justify-between gap-2 rounded-lg bg-white/[0.05] px-2.5 text-[11.5px] font-medium text-white/75 transition-colors hover:bg-white/[0.10] hover:text-white"
+            >
+              <span className="truncate">Open Website</span>
+              <ExternalLink className="h-3 w-3 shrink-0 opacity-70" aria-hidden="true" />
+            </a>
+            {onSignOut && (
+              <button
+                type="button"
+                onClick={onSignOut}
+                aria-label="Sign out of admin console"
+                title="Sign Out"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.05] text-white/65 transition-colors hover:bg-[#EF4444]/15 hover:text-[#FCA5A5]"
+              >
+                <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            )}
+          </div>
+        )}
       </aside>
 
       {/* Mobile Navigation Drawer */}
@@ -537,6 +639,17 @@ export function AdminShell({
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#BFDBFE] bg-[#EFF6FF] text-[#145BFF] transition-colors hover:bg-[#DBEAFE] lg:hidden"
             >
               <ChevronRight className="h-4 w-4 stroke-[2.4]" aria-hidden="true" />
+            </button>
+            {/* Desktop Hamburger Sidebar Collapse / Expand Toggle */}
+            <button
+              type="button"
+              onClick={() => setSidebarCollapsed((prev) => !prev)}
+              aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              aria-expanded={!sidebarCollapsed}
+              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white text-[#0B1736] transition-colors hover:border-[#BFDBFE] hover:bg-[#EFF6FF] hover:text-[#145BFF] lg:flex cursor-pointer"
+            >
+              <Menu className="h-[18px] w-[18px]" aria-hidden="true" />
             </button>
             <div className="min-w-0">
               <p className="hidden text-[11px] font-medium text-[#64748B] lg:block">
@@ -737,7 +850,9 @@ export function AdminShell({
         </header>
 
         {/* Scrollable Workspace Content with clearance for fixed bottom bars */}
-        <main className="mx-auto w-full max-w-[1360px] flex-1 px-3 py-4 pb-36 sm:px-5 sm:py-6 sm:pb-36 lg:px-7 lg:pb-24">
+        <main
+          className={`mx-auto w-full flex-1 px-3 py-4 pb-36 transition-[max-width,padding] duration-200 sm:px-5 sm:py-6 sm:pb-36 lg:pb-24 ${shellLayout.mainWidthClass}`}
+        >
           {children}
         </main>
       </div>

@@ -666,6 +666,26 @@ export function ensureSidebarGroupExpanded(
   return [...expandedIds, groupId];
 }
 
+export interface SidebarShellLayout {
+  asideWidthClass: string;
+  mainWidthClass: string;
+  showLabels: boolean;
+}
+
+export function getSidebarShellLayout(collapsed: boolean): SidebarShellLayout {
+  return collapsed
+    ? {
+        asideWidthClass: 'lg:w-[76px]',
+        mainWidthClass: 'max-w-none lg:px-8',
+        showLabels: false,
+      }
+    : {
+        asideWidthClass: 'lg:w-[244px]',
+        mainWidthClass: 'max-w-[1440px] lg:px-7',
+        showLabels: true,
+      };
+}
+
 export function filterSidebarGroups<T extends SidebarModuleRef>(
   groups: SidebarGroupDef<T>[],
   rawQuery: string

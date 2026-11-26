@@ -397,6 +397,17 @@ test('sidebar dropdown helpers default all groups open, toggle independently wit
 
   const empty = filterSidebarGroups(groups, 'nonexistent-module');
   assert.equal(empty.length, 0);
+
+  const { getSidebarShellLayout } = await import('./adminLogic');
+  const openLayout = getSidebarShellLayout(false);
+  assert.equal(openLayout.showLabels, true);
+  assert.equal(openLayout.asideWidthClass, 'lg:w-[244px]');
+  assert.ok(openLayout.mainWidthClass.includes('max-w-[1440px]'));
+
+  const collapsedLayout = getSidebarShellLayout(true);
+  assert.equal(collapsedLayout.showLabels, false);
+  assert.equal(collapsedLayout.asideWidthClass, 'lg:w-[76px]');
+  assert.ok(collapsedLayout.mainWidthClass.includes('max-w-none'));
 });
 
 test('generateNextDomainCode auto-increments DOM-xxx codes without collisions', () => {
