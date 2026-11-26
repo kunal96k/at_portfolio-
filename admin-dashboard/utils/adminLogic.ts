@@ -622,6 +622,12 @@ export function paginateList<T>(
 
 export type SidebarGroupId = 'curriculum' | 'publishing' | 'engagement';
 
+export const ALL_SIDEBAR_GROUP_IDS: SidebarGroupId[] = [
+  'curriculum',
+  'publishing',
+  'engagement',
+];
+
 export interface SidebarModuleRef {
   id: string;
   label: string;
@@ -647,15 +653,17 @@ export function toggleSidebarGroup(
   expandedIds: SidebarGroupId[],
   groupId: SidebarGroupId
 ): SidebarGroupId[] {
-  return expandedIds.includes(groupId) ? [] : [groupId];
+  return expandedIds.includes(groupId)
+    ? expandedIds.filter((id) => id !== groupId)
+    : [...expandedIds, groupId];
 }
 
 export function ensureSidebarGroupExpanded(
   expandedIds: SidebarGroupId[],
   groupId: SidebarGroupId | undefined
 ): SidebarGroupId[] {
-  if (!groupId) return expandedIds;
-  return [groupId];
+  if (!groupId || expandedIds.includes(groupId)) return expandedIds;
+  return [...expandedIds, groupId];
 }
 
 export function filterSidebarGroups<T extends SidebarModuleRef>(

@@ -23,7 +23,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { PROFILE } from '../../src/data/portfolioData';
 import type { AdminSectionId, NotificationItem } from '../types/admin';
 import {
-  ensureSidebarGroupExpanded,
+  ALL_SIDEBAR_GROUP_IDS,
   findSidebarGroupForSection,
   toggleSidebarGroup,
   type SidebarGroupDef,
@@ -108,8 +108,8 @@ export function AdminShell({
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState<SidebarGroupId[]>([
-    'curriculum',
+  const [expandedGroups, setExpandedGroups] = useState<SidebarGroupId[]>(() => [
+    ...ALL_SIDEBAR_GROUP_IDS,
   ]);
 
   useEffect(() => {
@@ -229,14 +229,6 @@ export function AdminShell({
     [sidebarGroups, activeSection]
   );
 
-  useEffect(() => {
-    if (activeGroup) {
-      setExpandedGroups((prev) =>
-        ensureSidebarGroupExpanded(prev, activeGroup.id)
-      );
-    }
-  }, [activeGroup]);
-
   const overviewItem = navItems[0];
   const unreadNotifications = notifications.filter((n) => !n.read).slice(0, 5);
   const unreadNotifCount = unreadNotifications.length;
@@ -297,15 +289,6 @@ export function AdminShell({
             <span className="text-[10px] font-semibold uppercase tracking-[0.09em] text-white/38">
               Modules
             </span>
-            {expandedGroups.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setExpandedGroups([])}
-                className="text-[10.5px] font-medium text-white/45 transition-colors hover:text-white/80"
-              >
-                Collapse
-              </button>
-            )}
           </div>
 
           {/* Collapsible Dropdown Groups */}

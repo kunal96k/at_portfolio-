@@ -318,13 +318,20 @@ test('validateUploadFile enforces 5 MB max limit and allowed extensions', () => 
   assert.equal(badExt.valid, false);
 });
 
-test('sidebar dropdown helpers resolve active groups, toggle cleanly, and filter modules', async () => {
+test('sidebar dropdown helpers default all groups open, toggle independently without collapsing others, and filter modules', async () => {
   const {
+    ALL_SIDEBAR_GROUP_IDS,
     ensureSidebarGroupExpanded,
     filterSidebarGroups,
     findSidebarGroupForSection,
     toggleSidebarGroup,
   } = await import('./adminLogic');
+
+  assert.deepEqual(ALL_SIDEBAR_GROUP_IDS, [
+    'curriculum',
+    'publishing',
+    'engagement',
+  ]);
 
   const groups = [
     {
@@ -359,11 +366,17 @@ test('sidebar dropdown helpers resolve active groups, toggle cleanly, and filter
   assert.equal(findSidebarGroupForSection(groups, 'overview'), undefined);
 
   assert.deepEqual(toggleSidebarGroup(['curriculum'], 'publishing'), [
+    'curriculum',
     'publishing',
   ]);
+  assert.deepEqual(
+    toggleSidebarGroup(['curriculum', 'publishing', 'engagement'], 'publishing'),
+    ['curriculum', 'engagement']
+  );
   assert.deepEqual(toggleSidebarGroup(['curriculum'], 'curriculum'), []);
 
   assert.deepEqual(ensureSidebarGroupExpanded(['curriculum'], 'engagement'), [
+    'curriculum',
     'engagement',
   ]);
   assert.deepEqual(ensureSidebarGroupExpanded(['curriculum'], 'curriculum'), [
