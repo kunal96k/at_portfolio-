@@ -55,7 +55,7 @@ export function AdminLoginView({
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-between bg-[#F5F7FC] px-4 py-8 text-[#0B1736] sm:px-6">
+    <div className="flex min-h-screen flex-col justify-between bg-[#F5F7FC] px-4 py-8 pt-safe pb-safe text-[#0B1736] sm:px-6">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
         <a
           href="/"

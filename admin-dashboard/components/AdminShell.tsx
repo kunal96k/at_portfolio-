@@ -577,8 +577,8 @@ export function AdminShell({
             onClick={() => setDrawerOpen(false)}
             className="fixed inset-0 bg-[#0B1736]/60 backdrop-blur-[1px]"
           />
-          <div className="relative z-10 flex h-full w-[276px] max-w-[84vw] flex-col bg-[#0B1736] text-white shadow-2xl">
-            <div className="flex h-13 shrink-0 items-center justify-between border-b border-white/[0.08] px-3.5">
+          <div className="relative z-10 flex h-full w-[276px] max-w-[84vw] flex-col bg-[#0B1736] pt-safe text-white shadow-2xl">
+            <div className="flex min-h-[54px] shrink-0 items-center justify-between border-b border-white/[0.08] px-3.5 py-2">
               <div className="flex min-w-0 items-center gap-2.5">
                 <img
                   src="/favicon.png"
@@ -640,72 +640,73 @@ export function AdminShell({
 
       {/* Main Content Shell */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Compact Top App Bar (52px mobile, 56px desktop) */}
-        <header className="sticky top-0 z-30 flex h-[54px] items-center justify-between gap-2 border-b border-[#E2E8F0] bg-white px-3 pt-safe sm:px-5 lg:h-14 lg:px-7">
-          <div className="flex min-w-0 items-center gap-2.5">
-            {/* Sleek '>' Chevron Drawer Trigger on Mobile */}
-            <button
-              type="button"
-              onClick={() => setDrawerOpen(true)}
-              aria-label="Open navigation menu"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#BFDBFE] bg-[#EFF6FF] text-[#145BFF] transition-colors hover:bg-[#DBEAFE] lg:hidden"
-            >
-              <ChevronRight className="h-4 w-4 stroke-[2.4]" aria-hidden="true" />
-            </button>
-            {/* Desktop Hamburger Sidebar Collapse / Expand Toggle */}
-            <button
-              type="button"
-              onClick={() => setSidebarCollapsed((prev) => !prev)}
-              aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              aria-expanded={!sidebarCollapsed}
-              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white text-[#0B1736] transition-colors hover:border-[#BFDBFE] hover:bg-[#EFF6FF] hover:text-[#145BFF] lg:flex cursor-pointer"
-            >
-              <Menu className="h-[18px] w-[18px]" aria-hidden="true" />
-            </button>
-            <div className="min-w-0">
-              <p className="hidden text-[11px] font-medium text-[#64748B] lg:block">
-                {activeGroup ? activeGroup.label : 'Console'} / {activeItem.label}
-              </p>
-              <h1 className="truncate text-[15px] font-semibold tracking-[-0.01em] text-[#0B1736] lg:text-[16px]">
-                {activeItem.label}
-              </h1>
-            </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-            {/* Notifications Trigger */}
-            <div className="relative">
+        {/* Compact Top App Bar (safe-area aware outer wrapper so controls never overflow bottom border) */}
+        <header className="sticky top-0 z-30 border-b border-[#E2E8F0] bg-white pt-safe">
+          <div className="flex min-h-[56px] w-full items-center justify-between gap-2 px-3 py-1.5 sm:px-5 lg:h-14 lg:min-h-0 lg:px-7 lg:py-0">
+            <div className="flex min-w-0 items-center gap-2.5">
+              {/* Sleek '>' Chevron Drawer Trigger on Mobile */}
               <button
                 type="button"
-                onClick={() => {
-                  setNotifOpen((prev) => !prev);
-                  setProfileOpen(false);
-                }}
-                aria-expanded={notifOpen}
-                aria-label={`Notifications (${unreadNotifCount} unread)`}
-                className="relative flex h-11 w-11 items-center justify-center rounded-xl text-[#0B1736] hover:bg-[#F5F7FC]"
+                onClick={() => setDrawerOpen(true)}
+                aria-label="Open navigation menu"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#BFDBFE] bg-[#EFF6FF] text-[#145BFF] transition-colors hover:bg-[#DBEAFE] lg:hidden"
               >
-                <Bell className="h-5 w-5" />
-                {unreadNotifCount > 0 && (
-                  <span className="absolute top-2 right-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#145BFF] px-1 text-[10px] font-bold text-white tabular-nums">
-                    {unreadNotifCount}
-                  </span>
-                )}
+                <ChevronRight className="h-4 w-4 stroke-[2.4]" aria-hidden="true" />
               </button>
+              {/* Desktop Hamburger Sidebar Collapse / Expand Toggle */}
+              <button
+                type="button"
+                onClick={() => setSidebarCollapsed((prev) => !prev)}
+                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                aria-expanded={!sidebarCollapsed}
+                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white text-[#0B1736] transition-colors hover:border-[#BFDBFE] hover:bg-[#EFF6FF] hover:text-[#145BFF] lg:flex cursor-pointer"
+              >
+                <Menu className="h-[18px] w-[18px]" aria-hidden="true" />
+              </button>
+              <div className="min-w-0">
+                <p className="hidden text-[11px] font-medium text-[#64748B] lg:block">
+                  {activeGroup ? activeGroup.label : 'Console'} / {activeItem.label}
+                </p>
+                <h1 className="truncate text-[15px] font-semibold tracking-[-0.01em] text-[#0B1736] lg:text-[16px]">
+                  {activeItem.label}
+                </h1>
+              </div>
+            </div>
 
-              {notifOpen && (
-                <>
-                  <div
-                    aria-hidden="true"
-                    onClick={() => setNotifOpen(false)}
-                    className="fixed inset-0 z-30"
-                  />
-                  <div
-                    role="dialog"
-                    aria-label="Recent notifications"
-                    className="fixed top-[60px] right-3 left-3 z-40 max-h-[70dvh] overflow-y-auto overscroll-contain rounded-2xl border border-[#E2E8F0] bg-white p-3.5 shadow-xl sm:absolute sm:top-12 sm:right-0 sm:left-auto sm:w-80 admin-scroll"
-                  >
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+              {/* Notifications Trigger */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNotifOpen((prev) => !prev);
+                    setProfileOpen(false);
+                  }}
+                  aria-expanded={notifOpen}
+                  aria-label={`Notifications (${unreadNotifCount} unread)`}
+                  className="relative flex h-10 w-10 items-center justify-center rounded-xl text-[#0B1736] hover:bg-[#F5F7FC]"
+                >
+                  <Bell className="h-5 w-5" />
+                  {unreadNotifCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#145BFF] px-1 text-[10px] font-bold text-white tabular-nums">
+                      {unreadNotifCount}
+                    </span>
+                  )}
+                </button>
+
+                {notifOpen && (
+                  <>
+                    <div
+                      aria-hidden="true"
+                      onClick={() => setNotifOpen(false)}
+                      className="fixed inset-0 z-30"
+                    />
+                    <div
+                      role="dialog"
+                      aria-label="Recent notifications"
+                      className="fixed top-[calc(3.75rem+env(safe-area-inset-top,0px))] right-3 left-3 z-40 max-h-[70dvh] overflow-y-auto overscroll-contain rounded-2xl border border-[#E2E8F0] bg-white p-3.5 shadow-xl sm:absolute sm:top-12 sm:right-0 sm:left-auto sm:w-80 admin-scroll"
+                    >
                     <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2.5">
                       <div>
                         <span className="text-sm font-bold text-[#0B1736]">
@@ -769,40 +770,40 @@ export function AdminShell({
               )}
             </div>
 
-            {/* Profile Menu Trigger */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setProfileOpen((prev) => !prev);
-                  setNotifOpen(false);
-                }}
-                aria-expanded={profileOpen}
-                aria-label="Admin profile menu"
-                className="flex min-h-[44px] items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-2 py-1 hover:bg-[#F5F7FC] sm:px-2.5"
-              >
-                <img
-                  src="/favicon.png"
-                  alt="Arvind Thevar"
-                  referrerPolicy="no-referrer"
-                  className="h-7 w-7 rounded-lg object-cover"
-                />
-                <span className="hidden text-xs font-semibold text-[#0B1736] sm:inline">
-                  {adminName || 'Arvind Thevar'}
-                </span>
-              </button>
-
-              {profileOpen && (
-                <>
-                  <div
-                    aria-hidden="true"
-                    onClick={() => setProfileOpen(false)}
-                    className="fixed inset-0 z-30"
+              {/* Profile Menu Trigger */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProfileOpen((prev) => !prev);
+                    setNotifOpen(false);
+                  }}
+                  aria-expanded={profileOpen}
+                  aria-label="Admin profile menu"
+                  className="flex h-10 items-center gap-2 rounded-xl border border-[#E2E8F0] bg-white px-2 py-1 hover:bg-[#F5F7FC] sm:px-2.5"
+                >
+                  <img
+                    src="/favicon.png"
+                    alt="Arvind Thevar"
+                    referrerPolicy="no-referrer"
+                    className="h-7 w-7 rounded-lg bg-white object-contain p-0.5"
                   />
-                  <div
-                    role="menu"
-                    className="fixed top-[60px] right-3 z-40 w-[260px] max-w-[calc(100vw-24px)] rounded-2xl border border-[#E2E8F0] bg-white p-3 shadow-xl sm:absolute sm:top-12 sm:right-0"
-                  >
+                  <span className="hidden text-xs font-semibold text-[#0B1736] sm:inline">
+                    {adminName || 'Arvind Thevar'}
+                  </span>
+                </button>
+
+                {profileOpen && (
+                  <>
+                    <div
+                      aria-hidden="true"
+                      onClick={() => setProfileOpen(false)}
+                      className="fixed inset-0 z-30"
+                    />
+                    <div
+                      role="menu"
+                      className="fixed top-[calc(3.75rem+env(safe-area-inset-top,0px))] right-3 z-40 w-[260px] max-w-[calc(100vw-24px)] rounded-2xl border border-[#E2E8F0] bg-white p-3 shadow-xl sm:absolute sm:top-12 sm:right-0"
+                    >
                     <div className="flex items-center gap-3 border-b border-[#E2E8F0] pb-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#145BFF]">
                         <User className="h-5 w-5" />
@@ -867,6 +868,7 @@ export function AdminShell({
                 </>
               )}
             </div>
+          </div>
           </div>
         </header>
 

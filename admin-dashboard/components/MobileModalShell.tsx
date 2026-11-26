@@ -88,45 +88,50 @@ export function MobileModalShell({
 
       {/* Fixed Header */}
       <div
-        className={`shrink-0 border-b border-[#E2E8F0] bg-white ${fullScreen ? 'px-4 py-3.5 sm:px-8 sm:py-4' : 'px-4 py-3 sm:px-6 sm:py-3.5'
-          }`}
+        className={`shrink-0 border-b border-[#E2E8F0] bg-white ${fullScreen ? 'pt-safe' : ''}`}
       >
         <div
-          className={`flex items-start justify-between gap-3 sm:items-center ${fullScreen ? 'mx-auto w-full max-w-6xl' : 'w-full'
-            }`}
+          className={
+            fullScreen ? 'px-4 py-3.5 sm:px-8 sm:py-4' : 'px-4 py-3 sm:px-6 sm:py-3.5'
+          }
         >
-          <div className="min-w-0 flex-1">
-            {headerBadge && (
-              <div className="mb-1 flex flex-wrap items-center gap-1.5">
-                {headerBadge}
-              </div>
-            )}
-            <h2
-              id={titleId}
-              className={`truncate font-bold text-[#0F172A] ${fullScreen ? 'text-base sm:text-lg' : 'text-[15px] sm:text-base'
-                }`}
-            >
-              {title}
-            </h2>
-            {subtitle && (
-              <p className="mt-0.5 text-xs leading-relaxed text-[#64748B]">
-                {subtitle}
-              </p>
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={busy}
-            aria-label={`Close ${title}`}
-            className={`flex shrink-0 items-center justify-center rounded-lg text-[#64748B] transition-colors hover:bg-[#F1F5F9] hover:text-[#0F172A] disabled:opacity-50 ${fullScreen
-              ? 'h-9 gap-1.5 border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-xs font-semibold'
-              : 'h-9 w-9'
+          <div
+            className={`flex items-start justify-between gap-3 sm:items-center ${fullScreen ? 'mx-auto w-full max-w-6xl' : 'w-full'
               }`}
           >
-            <X className="h-4.5 w-4.5" />
-            {fullScreen && <span className="hidden sm:inline">Close</span>}
-          </button>
+            <div className="min-w-0 flex-1">
+              {headerBadge && (
+                <div className="mb-1 flex flex-wrap items-center gap-1.5">
+                  {headerBadge}
+                </div>
+              )}
+              <h2
+                id={titleId}
+                className={`truncate font-bold text-[#0F172A] ${fullScreen ? 'text-base sm:text-lg' : 'text-[15px] sm:text-base'
+                  }`}
+              >
+                {title}
+              </h2>
+              {subtitle && (
+                <p className="mt-0.5 text-xs leading-relaxed text-[#64748B]">
+                  {subtitle}
+                </p>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={busy}
+              aria-label={`Close ${title}`}
+              className={`flex shrink-0 items-center justify-center rounded-lg text-[#64748B] transition-colors hover:bg-[#F1F5F9] hover:text-[#0F172A] disabled:opacity-50 ${fullScreen
+                ? 'h-9 gap-1.5 border border-[#E2E8F0] bg-[#F8FAFC] px-3 text-xs font-semibold'
+                : 'h-9 w-9'
+                }`}
+            >
+              <X className="h-4.5 w-4.5" />
+              {fullScreen && <span className="hidden sm:inline">Close</span>}
+            </button>
+          </div>
         </div>
       </div>
 
