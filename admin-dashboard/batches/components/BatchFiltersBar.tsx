@@ -32,13 +32,6 @@ interface BatchFiltersBarProps {
   onViewFiles?: () => void;
 }
 
-const DEFAULT_BATCH_CATEGORIES: BatchCategory[] = [
-  'Linux',
-  'Networking',
-  'Cloud',
-  'DevOps',
-];
-
 export function BatchFiltersBar({
   query,
   domainTracks = [],
@@ -54,7 +47,7 @@ export function BatchFiltersBar({
 }: BatchFiltersBarProps) {
   const mergedCategories = Array.from(
     new Map(
-      [...categoryOptions, ...DEFAULT_BATCH_CATEGORIES]
+      categoryOptions
         .map((c) => c.trim())
         .filter(Boolean)
         .map((c) => [c.toLowerCase(), c])

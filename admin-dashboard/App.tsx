@@ -10,11 +10,10 @@ import { EnquiriesPage } from './enquiries/pages/EnquiriesPage';
 import { GalleryPage } from './gallery/pages/GalleryPage';
 import { ResourcesPage } from './resources/pages/ResourcesPage';
 import { TestimonialsPage } from './testimonials/pages/TestimonialsPage';
-import { fetchAdminBatchesPageBackend } from '../src/services/batchesService';
 import {
-  fetchAdminBlogsPageBackend,
-  type BlogArticle,
-} from '../src/services/blogsService';
+  fetchDashboardOverviewBackend,
+  type DashboardOverviewData,
+} from './services/overviewService';
 import {
   fetchAllCoursesBackend,
   type CourseDomain,
@@ -24,15 +23,7 @@ import {
   fetchAdminEnquiriesPageBackend,
   type ContactEnquiryItem,
 } from '../src/services/enquiryApi';
-import { fetchAdminGalleryPageBackend } from '../src/services/galleryService';
-import {
-  fetchAdminResourcesPageBackend,
-  type StudyResourceNote,
-} from '../src/services/resourcesService';
-import {
-  fetchAdminTestimonialsPageBackend,
-  TESTIMONIALS_UPDATED_EVENT,
-} from '../src/services/testimonialsService';
+import { TESTIMONIALS_UPDATED_EVENT } from '../src/services/testimonialsService';
 import type {
   AdminSectionId,
   NotificationItem,
@@ -49,6 +40,7 @@ export default function AdminApp() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
     () => !shouldStartOnLogin()
   );
+  const [adminEmail, setAdminEmail] = useState<string>('');
 
   useEffect(() => {
     let link = document.querySelector<HTMLLinkElement>("link[rel*='icon']");
@@ -63,35 +55,13 @@ export default function AdminApp() {
 
   const [activeSection, setActiveSection] = useState<AdminSectionId>('overview');
   const [batchesCount, setBatchesCount] = useState<number>(0);
-
-  const [blogs, setBlogs] = useState<BlogArticle[]>([]);
-  const [blogsStats, setBlogsStats] = useState({
-    total: 0,
-    published: 0,
-  });
+  const [coursesCount, setCoursesCount] = useState<number>(0);
   const [courses, setCourses] = useState<CourseDomain[]>([]);
-  const [resourcesStats, setResourcesStats] = useState({
-    total: 0,
-    published: 0,
-  });
-  const [recentResources, setRecentResources] = useState<StudyResourceNote[]>(
-    []
-  );
-  const [galleryStats, setGalleryStats] = useState({
-    total: 0,
-    published: 0,
-  });
-  const [testimonialsStats, setTestimonialsStats] = useState({
-    total: 0,
-    published: 0,
-  });
-  const [enquiriesStats, setEnquiriesStats] = useState({
-    total: 0,
-    newCount: 0,
-  });
-  const [recentEnquiries, setRecentEnquiries] = useState<ContactEnquiryItem[]>(
-    []
-  );
+  const [resourcesCount, setResourcesCount] = useState<number>(0);
+  const [blogsCount, setBlogsCount] = useState<number>(0);
+  const [galleryCount, setGalleryCount] = useState<number>(0);
+  const [testimonialsCount, setTestimonialsCount] = useState<number>(0);
+  const [unreadEnquiriesCount, setUnreadEnquiriesCount] = useState<number>(0);
   const [unreadEnquiriesList, setUnreadEnquiriesList] = useState<
     ContactEnquiryItem[]
   >([]);
@@ -100,24 +70,20 @@ export default function AdminApp() {
   >(() => new Set());
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
-  const syncEnquiryHeaderState = useCallback(() => {
-    void fetchAdminEnquiriesPageBackend({
-      page: 0,
-      size: 5,
-      sortBy: 'createdAt',
-      sortDir: 'desc',
-    })
-      .then((res) => {
-        setEnquiriesStats({
-          total: res.stats.total,
-          newCount: res.stats.newCount,
-        });
-        setRecentEnquiries(res.items);
-      })
-      .catch(() => {
-        // Handled cleanly in EnquiriesPage
-      });
+  const applyOverviewSidebarStats = useCallback(
+    (data: DashboardOverviewData) => {
+      setBatchesCount(data.kpis.totalBatches);
+      setCoursesCount(data.kpis.totalCourses);
+      setResourcesCount(data.kpis.totalResources);
+      setBlogsCount(data.kpis.totalBlogs);
+      setGalleryCount(data.kpis.totalGallery);
+      setTestimonialsCount(data.kpis.totalTestimonials);
+      setUnreadEnquiriesCount(data.kpis.newEnquiries);
+    },
+    []
+  );
 
+  const syncEnquiryHeaderNotifications = useCallback(() => {
     void fetchAdminEnquiriesPageBackend({
       status: 'New',
       page: 0,
@@ -126,30 +92,21 @@ export default function AdminApp() {
       sortDir: 'desc',
     })
       .then((res) => {
+        setUnreadEnquiriesCount(res.stats.newCount);
         setUnreadEnquiriesList(res.items);
       })
       .catch(() => {
-        // Offline backend handled gracefully
+        // Offline backend handled cleanly
       });
   }, []);
 
-  const syncTestimonialCount = useCallback(() => {
-    void fetchAdminTestimonialsPageBackend({
-      page: 0,
-      size: 1,
-      sortBy: 'displayOrder',
-      sortDir: 'asc',
-    })
-      .then((res) => {
-        setTestimonialsStats({
-          total: res.stats.total,
-          published: res.stats.published,
-        });
-      })
+  const syncSidebarCountsFromBackend = useCallback(() => {
+    void fetchDashboardOverviewBackend()
+      .then(applyOverviewSidebarStats)
       .catch(() => {
-        // Handled cleanly in TestimonialsPage
+        // Offline backend surfaced cleanly inside active modules
       });
-  }, []);
+  }, [applyOverviewSidebarStats]);
 
   useEffect(() => {
     let cancelled = false;
@@ -157,6 +114,7 @@ export default function AdminApp() {
       .then((items) => {
         if (!cancelled) {
           setCourses(items);
+          setCoursesCount(items.length);
         }
       })
       .catch(() => {
@@ -164,138 +122,59 @@ export default function AdminApp() {
           setCourses([]);
         }
       });
-    void fetchAdminResourcesPageBackend({
-      page: 0,
-      size: 5,
-      sortBy: 'updatedAt',
-      sortDir: 'desc',
-    })
-      .then((res) => {
-        if (!cancelled) {
-          setResourcesStats({
-            total: res.stats.total,
-            published: res.stats.published,
-          });
-          setRecentResources(res.items);
-        }
-      })
-      .catch(() => {});
-    void fetchAdminBatchesPageBackend({
-      page: 0,
-      size: 1,
-      sortBy: 'updatedAt',
-      sortDir: 'desc',
-    })
-      .then((res) => {
-        if (!cancelled) {
-          setBatchesCount(res.stats.total);
-        }
-      })
-      .catch(() => {});
-    void fetchAdminBlogsPageBackend({
-      page: 0,
-      size: 5,
-      sortBy: 'updatedAt',
-      sortDir: 'desc',
-    })
-      .then((res) => {
-        if (!cancelled) {
-          setBlogsStats({
-            total: res.stats.total,
-            published: res.stats.published,
-          });
-          setBlogs(res.items);
-        }
-      })
-      .catch(() => {});
-    void fetchAdminGalleryPageBackend({
-      page: 0,
-      size: 1,
-      sortBy: 'updatedAt',
-      sortDir: 'desc',
-    })
-      .then((res) => {
-        if (!cancelled) {
-          setGalleryStats({
-            total: res.stats.total,
-            published: res.stats.published,
-          });
-        }
-      })
-      .catch(() => {});
 
-    syncEnquiryHeaderState();
-    syncTestimonialCount();
+    syncSidebarCountsFromBackend();
+    syncEnquiryHeaderNotifications();
 
-    window.addEventListener(ENQUIRIES_UPDATED_EVENT, syncEnquiryHeaderState);
-    window.addEventListener(TESTIMONIALS_UPDATED_EVENT, syncTestimonialCount);
+    const handleGlobalRefresh = () => {
+      syncSidebarCountsFromBackend();
+      syncEnquiryHeaderNotifications();
+    };
+    window.addEventListener(ENQUIRIES_UPDATED_EVENT, handleGlobalRefresh);
+    window.addEventListener(TESTIMONIALS_UPDATED_EVENT, handleGlobalRefresh);
 
     return () => {
       cancelled = true;
       window.removeEventListener(
         ENQUIRIES_UPDATED_EVENT,
-        syncEnquiryHeaderState
+        handleGlobalRefresh
       );
       window.removeEventListener(
         TESTIMONIALS_UPDATED_EVENT,
-        syncTestimonialCount
+        handleGlobalRefresh
       );
     };
-  }, [syncEnquiryHeaderState, syncTestimonialCount]);
+  }, [syncSidebarCountsFromBackend, syncEnquiryHeaderNotifications]);
 
-  const availableCourseTracks = courses.map((c) => c.title);
-
-  const handleResourcesCountChange = useCallback(
-    (total: number, published: number) => {
-      setResourcesStats((prev) =>
-        prev.total === total && prev.published === published
-          ? prev
-          : { total, published }
-      );
-    },
-    []
+  const availableCourseTracks = useMemo(
+    () => courses.map((c) => c.title),
+    [courses]
   );
 
-  const handleBlogsCountChange = useCallback(
-    (total: number, published: number) => {
-      setBlogsStats((prev) =>
-        prev.total === total && prev.published === published
-          ? prev
-          : { total, published }
-      );
-    },
-    []
-  );
+  const handleCoursesChange = useCallback((nextCourses: CourseDomain[]) => {
+    setCourses(nextCourses);
+    setCoursesCount(nextCourses.length);
+  }, []);
 
-  const handleGalleryCountChange = useCallback(
-    (total: number, published: number) => {
-      setGalleryStats((prev) =>
-        prev.total === total && prev.published === published
-          ? prev
-          : { total, published }
-      );
-    },
-    []
-  );
+  const handleResourcesCountChange = useCallback((total: number) => {
+    setResourcesCount(total);
+  }, []);
 
-  const handleTestimonialsCountChange = useCallback(
-    (total: number, published: number) => {
-      setTestimonialsStats((prev) =>
-        prev.total === total && prev.published === published
-          ? prev
-          : { total, published }
-      );
-    },
-    []
-  );
+  const handleBlogsCountChange = useCallback((total: number) => {
+    setBlogsCount(total);
+  }, []);
+
+  const handleGalleryCountChange = useCallback((total: number) => {
+    setGalleryCount(total);
+  }, []);
+
+  const handleTestimonialsCountChange = useCallback((total: number) => {
+    setTestimonialsCount(total);
+  }, []);
 
   const handleEnquiriesCountChange = useCallback(
-    (total: number, newCount: number) => {
-      setEnquiriesStats((prev) =>
-        prev.total === total && prev.newCount === newCount
-          ? prev
-          : { total, newCount }
-      );
+    (_total: number, newCount: number) => {
+      setUnreadEnquiriesCount(newCount);
     },
     []
   );
@@ -346,6 +225,7 @@ export default function AdminApp() {
 
   const handleLoginSuccess = (email: string) => {
     setIsAuthenticated(true);
+    setAdminEmail(email);
     if (
       typeof window !== 'undefined' &&
       window.location.search.includes('view=login')
@@ -361,6 +241,7 @@ export default function AdminApp() {
 
   const handleSignOut = () => {
     setIsAuthenticated(false);
+    setAdminEmail('');
     if (typeof window !== 'undefined') {
       window.history.replaceState({}, '', '/admin-dashboard/?view=login');
     }
@@ -375,30 +256,23 @@ export default function AdminApp() {
       <AdminShell
         activeSection={activeSection}
         onSelectSection={setActiveSection}
+        adminEmail={adminEmail || undefined}
         notifications={liveNotifications}
         onMarkAllRead={handleMarkAllRead}
         onNotificationClick={handleNotificationClick}
-        unreadEnquiriesCount={enquiriesStats.newCount}
+        unreadEnquiriesCount={unreadEnquiriesCount}
         batchesCount={batchesCount}
-        coursesCount={courses.length}
-        resourcesCount={resourcesStats.total}
-        blogsCount={blogsStats.total}
-        galleryCount={galleryStats.total}
-        testimonialsCount={testimonialsStats.total}
+        coursesCount={coursesCount}
+        resourcesCount={resourcesCount}
+        blogsCount={blogsCount}
+        galleryCount={galleryCount}
+        testimonialsCount={testimonialsCount}
         onSignOut={handleSignOut}
       >
         {activeSection === 'overview' && (
           <DashboardOverviewPage
-            batchesCount={batchesCount}
-            courses={courses}
-            blogs={blogs}
-            resourcesStats={resourcesStats}
-            recentResources={recentResources}
-            recentEnquiries={recentEnquiries}
-            unreadEnquiriesCount={enquiriesStats.newCount}
-            galleryStats={galleryStats}
-            testimonialsStats={testimonialsStats}
             onNavigate={setActiveSection}
+            onOverviewLoaded={applyOverviewSidebarStats}
           />
         )}
 
@@ -411,7 +285,10 @@ export default function AdminApp() {
         )}
 
         {activeSection === 'courses' && (
-          <CoursesPage onToast={pushToast} onCoursesChange={setCourses} />
+          <CoursesPage
+            onToast={pushToast}
+            onCoursesChange={handleCoursesChange}
+          />
         )}
 
         {activeSection === 'resources' && (
@@ -427,7 +304,6 @@ export default function AdminApp() {
             onToast={pushToast}
             domainSuggestions={availableCourseTracks}
             onCountChange={handleBlogsCountChange}
-            onBlogsChange={setBlogs}
           />
         )}
 

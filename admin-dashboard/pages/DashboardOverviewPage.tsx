@@ -14,31 +14,18 @@ import { useCallback, useEffect, useState } from 'react';
 import { MiniBarChart } from '../components/MiniBarChart';
 import { StatusBadge } from '../components/StatusBadge';
 import {
+  DASHBOARD_RECENT_LIMIT,
   fetchDashboardOverviewBackend,
   type DashboardOverviewData,
 } from '../services/overviewService';
-import type { CourseDomain } from '../../src/services/coursesService';
-import type { StudyResourceNote } from '../../src/services/resourcesService';
-import type { BlogArticle } from '../../src/services/blogsService';
-import {
-  ENQUIRIES_UPDATED_EVENT,
-  type ContactEnquiryItem,
-} from '../../src/services/enquiryApi';
+import { ENQUIRIES_UPDATED_EVENT } from '../../src/services/enquiryApi';
 import { TESTIMONIALS_UPDATED_EVENT } from '../../src/services/testimonialsService';
 import { formatShortDate } from '../utils/adminLogic';
 import type { AdminSectionId } from '../types/admin';
 
 interface DashboardOverviewPageProps {
-  batchesCount: number;
-  courses: CourseDomain[];
-  blogs: BlogArticle[];
-  resourcesStats: { total: number; published: number };
-  recentResources: StudyResourceNote[];
-  recentEnquiries: ContactEnquiryItem[];
-  unreadEnquiriesCount: number;
-  galleryStats: { total: number; published: number };
-  testimonialsStats: { total: number; published: number };
   onNavigate: (section: AdminSectionId) => void;
+  onOverviewLoaded?: (data: DashboardOverviewData) => void;
 }
 
 function asSectionId(key: string): AdminSectionId {
@@ -57,16 +44,8 @@ function asSectionId(key: string): AdminSectionId {
 }
 
 export function DashboardOverviewPage({
-  batchesCount,
-  courses,
-  blogs,
-  resourcesStats,
-  recentResources,
-  recentEnquiries,
-  unreadEnquiriesCount,
-  galleryStats,
-  testimonialsStats,
   onNavigate,
+  onOverviewLoaded,
 }: DashboardOverviewPageProps) {
   const [chartMetric, setChartMetric] = useState<
     'contentCount' | 'enquiriesCount'
@@ -75,27 +54,31 @@ export function DashboardOverviewPage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadOverview = useCallback(async (signal?: AbortSignal) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchDashboardOverviewBackend(signal);
-      if (!signal?.aborted) {
-        setOverview(data);
-        setLoading(false);
+  const loadOverview = useCallback(
+    async (signal?: AbortSignal) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchDashboardOverviewBackend(signal);
+        if (!signal?.aborted) {
+          setOverview(data);
+          onOverviewLoaded?.(data);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        if (!signal?.aborted) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : 'Unable to load live database analytics.'
+          );
+          setLoading(false);
+        }
       }
-    } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') return;
-      if (!signal?.aborted) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Unable to load live overview analytics.'
-        );
-        setLoading(false);
-      }
-    }
-  }, []);
+    },
+    [onOverviewLoaded]
+  );
 
   useEffect(() => {
     const controller = new AbortController();
@@ -114,50 +97,40 @@ export function DashboardOverviewPage({
   }, [loadOverview]);
 
   const kpis = overview?.kpis;
-  const activeCourses =
-    kpis?.publishedCourses ??
-    courses.filter((c) => c.status === 'Published').length;
-  const totalCourses = kpis?.totalCourses ?? courses.length;
-  const totalBatches = kpis?.totalBatches ?? batchesCount;
-  const upcomingBatches = kpis?.upcomingBatches ?? totalBatches;
-  const newEnquiries = kpis?.newEnquiries ?? unreadEnquiriesCount;
-  const totalEnquiries = kpis?.totalEnquiries ?? recentEnquiries.length;
-  const publishedResources =
-    kpis?.publishedResources ?? resourcesStats.published;
-  const totalDownloads = kpis?.totalDownloads ?? 0;
+  const isInitialLoading = loading && !overview;
 
   const statCards: Array<{
     label: string;
-    value: number;
+    value: number | null;
     detail: string;
     icon: typeof CalendarRange;
     target: AdminSectionId;
   }> = [
     {
       label: 'Upcoming Batches',
-      value: upcomingBatches,
-      detail: `${totalBatches} total batches`,
+      value: kpis ? kpis.upcomingBatches : null,
+      detail: kpis ? `${kpis.totalBatches} total batches` : 'Syncing from DB…',
       icon: CalendarRange,
       target: 'batches',
     },
     {
       label: 'Course / Domain',
-      value: activeCourses,
-      detail: `${totalCourses} total domains`,
+      value: kpis ? kpis.publishedCourses : null,
+      detail: kpis ? `${kpis.totalCourses} total domains` : 'Syncing from DB…',
       icon: GraduationCap,
       target: 'courses',
     },
     {
       label: 'New Enquiries',
-      value: newEnquiries,
-      detail: `${totalEnquiries} total leads`,
+      value: kpis ? kpis.newEnquiries : null,
+      detail: kpis ? `${kpis.totalEnquiries} total leads` : 'Syncing from DB…',
       icon: Mail,
       target: 'enquiries',
     },
     {
       label: 'Study Resources',
-      value: publishedResources,
-      detail: `${totalDownloads} total downloads`,
+      value: kpis ? kpis.publishedResources : null,
+      detail: kpis ? `${kpis.totalDownloads} total downloads` : 'Syncing from DB…',
       icon: FileText,
       target: 'resources',
     },
@@ -165,40 +138,69 @@ export function DashboardOverviewPage({
 
   const publishingCards: Array<{
     label: string;
-    published: number;
-    total: number;
+    published: number | null;
+    total: number | null;
     extra: string;
     icon: typeof BookOpen;
     target: AdminSectionId;
   }> = [
     {
       label: 'Blog Articles',
-      published: kpis?.publishedBlogs ?? blogs.length,
-      total: kpis?.totalBlogs ?? blogs.length,
-      extra: `${kpis?.totalBlogViews ?? 0} total reads`,
+      published: kpis ? kpis.publishedBlogs : null,
+      total: kpis ? kpis.totalBlogs : null,
+      extra: kpis ? `${kpis.totalBlogViews} total reads` : 'Syncing from DB…',
       icon: BookOpen,
       target: 'blogs',
     },
     {
       label: 'Gallery Photos',
-      published: kpis?.publishedGallery ?? galleryStats.published,
-      total: kpis?.totalGallery ?? galleryStats.total,
+      published: kpis ? kpis.publishedGallery : null,
+      total: kpis ? kpis.totalGallery : null,
       extra: 'Training & lab snapshots',
       icon: ImageIcon,
       target: 'gallery',
     },
     {
       label: 'Student Testimonials',
-      published: kpis?.publishedTestimonials ?? testimonialsStats.published,
-      total: kpis?.totalTestimonials ?? testimonialsStats.total,
-      extra: `${kpis?.featuredTestimonials ?? 0} featured on Home`,
+      published: kpis ? kpis.publishedTestimonials : null,
+      total: kpis ? kpis.totalTestimonials : null,
+      extra: kpis
+        ? `${kpis.featuredTestimonials} featured on Home`
+        : 'Syncing from DB…',
       icon: MessageSquareQuote,
       target: 'testimonials',
     },
   ];
 
   const chartData = overview?.dailyActivity ?? [];
-  const recentFeed = overview?.recentActivities ?? [];
+  const recentFeed = (overview?.recentActivities ?? []).slice(
+    0,
+    DASHBOARD_RECENT_LIMIT
+  );
+  const recentEnquiries = (overview?.recentEnquiries ?? []).slice(
+    0,
+    DASHBOARD_RECENT_LIMIT
+  );
+  const recentBatches = (overview?.recentBatches ?? []).slice(
+    0,
+    DASHBOARD_RECENT_LIMIT
+  );
+  const recentBlogs = (overview?.recentBlogs ?? []).slice(
+    0,
+    DASHBOARD_RECENT_LIMIT
+  );
+  const recentResources = (overview?.recentResources ?? []).slice(
+    0,
+    DASHBOARD_RECENT_LIMIT
+  );
+  const recentGallery = (overview?.recentGallery ?? []).slice(
+    0,
+    DASHBOARD_RECENT_LIMIT
+  );
+  const recentTestimonials = (overview?.recentTestimonials ?? []).slice(
+    0,
+    DASHBOARD_RECENT_LIMIT
+  );
   const moduleRows = overview?.moduleSummaries ?? [];
 
   return (
@@ -209,7 +211,7 @@ export function DashboardOverviewPage({
             Dashboard Overview
           </h1>
           <p className="text-xs text-[#64748B] sm:text-sm">
-            Real-time database analytics across curriculum, publishing, and student engagement.
+            Real-time MySQL database analytics and top 5 recent records per module.
           </p>
         </div>
 
@@ -220,7 +222,7 @@ export function DashboardOverviewPage({
           className="inline-flex h-[38px] items-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white px-3.5 text-xs font-semibold text-[#0B1736] shadow-2xs hover:bg-[#F8FAFC] disabled:opacity-50"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh Live Stats</span>
+          <span>Refresh Live Data</span>
         </button>
       </div>
 
@@ -231,7 +233,7 @@ export function DashboardOverviewPage({
         >
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#DC2626]" />
           <div className="min-w-0 flex-1">
-            <p className="font-semibold">Live overview metrics unavailable</p>
+            <p className="font-semibold">Live database overview unavailable</p>
             <p className="mt-0.5 text-xs text-[#B91C1C]">{error}</p>
           </div>
           <button
@@ -266,7 +268,7 @@ export function DashboardOverviewPage({
                 </div>
                 <div className="mt-3">
                   <p className="text-2xl font-bold text-[#0B1736] tabular-nums">
-                    {card.value}
+                    {card.value !== null ? card.value : '—'}
                   </p>
                   <p className="mt-0.5 text-xs text-[#64748B]">{card.detail}</p>
                 </div>
@@ -293,9 +295,9 @@ export function DashboardOverviewPage({
                     {card.label}
                   </p>
                   <p className="mt-0.5 text-lg font-bold text-[#0B1736] tabular-nums">
-                    {card.published}{' '}
+                    {card.published !== null ? card.published : '—'}{' '}
                     <span className="text-xs font-medium text-[#64748B]">
-                      / {card.total} published
+                      / {card.total !== null ? card.total : '—'} published
                     </span>
                   </p>
                   <p className="mt-0.5 text-[11px] text-[#64748B]">
@@ -311,7 +313,7 @@ export function DashboardOverviewPage({
         </div>
       </section>
 
-      {/* Chart + Live Activity Row */}
+      {/* Chart + Top 5 Recent Activity Feed */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-5 lg:col-span-7">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -356,16 +358,25 @@ export function DashboardOverviewPage({
           </div>
 
           <div className="mt-4">
-            <MiniBarChart data={chartData} metric={chartMetric} />
+            {isInitialLoading ? (
+              <div className="h-40 animate-pulse rounded-xl bg-[#F8FAFC]" />
+            ) : (
+              <MiniBarChart data={chartData} metric={chartMetric} />
+            )}
           </div>
         </section>
 
-        {/* Live Recent Activity Feed */}
+        {/* Top 5 Recent Database Activity */}
         <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-5 lg:col-span-5">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-base font-bold text-[#0B1736]">
-              Recent Database Activity
-            </h2>
+            <div>
+              <h2 className="text-base font-bold text-[#0B1736]">
+                Recent Activity
+              </h2>
+              <p className="text-[11px] text-[#64748B]">
+                Latest 5 database updates across modules
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => onNavigate('enquiries')}
@@ -376,13 +387,22 @@ export function DashboardOverviewPage({
             </button>
           </div>
 
-          {recentFeed.length === 0 ? (
+          {isInitialLoading ? (
+            <div className="mt-3 space-y-2.5">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <div
+                  key={n}
+                  className="h-11 animate-pulse rounded-lg bg-[#F8FAFC]"
+                />
+              ))}
+            </div>
+          ) : recentFeed.length === 0 ? (
             <p className="py-8 text-center text-xs text-[#64748B]">
               No database activity logged yet.
             </p>
           ) : (
             <ul className="mt-3 divide-y divide-[#E2E8F0]">
-              {recentFeed.slice(0, 5).map((item) => (
+              {recentFeed.map((item) => (
                 <li key={item.id}>
                   <button
                     type="button"
@@ -416,12 +436,17 @@ export function DashboardOverviewPage({
         </section>
       </div>
 
-      {/* Live Lists Row: Enquiries, Blogs, Resources */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {/* Recent Enquiries */}
+      {/* Top 5 Recent Database Records Grid (strictly 5 newest records per module) */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {/* Top 5 Recent Enquiries */}
         <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-5">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-base font-bold text-[#0B1736]">Recent Enquiries</h2>
+            <div>
+              <h2 className="text-base font-bold text-[#0B1736]">
+                Recent Enquiries
+              </h2>
+              <p className="text-[11px] text-[#64748B]">Top 5 newest leads</p>
+            </div>
             <button
               type="button"
               onClick={() => onNavigate('enquiries')}
@@ -431,21 +456,29 @@ export function DashboardOverviewPage({
             </button>
           </div>
           <ul className="mt-3 divide-y divide-[#E2E8F0]">
-            {recentEnquiries.length === 0 ? (
+            {isInitialLoading ? (
+              [1, 2, 3, 4, 5].map((n) => (
+                <li
+                  key={n}
+                  className="my-2 h-10 animate-pulse rounded-lg bg-[#F8FAFC]"
+                />
+              ))
+            ) : recentEnquiries.length === 0 ? (
               <li className="py-4 text-xs text-[#64748B]">
                 No contact enquiries recorded yet.
               </li>
             ) : (
-              recentEnquiries.slice(0, 3).map((enq) => (
-                <li key={enq.id} className="py-3 first:pt-1 last:pb-0">
+              recentEnquiries.map((enq) => (
+                <li key={enq.id} className="py-2.5 first:pt-1 last:pb-0">
                   <div className="flex items-center justify-between gap-2">
                     <p className="truncate text-sm font-semibold text-[#0B1736]">
                       {enq.name}
                     </p>
                     <StatusBadge status={enq.status} />
                   </div>
-                  <p className="mt-1 truncate text-xs text-[#475569]">
+                  <p className="mt-0.5 truncate text-xs text-[#475569]">
                     {enq.service || 'General Consultation'} · {enq.channel}
+                    {enq.createdAt ? ` · ${formatShortDate(enq.createdAt)}` : ''}
                   </p>
                 </li>
               ))
@@ -453,10 +486,66 @@ export function DashboardOverviewPage({
           </ul>
         </section>
 
-        {/* Recent Blogs */}
+        {/* Top 5 Recent Batches */}
         <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-5">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-base font-bold text-[#0B1736]">Recent Blogs</h2>
+            <div>
+              <h2 className="text-base font-bold text-[#0B1736]">
+                Recent Batches
+              </h2>
+              <p className="text-[11px] text-[#64748B]">
+                Top 5 recently updated batches
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigate('batches')}
+              className="text-xs font-semibold text-[#145BFF] hover:underline"
+            >
+              View all
+            </button>
+          </div>
+          <ul className="mt-3 divide-y divide-[#E2E8F0]">
+            {isInitialLoading ? (
+              [1, 2, 3, 4, 5].map((n) => (
+                <li
+                  key={n}
+                  className="my-2 h-10 animate-pulse rounded-lg bg-[#F8FAFC]"
+                />
+              ))
+            ) : recentBatches.length === 0 ? (
+              <li className="py-4 text-xs text-[#64748B]">
+                No training batches found in database.
+              </li>
+            ) : (
+              recentBatches.map((batch) => (
+                <li key={batch.id} className="py-2.5 first:pt-1 last:pb-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="truncate text-sm font-semibold text-[#0B1736]">
+                      {batch.title}
+                    </p>
+                    <StatusBadge status={batch.status} />
+                  </div>
+                  <p className="mt-0.5 truncate text-xs text-[#64748B]">
+                    {batch.category} · {batch.mode} · {batch.batchDate}
+                  </p>
+                </li>
+              ))
+            )}
+          </ul>
+        </section>
+
+        {/* Top 5 Recent Blogs */}
+        <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-base font-bold text-[#0B1736]">
+                Recent Blogs
+              </h2>
+              <p className="text-[11px] text-[#64748B]">
+                Top 5 recently updated articles
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => onNavigate('blogs')}
@@ -466,24 +555,31 @@ export function DashboardOverviewPage({
             </button>
           </div>
           <ul className="mt-3 divide-y divide-[#E2E8F0]">
-            {blogs.length === 0 ? (
+            {isInitialLoading ? (
+              [1, 2, 3, 4, 5].map((n) => (
+                <li
+                  key={n}
+                  className="my-2 h-10 animate-pulse rounded-lg bg-[#F8FAFC]"
+                />
+              ))
+            ) : recentBlogs.length === 0 ? (
               <li className="py-4 text-xs text-[#64748B]">
-                No blog articles loaded yet from backend.
+                No blog articles found in database.
               </li>
             ) : (
-              blogs.slice(0, 3).map((blog) => (
-                <li key={blog.id} className="py-3 first:pt-1 last:pb-0">
+              recentBlogs.map((blog) => (
+                <li key={blog.id} className="py-2.5 first:pt-1 last:pb-0">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="line-clamp-2 text-sm font-semibold text-[#0B1736]">
+                    <p className="line-clamp-1 text-sm font-semibold text-[#0B1736]">
                       {blog.title}
                     </p>
                     <StatusBadge status={blog.status} />
                   </div>
-                  <p className="mt-1 flex items-center gap-1.5 text-xs text-[#64748B]">
-                    <BookOpen className="h-3.5 w-3.5 shrink-0" />
-                    <span>
-                      {blog.category} · {formatShortDate(blog.updatedAt)}
-                    </span>
+                  <p className="mt-0.5 truncate text-xs text-[#64748B] tabular-nums">
+                    {blog.category} · {blog.viewsCount} reads
+                    {blog.timestamp
+                      ? ` · ${formatShortDate(blog.timestamp)}`
+                      : ''}
                   </p>
                 </li>
               ))
@@ -491,12 +587,17 @@ export function DashboardOverviewPage({
           </ul>
         </section>
 
-        {/* Recent Resources */}
+        {/* Top 5 Recent Resources */}
         <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-5">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-base font-bold text-[#0B1736]">
-              Recent Resources
-            </h2>
+            <div>
+              <h2 className="text-base font-bold text-[#0B1736]">
+                Recent Resources
+              </h2>
+              <p className="text-[11px] text-[#64748B]">
+                Top 5 recently updated study notes
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => onNavigate('resources')}
@@ -506,22 +607,134 @@ export function DashboardOverviewPage({
             </button>
           </div>
           <ul className="mt-3 divide-y divide-[#E2E8F0]">
-            {recentResources.length === 0 ? (
+            {isInitialLoading ? (
+              [1, 2, 3, 4, 5].map((n) => (
+                <li
+                  key={n}
+                  className="my-2 h-10 animate-pulse rounded-lg bg-[#F8FAFC]"
+                />
+              ))
+            ) : recentResources.length === 0 ? (
               <li className="py-4 text-xs text-[#64748B]">
-                No study notes loaded yet from backend.
+                No study notes found in database.
               </li>
             ) : (
-              recentResources.slice(0, 3).map((res) => (
-                <li key={res.id} className="py-3 first:pt-1 last:pb-0">
+              recentResources.map((res) => (
+                <li key={res.id} className="py-2.5 first:pt-1 last:pb-0">
                   <div className="flex items-center justify-between gap-2">
                     <p className="truncate text-sm font-semibold text-[#0B1736]">
                       {res.title}
                     </p>
                     <StatusBadge status={res.status} />
                   </div>
-                  <p className="mt-1 text-xs text-[#64748B] tabular-nums">
-                    {res.fileType} · {res.fileSizeLabel} · {res.downloads}{' '}
-                    downloads
+                  <p className="mt-0.5 truncate text-xs text-[#64748B] tabular-nums">
+                    {res.fileType}
+                    {res.fileSizeLabel ? ` · ${res.fileSizeLabel}` : ''} ·{' '}
+                    {res.downloads} downloads
+                  </p>
+                </li>
+              ))
+            )}
+          </ul>
+        </section>
+
+        {/* Top 5 Recent Gallery */}
+        <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-base font-bold text-[#0B1736]">
+                Recent Gallery
+              </h2>
+              <p className="text-[11px] text-[#64748B]">
+                Top 5 recently updated photos
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigate('gallery')}
+              className="text-xs font-semibold text-[#145BFF] hover:underline"
+            >
+              View all
+            </button>
+          </div>
+          <ul className="mt-3 divide-y divide-[#E2E8F0]">
+            {isInitialLoading ? (
+              [1, 2, 3, 4, 5].map((n) => (
+                <li
+                  key={n}
+                  className="my-2 h-10 animate-pulse rounded-lg bg-[#F8FAFC]"
+                />
+              ))
+            ) : recentGallery.length === 0 ? (
+              <li className="py-4 text-xs text-[#64748B]">
+                No gallery photos found in database.
+              </li>
+            ) : (
+              recentGallery.map((item) => (
+                <li key={item.id} className="py-2.5 first:pt-1 last:pb-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="truncate text-sm font-semibold text-[#0B1736]">
+                      {item.title}
+                    </p>
+                    <StatusBadge status={item.status} />
+                  </div>
+                  <p className="mt-0.5 truncate text-xs text-[#64748B]">
+                    {item.category}
+                    {item.featured ? ' · Featured' : ''}
+                    {item.timestamp
+                      ? ` · ${formatShortDate(item.timestamp)}`
+                      : ''}
+                  </p>
+                </li>
+              ))
+            )}
+          </ul>
+        </section>
+
+        {/* Top 5 Recent Testimonials */}
+        <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-base font-bold text-[#0B1736]">
+                Recent Testimonials
+              </h2>
+              <p className="text-[11px] text-[#64748B]">
+                Top 5 recently updated reviews
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigate('testimonials')}
+              className="text-xs font-semibold text-[#145BFF] hover:underline"
+            >
+              View all
+            </button>
+          </div>
+          <ul className="mt-3 divide-y divide-[#E2E8F0]">
+            {isInitialLoading ? (
+              [1, 2, 3, 4, 5].map((n) => (
+                <li
+                  key={n}
+                  className="my-2 h-10 animate-pulse rounded-lg bg-[#F8FAFC]"
+                />
+              ))
+            ) : recentTestimonials.length === 0 ? (
+              <li className="py-4 text-xs text-[#64748B]">
+                No student testimonials found in database.
+              </li>
+            ) : (
+              recentTestimonials.map((item) => (
+                <li key={item.id} className="py-2.5 first:pt-1 last:pb-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="truncate text-sm font-semibold text-[#0B1736]">
+                      {item.studentName}
+                    </p>
+                    <StatusBadge status={item.status} />
+                  </div>
+                  <p className="mt-0.5 truncate text-xs text-[#64748B]">
+                    {item.courseTrack}
+                    {item.company ? ` · ${item.company}` : ''}
+                    {item.featured ? ' · Featured' : ''}
                   </p>
                 </li>
               ))
@@ -530,7 +743,7 @@ export function DashboardOverviewPage({
         </section>
       </div>
 
-      {/* Live Module Inventory Summary Table (zero mock data) */}
+      {/* Live Module Inventory Summary Table */}
       <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-5">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -573,7 +786,9 @@ export function DashboardOverviewPage({
                     colSpan={5}
                     className="px-4 py-6 text-center text-xs text-[#64748B]"
                   >
-                    Loading module inventory…
+                    {isInitialLoading
+                      ? 'Loading real-time module inventory…'
+                      : 'No module inventory records available.'}
                   </td>
                 </tr>
               ) : (

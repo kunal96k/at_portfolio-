@@ -20,6 +20,7 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { PROFILE } from '../../src/data/portfolioData';
 import type { AdminSectionId, NotificationItem } from '../types/admin';
 import {
   ensureSidebarGroupExpanded,
@@ -51,6 +52,7 @@ interface SidebarGroupMeta {
 interface AdminShellProps {
   activeSection: AdminSectionId;
   onSelectSection: (section: AdminSectionId) => void;
+  adminEmail?: string;
   notifications: NotificationItem[];
   onMarkAllRead: () => void;
   onNotificationClick: (item: NotificationItem) => void;
@@ -88,6 +90,7 @@ const MORE_SHEET_SECTIONS: AdminSectionId[] = [
 export function AdminShell({
   activeSection,
   onSelectSection,
+  adminEmail,
   notifications,
   onMarkAllRead,
   onNotificationClick,
@@ -608,7 +611,12 @@ export function AdminShell({
                       </button>
                     </div>
                     <div className="mt-2 divide-y divide-[#E2E8F0]">
-                      {notifications.map((n) => (
+                      {notifications.length === 0 ? (
+                        <p className="py-4 text-center text-xs text-[#64748B]">
+                          No new unread notifications.
+                        </p>
+                      ) : (
+                        notifications.map((n) => (
                         <button
                           key={n.id}
                           type="button"
@@ -635,7 +643,8 @@ export function AdminShell({
                           </div>
                           <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-[#94A3B8]" />
                         </button>
-                      ))}
+                      ))
+                      )}
                     </div>
                   </div>
                 </>
@@ -685,7 +694,7 @@ export function AdminShell({
                           Arvind Thevar
                         </p>
                         <p className="truncate text-xs text-[#64748B]">
-                          arvindthaver@gmail.com
+                          {adminEmail || PROFILE.email}
                         </p>
                       </div>
                     </div>
