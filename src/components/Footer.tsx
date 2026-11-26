@@ -207,7 +207,7 @@ export function Footer({ onNavigate, onContactClick }: FooterProps) {
         {/* Hairline Divider */}
         <div className="h-px w-full bg-white/30 dark:bg-[#1A1A1B]/20" />
 
-        {/* Bottom Copyright, Temporary Admin Preview Buttons & Developed By Strip */}
+        {/* Bottom Copyright & Developed By Strip */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pt-6 text-[13.5px] font-normal">
           <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 text-white/95 dark:text-[#1A1A1B]/95">
             <p>© Copyright 2026 {PROFILE.name}. All Rights Reserved.</p>
@@ -216,22 +216,6 @@ export function Footer({ onNavigate, onContactClick }: FooterProps) {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
-            <a
-              href="/admin-dashboard/?view=login"
-              rel="nofollow"
-              className="inline-flex min-h-[38px] items-center gap-1.5 rounded-full border border-white/45 dark:border-[#1A1A1B]/35 bg-white/15 dark:bg-[#1A1A1B]/12 hover:bg-white/25 dark:hover:bg-[#1A1A1B]/20 px-3.5 py-1.5 text-[12.5px] font-medium text-white dark:text-[#1A1A1B] transition-colors duration-200"
-            >
-              <span>Admin Login</span>
-              <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
-            </a>
-            <a
-              href="/admin-dashboard/"
-              rel="nofollow"
-              className="inline-flex min-h-[38px] items-center gap-1.5 rounded-full border border-white/45 dark:border-[#1A1A1B]/35 bg-white/15 dark:bg-[#1A1A1B]/12 hover:bg-white/25 dark:hover:bg-[#1A1A1B]/20 px-3.5 py-1.5 text-[12.5px] font-medium text-white dark:text-[#1A1A1B] transition-colors duration-200"
-            >
-              <span>Admin Dashboard</span>
-              <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
-            </a>
             <a
               href="https://www.technokraftservices.com/"
               target="_blank"
