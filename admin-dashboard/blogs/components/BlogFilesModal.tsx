@@ -1,6 +1,7 @@
 import { Download, ExternalLink, FileText, FolderOpen } from 'lucide-react';
 import { MobileModalShell } from '../../components/MobileModalShell';
 import { formatFileSize } from '../../utils/adminLogic';
+import { sanitizeSafeHref } from '../../../src/utils/scrollMath';
 import type { BlogArticle } from '../types/blog';
 
 interface BlogFilesModalProps {
@@ -86,9 +87,9 @@ export function BlogFilesModal({
                   <ExternalLink className="h-3.5 w-3.5" />
                   <span>Article</span>
                 </button>
-                {file.url && (
+                {sanitizeSafeHref(file.url) && (
                   <a
-                    href={file.url}
+                    href={sanitizeSafeHref(file.url)!}
                     download={file.name}
                     className="inline-flex h-8 items-center gap-1 rounded-lg bg-[#145BFF] px-3 text-xs font-semibold text-white hover:bg-[#0F4AD6]"
                   >

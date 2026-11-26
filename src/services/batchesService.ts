@@ -1,4 +1,4 @@
-import { getApiBaseUrl } from '../config/api';
+import { buildApiEndpointUrl, getApiBaseUrl } from '../config/api';
 import { ASSETS } from '../data/portfolioData';
 import { adminFetch } from './authService';
 import { resolveResourceUrl } from './resourcesService';
@@ -333,37 +333,37 @@ function sanitizeBatchPage(raw: BatchPageResult): BatchPageResult {
 }
 
 function buildSearchUrl(path: string, params: BatchSearchParams): string {
-  const url = new URL(`${batchesApiBase()}${path}`);
+  const searchParams = new URLSearchParams();
   if (params.search && params.search.trim()) {
-    url.searchParams.set('search', params.search.trim());
+    searchParams.set('search', params.search.trim());
   }
   if (params.status && params.status !== 'All') {
-    url.searchParams.set('status', params.status);
+    searchParams.set('status', params.status);
   }
   if (params.category && params.category !== 'All') {
-    url.searchParams.set('category', params.category);
+    searchParams.set('category', params.category);
   }
   if (params.relatedCourse && params.relatedCourse !== 'All') {
-    url.searchParams.set('relatedCourse', params.relatedCourse);
+    searchParams.set('relatedCourse', params.relatedCourse);
   }
   if (params.learningLevel && params.learningLevel !== 'All') {
-    url.searchParams.set('learningLevel', params.learningLevel);
+    searchParams.set('learningLevel', params.learningLevel);
   }
   if (params.hasFilesOnly) {
-    url.searchParams.set('hasFilesOnly', 'true');
+    searchParams.set('hasFilesOnly', 'true');
   }
   if (params.scheduleFilter && params.scheduleFilter !== 'All') {
-    url.searchParams.set('scheduleFilter', params.scheduleFilter);
+    searchParams.set('scheduleFilter', params.scheduleFilter);
   }
-  url.searchParams.set('page', String(Math.max(0, params.page ?? 0)));
-  url.searchParams.set('size', String(Math.max(1, params.size ?? 5)));
+  searchParams.set('page', String(Math.max(0, params.page ?? 0)));
+  searchParams.set('size', String(Math.max(1, params.size ?? 5)));
   if (params.sortBy) {
-    url.searchParams.set('sortBy', params.sortBy);
+    searchParams.set('sortBy', params.sortBy);
   }
   if (params.sortDir) {
-    url.searchParams.set('sortDir', params.sortDir);
+    searchParams.set('sortDir', params.sortDir);
   }
-  return url.toString();
+  return buildApiEndpointUrl(`${batchesApiBase()}${path}`, searchParams);
 }
 
 async function parseApiError(response: Response): Promise<string> {
@@ -428,11 +428,16 @@ export function loadPublicBatchesFromStorage(): ManagedBatch[] {
   }
 }
 
-export function saveBatchesSnapshotToStorage(batches: ManagedBatch[]): void {
+export function saveBatchesSnapshotToStorage(
+  batches: ManagedBatch[],
+  emitEvent = false
+): void {
   if (typeof window === 'undefined') return;
   try {
     window.localStorage.setItem(BATCHES_STORAGE_KEY, JSON.stringify(batches));
-    window.dispatchEvent(new CustomEvent(BATCHES_UPDATED_EVENT));
+    if (emitEvent) {
+      window.dispatchEvent(new CustomEvent(BATCHES_UPDATED_EVENT));
+    }
   } catch {
     // Ignore storage quota errors
   }

@@ -1,5 +1,6 @@
 import { getApiBaseUrl } from '../config/api';
 import { STUDY_RESOURCES } from '../data/portfolioData';
+import { sanitizeSafeHref } from '../utils/scrollMath';
 import { adminFetch } from './authService';
 
 export type ResourceSectionType = 'Notes' | 'Lab Sections';
@@ -754,8 +755,15 @@ export async function downloadResourceSafely(
   }
 
   const updatedNote = await recordResourceDownloadBackend(note.id, isAdmin);
+  const safeExternalUrl = sanitizeSafeHref(targetUrl);
+  if (!safeExternalUrl) {
+    return {
+      blocked: true,
+      message: 'Unsafe or invalid download link blocked by security policy.',
+    };
+  }
   if (typeof window !== 'undefined') {
-    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    window.open(safeExternalUrl, '_blank', 'noopener,noreferrer');
   }
   return {
     blocked: false,

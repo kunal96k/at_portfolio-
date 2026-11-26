@@ -13,6 +13,7 @@ import {
 import { MobileModalShell } from '../../components/MobileModalShell';
 import { StatusBadge } from '../../components/StatusBadge';
 import { formatFileSize, formatShortDate } from '../../utils/adminLogic';
+import { sanitizeSafeHref } from '../../../src/utils/scrollMath';
 import type { BlogArticle } from '../types/blog';
 
 interface BlogPreviewModalProps {
@@ -280,9 +281,9 @@ export function BlogPreviewModal({
                         </p>
                       </div>
                     </div>
-                    {file.url && (
+                    {sanitizeSafeHref(file.url) && (
                       <a
-                        href={file.url}
+                        href={sanitizeSafeHref(file.url)!}
                         download={file.name}
                         className="inline-flex min-h-[36px] shrink-0 items-center justify-center gap-1 rounded-lg border border-[#E2E8F0] bg-white px-3 text-xs font-semibold text-[#145BFF] hover:bg-[#EFF6FF]"
                       >

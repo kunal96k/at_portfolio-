@@ -186,11 +186,16 @@ export function loadPublicCoursesFromStorage(): CourseDomain[] {
     .sort((a, b) => a.displayOrder - b.displayOrder);
 }
 
-export function saveCoursesToStorage(courses: CourseDomain[]): void {
+export function saveCoursesToStorage(
+  courses: CourseDomain[],
+  emitEvent = true
+): void {
   if (typeof window === 'undefined') return;
   try {
     window.localStorage.setItem(COURSES_STORAGE_KEY, JSON.stringify(courses));
-    window.dispatchEvent(new CustomEvent(COURSES_UPDATED_EVENT));
+    if (emitEvent) {
+      window.dispatchEvent(new CustomEvent(COURSES_UPDATED_EVENT));
+    }
   } catch {
     // Ignore storage quota warnings
   }
@@ -367,7 +372,7 @@ export async function fetchAllCoursesBackend(): Promise<CourseDomain[]> {
     data?: Record<string, unknown>[];
   };
   const items = Array.isArray(json?.data) ? json.data.map(mapApiCourse) : [];
-  saveCoursesToStorage(items);
+  saveCoursesToStorage(items, false);
   return items;
 }
 

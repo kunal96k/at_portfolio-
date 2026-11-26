@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { sanitizeSafeHref } from '../utils/scrollMath';
 
 interface ImageAssetMeta {
   webp: string;
@@ -82,8 +83,9 @@ export function SafeImage({
 }: SafeImageProps) {
   const [failed, setFailed] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
+  const safeSrc = sanitizeSafeHref(src, { allowDataImage: true });
 
-  if (failed) {
+  if (failed || !safeSrc) {
     return (
       <div
         role="img"
@@ -100,7 +102,7 @@ export function SafeImage({
       ? { webp: '/assets/optimized/arvind_avatar.webp', width: 128, height: 128 }
       : undefined;
 
-  const meta = avatarOverride ?? OPTIMIZED_IMAGE_MAP[src];
+  const meta = avatarOverride ?? OPTIMIZED_IMAGE_MAP[safeSrc];
   const resolvedWidth = width ?? meta?.width;
   const resolvedHeight = height ?? meta?.height;
   const decoding = fetchPriority === 'high' ? 'sync' : 'async';
@@ -108,7 +110,7 @@ export function SafeImage({
   if (useFallback || !meta) {
     return (
       <img
-        src={src}
+        src={safeSrc}
         alt={alt}
         width={resolvedWidth}
         height={resolvedHeight}
@@ -126,7 +128,7 @@ export function SafeImage({
     <picture className="block w-full h-full">
       <source srcSet={meta.webp} type="image/webp" />
       <img
-        src={src}
+        src={safeSrc}
         alt={alt}
         width={resolvedWidth}
         height={resolvedHeight}

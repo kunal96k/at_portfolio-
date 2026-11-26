@@ -245,3 +245,71 @@ test('fetchPublicBlogsPageAsync & fetchPublicBlogsAsync return empty zero-mock s
     globalThis.fetch = originalFetch;
   }
 });
+
+test('fetchPublicBlogsAsync writes snapshot without emitting BLOGS_UPDATED_EVENT loop', async () => {
+  const { BLOGS_STORAGE_KEY, BLOGS_UPDATED_EVENT, fetchPublicBlogsAsync } =
+    await import('./blogsService');
+
+  const store = new Map<string, string>();
+  const dispatched: string[] = [];
+  const origWindow = globalThis.window;
+  const origCustomEvent = globalThis.CustomEvent;
+  const originalFetch = globalThis.fetch;
+
+  (globalThis as unknown as { CustomEvent: unknown }).CustomEvent = class MockCustomEvent {
+    type: string;
+    constructor(type: string) {
+      this.type = type;
+    }
+  };
+  (globalThis as unknown as { window: unknown }).window = {
+    localStorage: {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, val: string) => {
+        store.set(key, val);
+      },
+      removeItem: (key: string) => {
+        store.delete(key);
+      },
+    },
+    dispatchEvent: (ev: { type: string }) => {
+      dispatched.push(ev.type);
+      return true;
+    },
+  };
+
+  globalThis.fetch = (async () =>
+    new Response(
+      JSON.stringify({
+        data: [
+          {
+            id: 42,
+            blogCode: 'BLOG-042',
+            title: 'Production Hardening Checklist',
+            slug: 'production-hardening-checklist',
+            category: 'DevSecOps',
+            author: 'Arvind Thevar',
+            readTime: '5 min read',
+            guideLabel: 'Guide',
+            excerpt: 'Locking down public APIs.',
+            sections: [],
+            tags: ['Security'],
+            status: 'Published',
+          },
+        ],
+      }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    )) as typeof fetch;
+
+  try {
+    const res = await fetchPublicBlogsAsync();
+    assert.equal(res.fromApi, true);
+    assert.equal(res.items.length, 1);
+    assert.ok(store.get(BLOGS_STORAGE_KEY));
+    assert.equal(dispatched.includes(BLOGS_UPDATED_EVENT), false);
+  } finally {
+    globalThis.fetch = originalFetch;
+    (globalThis as unknown as { window: unknown }).window = origWindow;
+    (globalThis as unknown as { CustomEvent: unknown }).CustomEvent = origCustomEvent;
+  }
+});

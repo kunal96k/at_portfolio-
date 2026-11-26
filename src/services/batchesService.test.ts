@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   BATCHES_STORAGE_KEY,
+  BATCHES_UPDATED_EVENT,
   buildEmptyPublicBatchPage,
+  fetchPublicBatchesAsync,
   formatBatchDateDisplay,
   formatBatchTimeDisplay,
   isBatchStarted,
@@ -153,6 +155,35 @@ test('loadPublicBatchesFromStorage excludes Drafts and already-started batches',
     assert.equal(publicBatches.length, 1);
     assert.equal(publicBatches[0].id, 'upcoming');
   } finally {
+    restore();
+  }
+});
+
+test('fetchPublicBatchesAsync persists snapshot without emitting BATCHES_UPDATED_EVENT loop', async () => {
+  const restore = setupMockWindowStorage();
+  const originalFetch = globalThis.fetch;
+  const dispatched: string[] = [];
+
+  (globalThis.window as unknown as { dispatchEvent: (ev: { type: string }) => boolean }).dispatchEvent =
+    (ev: { type: string }) => {
+      dispatched.push(ev.type);
+      return true;
+    };
+
+  globalThis.fetch = (async () =>
+    new Response(
+      JSON.stringify({ data: [makeBatch({ id: '99', batchCode: 'BATCH-099' })] }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    )) as typeof fetch;
+
+  try {
+    const res = await fetchPublicBatchesAsync();
+    assert.equal(res.fromApi, true);
+    assert.equal(res.items.length, 1);
+    assert.ok(window.localStorage.getItem(BATCHES_STORAGE_KEY));
+    assert.equal(dispatched.includes(BATCHES_UPDATED_EVENT), false);
+  } finally {
+    globalThis.fetch = originalFetch;
     restore();
   }
 });

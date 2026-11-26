@@ -65,7 +65,7 @@ async function main() {
     pageHtml = pageHtml.replace(/<html(\s+[^>]*)?>/i, '<html lang="en-IN">');
 
     // Replace <title>
-    pageHtml = pageHtml.replace(/<title>.*?<\/title>/is, `<title>${seo.title}</title>`);
+    pageHtml = pageHtml.replace(/<title>.*?<\/title>/is, `<title>${escapeHtml(seo.title)}</title>`);
 
     // Replace or inject meta description
     const descTag = `<meta name="description" content="${escapeHtml(seo.description)}" />`;
@@ -82,7 +82,7 @@ async function main() {
     }
 
     // Replace or inject canonical
-    const canonicalTag = `<link rel="canonical" href="${seo.canonicalUrl}" />`;
+    const canonicalTag = `<link rel="canonical" href="${escapeHtml(seo.canonicalUrl)}" />`;
     if (pageHtml.includes('<link rel="canonical"')) {
       pageHtml = pageHtml.replace(/<link\s+rel="canonical"[\s\S]*?>/i, canonicalTag);
     } else {
@@ -104,13 +104,13 @@ async function main() {
     // Replace OpenGraph & Twitter tags
     const ogTags = `<!-- SOCIAL_META_START -->
     <!-- OpenGraph Social Metadata -->
-    <meta property="og:type" content="${seo.ogType}" />
+    <meta property="og:type" content="${escapeHtml(seo.ogType)}" />
     <meta property="og:site_name" content="Arvind Thevar" />
     <meta property="og:locale" content="en_IN" />
-    <meta property="og:url" content="${seo.canonicalUrl}" />
+    <meta property="og:url" content="${escapeHtml(seo.canonicalUrl)}" />
     <meta property="og:title" content="${escapeHtml(seo.title)}" />
     <meta property="og:description" content="${escapeHtml(seo.description)}" />
-    <meta property="og:image" content="${seo.ogImage}" />
+    <meta property="og:image" content="${escapeHtml(seo.ogImage)}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="${escapeHtml(seo.ogImageAlt)}" />
@@ -119,7 +119,7 @@ async function main() {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(seo.title)}" />
     <meta name="twitter:description" content="${escapeHtml(seo.description)}" />
-    <meta name="twitter:image" content="${seo.ogImage}" />
+    <meta name="twitter:image" content="${escapeHtml(seo.ogImage)}" />
     <meta name="twitter:image:alt" content="${escapeHtml(seo.ogImageAlt)}" />
     <!-- SOCIAL_META_END -->`;
 
@@ -136,12 +136,12 @@ async function main() {
       );
     }
 
-    // Inject JSON-LD Schema
-    const jsonLdScript = `\n    <script type="application/ld+json" data-seo-route="true">\n${JSON.stringify(
-      seo.jsonLd,
-      null,
-      2
-    )}\n    </script>\n`;
+    // Inject JSON-LD Schema (escape <, >, & to prevent </script> breakout XSS)
+    const serializedJsonLd = JSON.stringify(seo.jsonLd, null, 2)
+      .replace(/</g, '\\u003c')
+      .replace(/>/g, '\\u003e')
+      .replace(/&/g, '\\u0026');
+    const jsonLdScript = `\n    <script type="application/ld+json" data-seo-route="true">\n${serializedJsonLd}\n    </script>\n`;
 
     if (pageHtml.includes('data-seo-route="true"')) {
       pageHtml = pageHtml.replace(
@@ -159,13 +159,13 @@ async function main() {
 
     // Process Google and Bing verification tags
     if (googleVerification) {
-      pageHtml = pageHtml.replace('%VITE_GOOGLE_SITE_VERIFICATION%', googleVerification);
+      pageHtml = pageHtml.replace('%VITE_GOOGLE_SITE_VERIFICATION%', escapeHtml(googleVerification));
     } else {
       pageHtml = pageHtml.replace(/<meta\s+name="google-site-verification"[^>]*>\s*/i, '');
     }
 
     if (bingVerification) {
-      pageHtml = pageHtml.replace('%VITE_BING_SITE_VERIFICATION%', bingVerification);
+      pageHtml = pageHtml.replace('%VITE_BING_SITE_VERIFICATION%', escapeHtml(bingVerification));
     } else {
       pageHtml = pageHtml.replace(/<meta\s+name="msvalidate\.01"[^>]*>\s*/i, '');
     }

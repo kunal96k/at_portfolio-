@@ -307,9 +307,57 @@ export const PUBLIC_INPUT_LIMITS = {
 } as const;
 
 export function containsDangerousMarkup(value: string): boolean {
-  return /[<>]|javascript:|vbscript:|data\s*:\s*text\/html|\bon[a-z]+\s*=/i.test(
+  return /[<>]|(?:javascript|vbscript):|data\s*:\s*(?:text\/html|image\/svg\+xml)|\bon[a-z]+\s*=/i.test(
     value
   );
+}
+
+/**
+ * Validates URLs before rendering them inside href/src attributes or window.open.
+ * Blocks javascript:, vbscript:, data:text/html, SVG script injection, and // open redirects.
+ */
+export function sanitizeSafeHref(
+  rawUrl: string | null | undefined,
+  options?: { allowDataImage?: boolean }
+): string | null {
+  if (!rawUrl || typeof rawUrl !== 'string') return null;
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return null;
+
+  // Strip ASCII control characters & zero-width obfuscators before scheme matching
+  const compact = trimmed
+    .replace(/[\u0000-\u0020\u007F\u200B-\u200D\uFEFF]/g, '')
+    .toLowerCase();
+
+  if (
+    compact.startsWith('javascript:') ||
+    compact.startsWith('vbscript:') ||
+    compact.startsWith('data:text/') ||
+    compact.startsWith('data:image/svg')
+  ) {
+    return null;
+  }
+
+  if (options?.allowDataImage && compact.startsWith('data:image/')) {
+    return /^data:image\/(?:png|jpeg|jpg|webp|gif);base64,[a-z0-9+/=\s]+$/i.test(
+      trimmed
+    )
+      ? trimmed
+      : null;
+  }
+
+  if (trimmed.startsWith('/')) {
+    if (trimmed.length > 1 && (trimmed[1] === '/' || trimmed[1] === '\\')) {
+      return null;
+    }
+    return trimmed;
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  return null;
 }
 
 export function sanitizePhoneInput(raw: string): string {

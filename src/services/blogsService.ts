@@ -1,4 +1,4 @@
-import { getApiBaseUrl } from '../config/api';
+import { buildApiEndpointUrl, getApiBaseUrl } from '../config/api';
 import type { CourseAttachment } from './coursesService';
 import { adminFetch } from './authService';
 import { resolveResourceUrl } from './resourcesService';
@@ -178,31 +178,31 @@ function sanitizeBlogPage(raw: BlogPageResult): BlogPageResult {
 }
 
 function buildSearchUrl(path: string, params: BlogSearchParams): string {
-  const url = new URL(`${blogsApiBase()}${path}`);
+  const searchParams = new URLSearchParams();
   if (params.search && params.search.trim()) {
-    url.searchParams.set('search', params.search.trim());
+    searchParams.set('search', params.search.trim());
   }
   if (params.status && params.status !== 'All') {
-    url.searchParams.set('status', params.status);
+    searchParams.set('status', params.status);
   }
   if (params.category && params.category !== 'All') {
-    url.searchParams.set('category', params.category);
+    searchParams.set('category', params.category);
   }
   if (params.featuredOnly) {
-    url.searchParams.set('featuredOnly', 'true');
+    searchParams.set('featuredOnly', 'true');
   }
   if (params.hasFilesOnly) {
-    url.searchParams.set('hasFilesOnly', 'true');
+    searchParams.set('hasFilesOnly', 'true');
   }
-  url.searchParams.set('page', String(Math.max(0, params.page ?? 0)));
-  url.searchParams.set('size', String(Math.max(1, params.size ?? 5)));
+  searchParams.set('page', String(Math.max(0, params.page ?? 0)));
+  searchParams.set('size', String(Math.max(1, params.size ?? 5)));
   if (params.sortBy) {
-    url.searchParams.set('sortBy', params.sortBy);
+    searchParams.set('sortBy', params.sortBy);
   }
   if (params.sortDir) {
-    url.searchParams.set('sortDir', params.sortDir);
+    searchParams.set('sortDir', params.sortDir);
   }
-  return url.toString();
+  return buildApiEndpointUrl(`${blogsApiBase()}${path}`, searchParams);
 }
 
 async function parseApiError(response: Response): Promise<string> {
@@ -268,11 +268,16 @@ export function loadPublicBlogsFromStorage(): BlogArticle[] {
   }
 }
 
-export function saveBlogsSnapshotToStorage(blogs: BlogArticle[]): void {
+export function saveBlogsSnapshotToStorage(
+  blogs: BlogArticle[],
+  emitEvent = false
+): void {
   if (typeof window === 'undefined') return;
   try {
     window.localStorage.setItem(BLOGS_STORAGE_KEY, JSON.stringify(blogs));
-    window.dispatchEvent(new CustomEvent(BLOGS_UPDATED_EVENT));
+    if (emitEvent) {
+      window.dispatchEvent(new CustomEvent(BLOGS_UPDATED_EVENT));
+    }
   } catch {
     // Ignore storage quota errors
   }

@@ -1,4 +1,4 @@
-import { getApiBaseUrl } from '../config/api';
+import { buildApiEndpointUrl, getApiBaseUrl } from '../config/api';
 import { adminFetch } from './authService';
 import {
   resolveResourceUrl,
@@ -138,28 +138,28 @@ function sanitizeGalleryPage(
 }
 
 function buildSearchUrl(path: string, params: GallerySearchParams, defaultSize: number): string {
-  const url = new URL(`${galleryApiBase()}${path}`);
+  const searchParams = new URLSearchParams();
   if (params.search && params.search.trim()) {
-    url.searchParams.set('search', params.search.trim());
+    searchParams.set('search', params.search.trim());
   }
   if (params.status && params.status !== 'All') {
-    url.searchParams.set('status', params.status);
+    searchParams.set('status', params.status);
   }
   if (params.category && params.category !== 'All') {
-    url.searchParams.set('category', params.category);
+    searchParams.set('category', params.category);
   }
   if (params.featuredOnly) {
-    url.searchParams.set('featuredOnly', 'true');
+    searchParams.set('featuredOnly', 'true');
   }
-  url.searchParams.set('page', String(Math.max(0, params.page ?? 0)));
-  url.searchParams.set('size', String(Math.max(1, params.size ?? defaultSize)));
+  searchParams.set('page', String(Math.max(0, params.page ?? 0)));
+  searchParams.set('size', String(Math.max(1, params.size ?? defaultSize)));
   if (params.sortBy) {
-    url.searchParams.set('sortBy', params.sortBy);
+    searchParams.set('sortBy', params.sortBy);
   }
   if (params.sortDir) {
-    url.searchParams.set('sortDir', params.sortDir);
+    searchParams.set('sortDir', params.sortDir);
   }
-  return url.toString();
+  return buildApiEndpointUrl(`${galleryApiBase()}${path}`, searchParams);
 }
 
 async function parseApiError(response: Response): Promise<string> {

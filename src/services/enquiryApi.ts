@@ -3,7 +3,7 @@
  * server-side paginated Enquiry management.
  */
 
-import { getApiBaseUrl } from '../config/api';
+import { buildApiEndpointUrl, getApiBaseUrl } from '../config/api';
 import { adminFetch } from './authService';
 
 export const ENQUIRIES_UPDATED_EVENT = 'arvind-enquiries-updated';
@@ -234,28 +234,31 @@ export async function fetchAdminEnquiriesPageBackend(
   params: EnquirySearchParams,
   signal?: AbortSignal
 ): Promise<EnquiryPageResult> {
-  const url = new URL(`${enquiriesApiBase()}/search`);
+  const searchParams = new URLSearchParams();
   if (params.search && params.search.trim()) {
-    url.searchParams.set('search', params.search.trim());
+    searchParams.set('search', params.search.trim());
   }
   if (params.status && params.status !== 'All') {
-    url.searchParams.set('status', params.status);
+    searchParams.set('status', params.status);
   }
   if (params.channel && params.channel !== 'All') {
-    url.searchParams.set('channel', params.channel);
+    searchParams.set('channel', params.channel);
   }
   if (params.service && params.service !== 'All') {
-    url.searchParams.set('service', params.service);
+    searchParams.set('service', params.service);
   }
-  url.searchParams.set('page', String(Math.max(0, params.page ?? 0)));
-  url.searchParams.set('size', String(Math.max(1, params.size ?? 5)));
-  url.searchParams.set('sortBy', params.sortBy ?? 'createdAt');
-  url.searchParams.set('sortDir', params.sortDir ?? 'desc');
+  searchParams.set('page', String(Math.max(0, params.page ?? 0)));
+  searchParams.set('size', String(Math.max(1, params.size ?? 5)));
+  searchParams.set('sortBy', params.sortBy ?? 'createdAt');
+  searchParams.set('sortDir', params.sortDir ?? 'desc');
 
-  const response = await adminFetch(url.toString(), {
-    headers: { Accept: 'application/json' },
-    signal,
-  });
+  const response = await adminFetch(
+    buildApiEndpointUrl(`${enquiriesApiBase()}/search`, searchParams),
+    {
+      headers: { Accept: 'application/json' },
+      signal,
+    }
+  );
   if (!response.ok) {
     throw new Error(await parseEnquiryApiError(response));
   }

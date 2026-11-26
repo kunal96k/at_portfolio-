@@ -84,6 +84,10 @@ test('loginAdminBackend, fetchAdminSessionBackend, and logoutAdminBackend send c
     await logoutAdminBackend();
     assert.equal(getCachedCsrfToken(), null);
     assert.equal(calls[2].init?.credentials, 'include');
+    assert.equal(
+      (calls[2].init?.headers as Record<string, string>)['X-CSRF-TOKEN'],
+      'csrf-session-token'
+    );
   } finally {
     globalThis.fetch = originalFetch;
     clearCachedCsrfToken();

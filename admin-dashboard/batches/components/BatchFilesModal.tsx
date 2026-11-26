@@ -11,6 +11,7 @@ import {
 import { useMemo, useState } from 'react';
 import { MobileModalShell } from '../../components/MobileModalShell';
 import { formatFileSize, formatShortDate } from '../../utils/adminLogic';
+import { sanitizeSafeHref } from '../../../src/utils/scrollMath';
 import type { Batch, BatchAttachment } from '../types/batch';
 
 interface FlattenedBatchFile {
@@ -261,9 +262,9 @@ export function BatchFilesModal({
                         <span>View Batch</span>
                       </button>
                     )}
-                    {item.file.url ? (
+                    {sanitizeSafeHref(item.file.url) ? (
                       <a
-                        href={item.file.url}
+                        href={sanitizeSafeHref(item.file.url)!}
                         download={item.file.name}
                         className="inline-flex h-[32px] items-center gap-1 rounded-lg bg-[#145BFF] px-2.5 text-xs font-semibold text-white hover:bg-[#0F4AD6]"
                       >

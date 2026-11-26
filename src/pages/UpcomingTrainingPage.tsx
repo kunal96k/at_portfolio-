@@ -26,6 +26,7 @@ import {
   formatBatchDateDisplay,
   formatBatchTimeDisplay,
 } from '../services/batchesService';
+import { sanitizeSafeHref } from '../utils/scrollMath';
 
 interface UpcomingTrainingPageProps {
   onContactClick: () => void;
@@ -393,9 +394,9 @@ export function UpcomingTrainingPage({
                         </OutlineButton>
 
                         {program.attachments.length > 0 &&
-                          program.attachments[0]?.url && (
+                          sanitizeSafeHref(program.attachments[0]?.url) && (
                             <a
-                              href={program.attachments[0].url}
+                              href={sanitizeSafeHref(program.attachments[0]?.url)!}
                               download={program.attachments[0].name}
                               className="inline-flex items-center gap-2 rounded-full border border-[#303030]/20 dark:border-white/20 px-4 py-2.5 text-[13px] font-medium text-[#303030] dark:text-white/90 hover:bg-[#303030] hover:text-white dark:hover:bg-white dark:hover:text-[#1A1A1B] transition-colors"
                             >

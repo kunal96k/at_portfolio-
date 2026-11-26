@@ -128,10 +128,27 @@ export async function loginAdminBackend(
 
 export async function logoutAdminBackend(): Promise<void> {
   try {
+    if (
+      !cachedCsrfToken &&
+      typeof window !== 'undefined' &&
+      typeof fetch === 'function'
+    ) {
+      try {
+        await fetchAdminSessionBackend();
+      } catch {
+        // Proceed cleanly even if session check fails
+      }
+    }
+
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    if (cachedCsrfToken) {
+      headers['X-CSRF-TOKEN'] = cachedCsrfToken;
+    }
+
     await fetch(`${authApiBase()}/logout`, {
       method: 'POST',
       credentials: 'include',
-      headers: { Accept: 'application/json' },
+      headers,
     });
   } finally {
     clearCachedCsrfToken();

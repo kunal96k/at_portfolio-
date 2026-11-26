@@ -69,3 +69,19 @@ export function getApiBaseUrl(): string {
 
   return (configured || LOCAL_DEV_API_URL).replace(/\/+$/, '');
 }
+
+/**
+ * Attaches query parameters cleanly to either an absolute cross-origin API URL or a
+ * same-origin root-relative API path without calling new URL() on relative strings.
+ */
+export function buildApiEndpointUrl(
+  baseEndpoint: string,
+  searchParams: URLSearchParams
+): string {
+  const query = searchParams.toString();
+  if (!query) {
+    return baseEndpoint;
+  }
+  const separator = baseEndpoint.includes('?') ? '&' : '?';
+  return `${baseEndpoint}${separator}${query}`;
+}

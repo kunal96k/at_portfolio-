@@ -12,6 +12,7 @@ import {
   containsDangerousMarkup,
   isValidPhone,
   sanitizePhoneInput,
+  sanitizeSafeHref,
   validateContactForm,
   validateNewsletterEmail,
   parseRoute,
@@ -204,4 +205,23 @@ test('counter value formats and clamps cleanly', () => {
   assert.equal(formatCounterValue(50, 50, '+'), '50+');
   assert.equal(formatCounterValue(98, 98, '%'), '98%');
   assert.equal(formatCounterValue(-5, 200, '%'), '0%');
+});
+
+test('sanitizeSafeHref blocks XSS URI schemes and open redirects while keeping valid URLs', () => {
+  assert.equal(sanitizeSafeHref('/api/files/blogs/sample.pdf'), '/api/files/blogs/sample.pdf');
+  assert.equal(sanitizeSafeHref('https://arvindthevar.com/resources'), 'https://arvindthevar.com/resources');
+  assert.equal(sanitizeSafeHref('javascript:alert(1)'), null);
+  assert.equal(sanitizeSafeHref('  java\tscript:alert(1) '), null);
+  assert.equal(sanitizeSafeHref('vbscript:msgbox(1)'), null);
+  assert.equal(sanitizeSafeHref('data:text/html,<script>alert(1)</script>'), null);
+  assert.equal(sanitizeSafeHref('data:image/svg+xml;base64,PHN2Zz4='), null);
+  assert.equal(sanitizeSafeHref('//evil.com/phish.pdf'), null);
+  assert.equal(
+    sanitizeSafeHref('data:image/png;base64,iVBORw0KGgo=', { allowDataImage: true }),
+    'data:image/png;base64,iVBORw0KGgo='
+  );
+  assert.equal(
+    sanitizeSafeHref('data:image/svg+xml;base64,PHN2Zz4=', { allowDataImage: true }),
+    null
+  );
 });

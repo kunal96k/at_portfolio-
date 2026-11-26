@@ -10,7 +10,7 @@ import {
   Sparkles,
   User,
 } from 'lucide-react';
-import { validateNewsletterEmail } from '../utils/scrollMath';
+import { sanitizeSafeHref, validateNewsletterEmail } from '../utils/scrollMath';
 import { OutlineButton } from '../components/OutlineButton';
 import { SafeImage } from '../components/SafeImage';
 import {
@@ -257,20 +257,24 @@ export function BlogDetailPage({ slug, onNavigate }: BlogDetailPageProps) {
               Companion Lab Files ({post.attachments.length})
             </h3>
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {post.attachments.map((file) => (
-                <a
-                  key={file.id}
-                  href={file.url}
-                  download={file.name}
-                  className="flex items-center justify-between gap-3 rounded-[14px] bg-white dark:bg-[#1E1E1F] px-4 py-3 text-[14px] text-[#303030] dark:text-white hover:ring-2 hover:ring-[#5E67E6] dark:hover:ring-[#D0FF71]"
-                >
-                  <span className="flex min-w-0 items-center gap-2.5">
-                    <FileText className="w-4 h-4 shrink-0 text-[#5E67E6] dark:text-[#D0FF71]" />
-                    <span className="truncate font-medium">{file.name}</span>
-                  </span>
-                  <Download className="w-4 h-4 shrink-0 text-[#5E67E6] dark:text-[#D0FF71]" />
-                </a>
-              ))}
+              {post.attachments.map((file) => {
+                const safeFileUrl = sanitizeSafeHref(file.url);
+                if (!safeFileUrl) return null;
+                return (
+                  <a
+                    key={file.id}
+                    href={safeFileUrl}
+                    download={file.name}
+                    className="flex items-center justify-between gap-3 rounded-[14px] bg-white dark:bg-[#1E1E1F] px-4 py-3 text-[14px] text-[#303030] dark:text-white hover:ring-2 hover:ring-[#5E67E6] dark:hover:ring-[#D0FF71]"
+                  >
+                    <span className="flex min-w-0 items-center gap-2.5">
+                      <FileText className="w-4 h-4 shrink-0 text-[#5E67E6] dark:text-[#D0FF71]" />
+                      <span className="truncate font-medium">{file.name}</span>
+                    </span>
+                    <Download className="w-4 h-4 shrink-0 text-[#5E67E6] dark:text-[#D0FF71]" />
+                  </a>
+                );
+              })}
             </div>
           </div>
         )}
