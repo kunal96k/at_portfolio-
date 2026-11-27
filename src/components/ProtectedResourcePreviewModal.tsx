@@ -7,12 +7,13 @@ import {
   Mail,
   MessageCircle,
   Phone,
+  RefreshCw,
   ShieldCheck,
   X,
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { PROFILE } from '../data/portfolioData';
 import {
@@ -44,10 +45,37 @@ export function ProtectedResourcePreviewModal({
   const [pageNumber, setPageNumber] = useState(1);
   const [pageInput, setPageInput] = useState('1');
   const [pageImageLoading, setPageImageLoading] = useState(false);
+  const [reloadNonce, setReloadNonce] = useState(0);
   const [zoomPercent, setZoomPercent] = useState(100);
   const [imageError, setImageError] = useState(false);
 
   const open = Boolean(resource);
+
+  const totalPdfPages =
+    previewInfo?.previewMode === 'PDF_PAGES' ? previewInfo.pageCount : 0;
+
+  /**
+   * Navigates to a clamped PDF page while avoiding stuck loading spinners on no-op bounds.
+   */
+  const goToPage = useCallback(
+    (nextPage: number) => {
+      if (totalPdfPages <= 0) return;
+      const clamped = Math.min(totalPdfPages, Math.max(1, nextPage));
+      setPageInput(String(clamped));
+      if (clamped === pageNumber) {
+        if (imageError) {
+          setImageError(false);
+          setPageImageLoading(true);
+          setReloadNonce((n) => n + 1);
+        }
+        return;
+      }
+      setImageError(false);
+      setPageImageLoading(true);
+      setPageNumber(clamped);
+    },
+    [totalPdfPages, pageNumber, imageError]
+  );
 
   useEffect(() => {
     setPageInput(String(pageNumber));
@@ -62,6 +90,7 @@ export function ProtectedResourcePreviewModal({
     setPageNumber(1);
     setPageInput('1');
     setPageImageLoading(false);
+    setReloadNonce(0);
     setZoomPercent(100);
     setImageError(false);
 
@@ -100,6 +129,11 @@ export function ProtectedResourcePreviewModal({
     void fetchResourcePreviewInfo(resource.id, isPublic, controller.signal)
       .then((info) => {
         if (!controller.signal.aborted) {
+          const expectsPageImage =
+            info.previewMode === 'PDF_PAGES' &&
+            info.pageCount > 0 &&
+            /^\d+$/.test(info.id);
+          setPageImageLoading(expectsPageImage);
           setPreviewInfo(info);
           setLoading(false);
         }
@@ -158,14 +192,18 @@ export function ProtectedResourcePreviewModal({
         return;
       }
       if (previewInfo?.previewMode === 'PDF_PAGES' && previewInfo.pageCount > 1) {
+        const target = e.target as HTMLElement | null;
+        if (
+          target instanceof HTMLInputElement ||
+          target instanceof HTMLTextAreaElement ||
+          target instanceof HTMLSelectElement
+        ) {
+          return;
+        }
         if (e.key === 'ArrowRight') {
-          setImageError(false);
-          setPageImageLoading(true);
-          setPageNumber((p) => Math.min(previewInfo.pageCount, p + 1));
+          goToPage(pageNumber + 1);
         } else if (e.key === 'ArrowLeft') {
-          setImageError(false);
-          setPageImageLoading(true);
-          setPageNumber((p) => Math.max(1, p - 1));
+          goToPage(pageNumber - 1);
         }
       }
     };
@@ -175,7 +213,7 @@ export function ProtectedResourcePreviewModal({
       document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, [open, onClose, previewInfo]);
+  }, [open, onClose, previewInfo, goToPage, pageNumber]);
 
   if (!resource || typeof document === 'undefined') return null;
 
@@ -215,12 +253,17 @@ export function ProtectedResourcePreviewModal({
       : `Hello Arvind Sir, I would like to request download access for study note ${effective.noteCode}: ${effective.title}.`
   )}`;
 
-  const pageImageUrl =
+  const basePageImageUrl =
     effective.previewMode === 'PDF_PAGES' &&
     effective.pageCount > 0 &&
     /^\d+$/.test(effective.id)
       ? getResourcePreviewPageUrl(effective.id, pageNumber, isPublic)
       : '';
+  const pageImageUrl = basePageImageUrl
+    ? reloadNonce > 0
+      ? `${basePageImageUrl}?retry=${reloadNonce}`
+      : basePageImageUrl
+    : '';
 
   return createPortal(
     <div
@@ -298,11 +341,7 @@ export function ProtectedResourcePreviewModal({
                   <button
                     type="button"
                     disabled={pageNumber <= 1}
-                    onClick={() => {
-                      setImageError(false);
-                      setPageImageLoading(true);
-                      setPageNumber((p) => Math.max(1, p - 1));
-                    }}
+                    onClick={() => goToPage(pageNumber - 1)}
                     className="inline-flex h-8 items-center gap-1 rounded-lg border border-black/10 dark:border-white/15 px-2.5 font-semibold text-[#334155] dark:text-white disabled:opacity-40 cursor-pointer"
                   >
                     <ChevronLeft className="h-3.5 w-3.5" />
@@ -313,17 +352,7 @@ export function ProtectedResourcePreviewModal({
                       e.preventDefault();
                       const parsed = Number.parseInt(pageInput, 10);
                       if (!Number.isNaN(parsed)) {
-                        const clamped = Math.min(
-                          effective.pageCount,
-                          Math.max(1, parsed)
-                        );
-                        setImageError(false);
-                        if (clamped !== pageNumber) {
-                          setPageImageLoading(true);
-                          setPageNumber(clamped);
-                        } else {
-                          setPageInput(String(clamped));
-                        }
+                        goToPage(parsed);
                       } else {
                         setPageInput(String(pageNumber));
                       }
@@ -341,16 +370,7 @@ export function ProtectedResourcePreviewModal({
                       onBlur={() => {
                         const parsed = Number.parseInt(pageInput, 10);
                         if (!Number.isNaN(parsed)) {
-                          const clamped = Math.min(
-                            effective.pageCount,
-                            Math.max(1, parsed)
-                          );
-                          if (clamped !== pageNumber) {
-                            setImageError(false);
-                            setPageImageLoading(true);
-                            setPageNumber(clamped);
-                          }
-                          setPageInput(String(clamped));
+                          goToPage(parsed);
                         } else {
                           setPageInput(String(pageNumber));
                         }
@@ -362,13 +382,7 @@ export function ProtectedResourcePreviewModal({
                   <button
                     type="button"
                     disabled={pageNumber >= effective.pageCount}
-                    onClick={() => {
-                      setImageError(false);
-                      setPageImageLoading(true);
-                      setPageNumber((p) =>
-                        Math.min(effective.pageCount, p + 1)
-                      );
-                    }}
+                    onClick={() => goToPage(pageNumber + 1)}
                     className="inline-flex h-8 items-center gap-1 rounded-lg border border-black/10 dark:border-white/15 px-2.5 font-semibold text-[#334155] dark:text-white disabled:opacity-40 cursor-pointer"
                   >
                     <span>Next</span>
@@ -404,13 +418,14 @@ export function ProtectedResourcePreviewModal({
               {/* Guarded Page Frame (blocks right-click & drag-to-save) */}
               <div
                 style={{ width: `${zoomPercent}%`, maxWidth: '100%' }}
-                className="relative overflow-hidden rounded-xl border border-black/10 dark:border-white/15 bg-white shadow-lg"
+                className="relative min-h-[260px] overflow-hidden rounded-xl border border-black/10 dark:border-white/15 bg-white shadow-lg"
               >
                 {!imageError ? (
                   <>
                     {pageImageLoading && (
-                      <div className="flex items-center justify-center py-12 text-xs font-medium text-[#64748B]">
-                        Rendering page {pageNumber}…
+                      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2.5 bg-white/90 text-xs font-medium text-[#64748B]">
+                        <div className="h-7 w-7 animate-spin rounded-full border-2 border-[#5E67E6] border-t-transparent" />
+                        <span>Rendering page {pageNumber}…</span>
                       </div>
                     )}
                     <img
@@ -424,7 +439,7 @@ export function ProtectedResourcePreviewModal({
                         setPageImageLoading(false);
                         setImageError(true);
                       }}
-                      className={`pointer-events-none block h-auto w-full select-none ${
+                      className={`pointer-events-none block h-auto w-full select-none transition-opacity duration-200 ${
                         pageImageLoading ? 'opacity-0' : 'opacity-100'
                       }`}
                     />
@@ -436,9 +451,23 @@ export function ProtectedResourcePreviewModal({
                     />
                   </>
                 ) : (
-                  <div className="p-8 text-center text-sm text-[#64748B]">
-                    Unable to render page image. Review topics outline below or
-                    contact Arvind Thevar.
+                  <div className="flex flex-col items-center justify-center gap-3 p-8 text-center text-sm text-[#64748B]">
+                    <p>
+                      Unable to render page image. Review topics outline below or
+                      contact Arvind Thevar.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageError(false);
+                        setPageImageLoading(true);
+                        setReloadNonce((n) => n + 1);
+                      }}
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-black/15 px-3 text-xs font-semibold text-[#334155] hover:bg-[#F8FAFC] cursor-pointer"
+                    >
+                      <RefreshCw className="h-3.5 w-3.5" />
+                      <span>Retry Page {pageNumber}</span>
+                    </button>
                   </div>
                 )}
               </div>
