@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import {
   containsDangerousMarkup,
   isValidEmail,
@@ -40,9 +40,17 @@ export function EnquiryManualFormModal({
   const [message, setMessage] = useState('');
   const [adminNotes, setAdminNotes] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const wasOpenRef = useRef(false);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      wasOpenRef.current = false;
+      return;
+    }
+    if (wasOpenRef.current) {
+      return;
+    }
+    wasOpenRef.current = true;
     setName('');
     setEmail('');
     setPhone('');

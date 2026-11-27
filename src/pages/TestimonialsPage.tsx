@@ -279,17 +279,13 @@ export function TestimonialsPage({ onNavigate }: TestimonialsPageProps) {
                             )}
                           </div>
                         </div>
-                        {item.featured && (
-                          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#5E67E6]/10 dark:bg-[#D0FF71]/15 px-2.5 py-0.5 text-[11px] font-semibold text-[#5E67E6] dark:text-[#D0FF71]">
-                            <Sparkles className="w-3 h-3" aria-hidden="true" />
-                            <span>Featured</span>
-                          </span>
-                        )}
                       </div>
 
-                      <p className="mt-4 text-[13px] font-medium uppercase tracking-wider text-[#5E67E6] dark:text-[#D0FF71]">
-                        {item.courseTrack}
-                      </p>
+                      {item.courseTrack && (
+                        <p className="mt-4 text-[13px] font-medium uppercase tracking-wider text-[#5E67E6] dark:text-[#D0FF71]">
+                          {item.courseTrack}
+                        </p>
+                      )}
 
                       <blockquote className="mt-3 text-[15px] font-light leading-[1.65] text-[#303030] dark:text-white/80">
                         &ldquo;{item.quote}&rdquo;

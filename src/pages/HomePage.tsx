@@ -11,6 +11,7 @@ import { ContactSection } from '../components/ContactSection';
 import { FaqSection } from '../components/FaqSection';
 import { FeaturedProjectsSection } from '../components/FeaturedProjectsSection';
 import { FloatingContactToggler } from '../components/FloatingContactToggler';
+import { GalleryPreviewSection } from '../components/GalleryPreviewSection';
 import { OutlineButton } from '../components/OutlineButton';
 import { PortraitShowcaseSection } from '../components/PortraitShowcaseSection';
 import { SafeImage } from '../components/SafeImage';
@@ -35,6 +36,10 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
   const visibleBatches = [...batches].sort(
     (a, b) => a.displayOrder - b.displayOrder
   );
+  const featuredBatches = visibleBatches.filter((b) => b.featured);
+  const homeBatches = (
+    featuredBatches.length > 0 ? featuredBatches : visibleBatches
+  ).slice(0, 3);
   const visibleDomains = [...courses].sort(
     (a, b) => a.displayOrder - b.displayOrder
   );
@@ -128,7 +133,7 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
               </OutlineButton>
             </div>
 
-            {visibleBatches.length === 0 ? (
+            {homeBatches.length === 0 ? (
               <div className="mt-8">
                 <BatchEmptyStateCard
                   variant="all"
@@ -139,14 +144,14 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
               </div>
             ) : (
               <div
-                className={`mt-8 grid grid-cols-1 gap-6 ${visibleBatches.length === 1
+                className={`mt-8 grid grid-cols-1 gap-6 ${homeBatches.length === 1
                   ? 'max-w-xl'
-                  : visibleBatches.length === 2 || visibleBatches.length === 4
+                  : homeBatches.length === 2
                     ? 'md:grid-cols-2'
                     : 'md:grid-cols-3'
                   }`}
               >
-                {visibleBatches.map((batch) => (
+                {homeBatches.map((batch) => (
                   <button
                     key={batch.id}
                     type="button"
@@ -225,13 +230,18 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
         </div>
       </section>
 
-      <FeaturedProjectsSection onNavigate={onNavigate} showBrowseButton />
+      <FeaturedProjectsSection
+        onNavigate={onNavigate}
+        showBrowseButton
+        maxItems={3}
+      />
       <TestimonialsSection onNavigate={onNavigate} showTestimonialsLink />
       <FaqSection />
       <BlogsPreviewSection
         onNavigate={onNavigate}
         onContactClick={onContactClick}
       />
+      <GalleryPreviewSection onNavigate={onNavigate} />
       <ContactSection />
       <FloatingContactToggler onContactClick={onContactClick} />
     </main>

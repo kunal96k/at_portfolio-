@@ -11,7 +11,7 @@ interface FooterProps {
 
 const QUICK_LINKS = [
   { label: 'Home', path: '/' },
-  { label: 'About Us', path: '/about' },
+  { label: 'About Me', path: '/about' },
   { label: 'Upcoming Batches', path: '/upcoming-batches' },
   { label: 'Notes & Resources', path: '/resources' },
   { label: 'Student Testimonials', path: '/testimonials' },

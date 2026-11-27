@@ -10,6 +10,7 @@ interface FeaturedProjectsSectionProps {
   onNavigate: (path: string) => void;
   showBrowseButton?: boolean;
   asMainHeading?: boolean;
+  maxItems?: number;
 }
 
 interface StackedTrackCardProps {
@@ -106,8 +107,11 @@ export function FeaturedProjectsSection({
   onNavigate,
   showBrowseButton = true,
   asMainHeading = false,
+  maxItems,
 }: FeaturedProjectsSectionProps) {
-  const featured = PROJECTS.filter((p) => p.featured);
+  const allFeatured = PROJECTS.filter((p) => p.featured);
+  const featured =
+    typeof maxItems === 'number' ? allFeatured.slice(0, maxItems) : allFeatured;
   const HeadingTag = asMainHeading ? 'h1' : 'h2';
   const stackRef = useRef<HTMLDivElement | null>(null);
   const reveal = useResponsiveReveal(0.25, 0.6);

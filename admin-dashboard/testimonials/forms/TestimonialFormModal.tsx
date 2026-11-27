@@ -6,7 +6,7 @@ import {
   Image as ImageIcon,
   Sparkles,
 } from 'lucide-react';
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { containsDangerousMarkup } from '../../../src/utils/scrollMath';
 import { ImageUploadZone } from '../../components/FileUploadZone';
 import { MobileModalShell } from '../../components/MobileModalShell';
@@ -50,14 +50,10 @@ function validateValues(
   } else if (containsDangerousMarkup(v.studentName)) {
     errors.studentName = 'Student name cannot contain HTML tags or < > brackets.';
   }
-  if (v.role.trim().length < 2) {
-    errors.role = 'Role / job title must contain at least 2 characters.';
-  } else if (containsDangerousMarkup(v.role)) {
+  if (v.role.trim() && containsDangerousMarkup(v.role)) {
     errors.role = 'Role cannot contain HTML tags or < > brackets.';
   }
-  if (v.courseTrack.trim().length < 2) {
-    errors.courseTrack = 'Please select or enter a course track.';
-  } else if (containsDangerousMarkup(v.courseTrack)) {
+  if (v.courseTrack.trim() && containsDangerousMarkup(v.courseTrack)) {
     errors.courseTrack = 'Course track cannot contain HTML tags or < > brackets.';
   }
   if (v.quote.trim().length < 10) {
@@ -76,8 +72,7 @@ function validateValues(
 function buildInitial(
   editingItem: StudentTestimonial | null,
   defaultDisplayOrder: number,
-  existingCodes: string[],
-  firstTrack: string
+  existingCodes: string[]
 ): TestimonialFormPayload {
   if (editingItem) {
     return {
@@ -100,7 +95,7 @@ function buildInitial(
     studentName: '',
     role: '',
     company: '',
-    courseTrack: firstTrack || 'Linux & Network Security',
+    courseTrack: '',
     quote: '',
     avatarUrl: '',
     avatarName: '',
@@ -135,25 +130,29 @@ export function TestimonialFormModal({
   }, [domainSuggestions, editingItem]);
 
   const [values, setValues] = useState<TestimonialFormPayload>(() =>
-    buildInitial(
-      editingItem,
-      defaultDisplayOrder,
-      existingCodes,
-      trackOptions[0] ?? ''
-    )
+    buildInitial(editingItem, defaultDisplayOrder, existingCodes)
   );
   const [activeTab, setActiveTab] = useState<FormTabId>('student');
   const [customTrackMode, setCustomTrackMode] = useState(false);
   const [errors, setErrors] = useState<TestimonialValidationErrors>({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const activeSessionKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      activeSessionKeyRef.current = null;
+      return;
+    }
+    const sessionKey = editingItem ? `edit:${editingItem.id}` : 'create';
+    if (activeSessionKeyRef.current === sessionKey) {
+      return;
+    }
+    activeSessionKeyRef.current = sessionKey;
+
     const initial = buildInitial(
       editingItem,
       defaultDisplayOrder,
-      existingCodes,
-      trackOptions[0] ?? ''
+      existingCodes
     );
     setValues(initial);
     setActiveTab('student');
@@ -162,9 +161,11 @@ export function TestimonialFormModal({
     setSubmitAttempted(false);
 
     if (!editingItem) {
+      let active = true;
       void testimonialsAdminService
         .getNextCode()
         .then((code) => {
+          if (!active || !code) return;
           setValues((prev) =>
             prev.testimonialCode ? { ...prev, testimonialCode: code } : prev
           );
@@ -172,8 +173,11 @@ export function TestimonialFormModal({
         .catch(() => {
           // Fallback sequential local code already set
         });
+      return () => {
+        active = false;
+      };
     }
-  }, [open, editingItem, defaultDisplayOrder, existingCodes, trackOptions]);
+  }, [open, editingItem, defaultDisplayOrder, existingCodes]);
 
   const liveErrors = validateValues(values);
   const hasStudentErrors = Boolean(
@@ -422,7 +426,8 @@ export function TestimonialFormModal({
                     htmlFor="test-role"
                     className="block text-xs font-semibold text-[#0B1736]"
                   >
-                    Placed Role / Designation *
+                    Placed Role / Designation{' '}
+                    <span className="font-normal text-[#64748B]">(Optional)</span>
                   </label>
                   <input
                     id="test-role"
@@ -432,7 +437,7 @@ export function TestimonialFormModal({
                     onChange={(e) =>
                       setValues((v) => ({ ...v, role: e.target.value }))
                     }
-                    placeholder="Enter job role or designation"
+                    placeholder="Enter job role or designation (optional)"
                     className="mt-1.5 h-[42px] w-full rounded-xl border border-[#CBD5E1] bg-white px-3 text-sm text-[#0B1736] focus:border-[#145BFF] focus:outline-none"
                   />
                   {(submitAttempted || errors.role) && liveErrors.role && (
@@ -447,7 +452,8 @@ export function TestimonialFormModal({
                     htmlFor="test-company"
                     className="block text-xs font-semibold text-[#0B1736]"
                   >
-                    Hiring Organization / Company
+                    Hiring Organization / Company{' '}
+                    <span className="font-normal text-[#64748B]">(Optional)</span>
                   </label>
                   <input
                     id="test-company"
@@ -469,7 +475,8 @@ export function TestimonialFormModal({
                     htmlFor="test-track"
                     className="block text-xs font-semibold text-[#0B1736]"
                   >
-                    Course / Training Track *
+                    Course / Training Track{' '}
+                    <span className="font-normal text-[#64748B]">(Optional)</span>
                   </label>
                   <button
                     type="button"
@@ -490,7 +497,7 @@ export function TestimonialFormModal({
                     onChange={(e) =>
                       setValues((v) => ({ ...v, courseTrack: e.target.value }))
                     }
-                    placeholder="Enter course or training track"
+                    placeholder="Enter course or training track (optional)"
                     className="mt-1.5 h-[42px] w-full rounded-xl border border-[#CBD5E1] bg-white px-3 text-sm text-[#0B1736] focus:border-[#145BFF] focus:outline-none"
                   />
                 ) : (
@@ -502,6 +509,7 @@ export function TestimonialFormModal({
                     }
                     className="mt-1.5 h-[42px] w-full rounded-xl border border-[#CBD5E1] bg-white px-3 text-sm text-[#0B1736] focus:border-[#145BFF] focus:outline-none"
                   >
+                    <option value="">Not specified (Optional)</option>
                     {trackOptions.map((opt) => (
                       <option key={opt} value={opt}>
                         {opt}

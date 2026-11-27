@@ -143,7 +143,7 @@ export function buildRouteSeo(
             },
             buildBreadcrumbList(cleanOrigin, [
               { name: 'Home', path: '/' },
-              { name: 'About Us', path: pathname },
+              { name: 'About Me', path: pathname },
             ]),
           ],
         },

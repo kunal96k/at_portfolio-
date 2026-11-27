@@ -39,9 +39,11 @@ export function TestimonialPreviewModal({
       headerBadge={
         <>
           <StatusBadge status={item.status} />
-          <span className="rounded-md bg-[#EFF6FF] px-2 py-0.5 text-[11px] font-semibold text-[#145BFF]">
-            {item.courseTrack}
-          </span>
+          {item.courseTrack && (
+            <span className="rounded-md bg-[#EFF6FF] px-2 py-0.5 text-[11px] font-semibold text-[#145BFF]">
+              {item.courseTrack}
+            </span>
+          )}
           {item.featured && (
             <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700">
               <Sparkles className="h-3 w-3" />
@@ -123,9 +125,11 @@ export function TestimonialPreviewModal({
                     <h3 className="text-lg font-bold text-[#0B1736]">
                       {item.studentName}
                     </h3>
-                    <p className="mt-0.5 text-sm font-medium text-[#145BFF]">
-                      {[item.company, item.role].filter(Boolean).join(' | ')}
-                    </p>
+                    {(item.company || item.role) && (
+                      <p className="mt-0.5 text-sm font-medium text-[#145BFF]">
+                        {[item.company, item.role].filter(Boolean).join(' | ')}
+                      </p>
+                    )}
                   </div>
                 </div>
                 {item.featured && (
@@ -136,9 +140,11 @@ export function TestimonialPreviewModal({
                 )}
               </div>
 
-              <p className="mt-5 text-xs font-semibold uppercase tracking-wider text-[#145BFF]">
-                {item.courseTrack}
-              </p>
+              {item.courseTrack && (
+                <p className="mt-5 text-xs font-semibold uppercase tracking-wider text-[#145BFF]">
+                  {item.courseTrack}
+                </p>
+              )}
 
               <blockquote className="mt-3 text-base leading-relaxed text-[#334155]">
                 &ldquo;{item.quote}&rdquo;

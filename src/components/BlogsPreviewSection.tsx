@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import {
   BLOGS_STORAGE_KEY,
   BLOGS_UPDATED_EVENT,
-  fetchPublicBlogsAsync,
+  fetchPublicBlogsPageAsync,
   type BlogArticle,
 } from '../services/blogsService';
 import { useResponsiveReveal } from '../hooks/useResponsiveReveal';
@@ -28,10 +28,16 @@ export function BlogsPreviewSection({
   useEffect(() => {
     let active = true;
     const loadPosts = () => {
-      void fetchPublicBlogsAsync()
+      void fetchPublicBlogsPageAsync({
+        featuredOnly: true,
+        page: 0,
+        size: 3,
+        sortBy: 'displayOrder',
+        sortDir: 'asc',
+      })
         .then((res) => {
           if (active) {
-            setPosts(res.items.slice(0, 2));
+            setPosts(res.page.items.slice(0, 3));
             setLoading(false);
           }
         })
@@ -96,8 +102,8 @@ export function BlogsPreviewSection({
         </motion.div>
 
         {loading && posts.length === 0 ? (
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
-            {[0, 1].map((skeleton) => (
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-8">
+            {[0, 1, 2].map((skeleton) => (
               <div
                 key={skeleton}
                 className="animate-pulse rounded-[20px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-5"
@@ -163,8 +169,8 @@ export function BlogsPreviewSection({
           </div>
         ) : (
           <>
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
-              {posts.map((post, idx) => (
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-8">
+              {posts.slice(0, 3).map((post, idx) => (
                 <motion.a
                   key={post.id || post.slug}
                   href={`/blogs/${post.slug}`}

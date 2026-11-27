@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Building2, Sparkles } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import {
   CORPORATE_PARTNERS,
   WHY_LEARN_ITEMS,
@@ -25,7 +25,7 @@ export function TestimonialsSection({
   const cardReveal = useResponsiveReveal(0.15, 0.55);
   const { pageData, loading } = usePublicTestimonials({
     featuredOnly: true,
-    size: 6,
+    size: 3,
     enabled: showTestimonialsLink && showStudentCards,
   });
   const featuredStories = pageData.items;
@@ -254,12 +254,6 @@ export function TestimonialsSection({
                               )}
                             </div>
                           </div>
-                          {student.featured && (
-                            <Sparkles
-                              className="h-4 w-4 shrink-0 text-[#5E67E6] dark:text-[#D0FF71]"
-                              aria-hidden="true"
-                            />
-                          )}
                         </div>
 
                         <p className="mt-4 text-[14.5px] font-light leading-[1.6] text-[#303030] dark:text-white/85">
@@ -267,11 +261,13 @@ export function TestimonialsSection({
                         </p>
                       </div>
 
-                      <div className="mt-5 pt-3 border-t border-[#E2E2E4] dark:border-[#3A3A3D]">
-                        <span className="text-[12.5px] font-medium text-[#5C5C5C] dark:text-white/65">
-                          {student.courseTrack}
-                        </span>
-                      </div>
+                      {student.courseTrack && (
+                        <div className="mt-5 pt-3 border-t border-[#E2E2E4] dark:border-[#3A3A3D]">
+                          <span className="text-[12.5px] font-medium text-[#5C5C5C] dark:text-white/65">
+                            {student.courseTrack}
+                          </span>
+                        </div>
+                      )}
                     </article>
                   ))}
                 </div>

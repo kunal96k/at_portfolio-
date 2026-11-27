@@ -303,12 +303,6 @@ export function GalleryPage({ onNavigate }: GalleryPageProps) {
                       alt={item.altText || item.title}
                       className="w-full h-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                     />
-                    {item.featured && (
-                      <span className="absolute top-3.5 left-3.5 inline-flex items-center gap-1 rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] px-3 py-1 font-display text-[11px] font-bold uppercase tracking-wide text-white dark:text-[#1A1A1B] shadow">
-                        <Sparkles className="w-3 h-3" aria-hidden="true" />
-                        <span>Featured</span>
-                      </span>
-                    )}
                   </div>
                   <div className="flex flex-1 flex-col p-5">
                     <div className="flex flex-wrap items-center justify-between gap-2">
@@ -489,12 +483,6 @@ export function GalleryPage({ onNavigate }: GalleryPageProps) {
                       <span className="text-[12px] font-medium uppercase tracking-wider text-[#5E67E6] dark:text-[#D0FF71]">
                         {selectedPhoto.category}
                       </span>
-                      {selectedPhoto.featured && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-[#5E67E6]/10 dark:bg-[#D0FF71]/15 px-2.5 py-0.5 text-[11px] font-semibold text-[#5E67E6] dark:text-[#D0FF71]">
-                          <Sparkles className="w-3 h-3" aria-hidden="true" />
-                          Featured
-                        </span>
-                      )}
                       {selectedPhoto.takenAt && (
                         <span className="text-[12px] text-[#5C5C5C] dark:text-white/65 tabular-nums">
                           · {selectedPhoto.takenAt}
