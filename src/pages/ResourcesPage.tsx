@@ -25,6 +25,7 @@ import {
 } from '../components/ContactSection';
 import { OutlineButton } from '../components/OutlineButton';
 import { ProtectedResourcePreviewModal } from '../components/ProtectedResourcePreviewModal';
+import { TruncatedTextWithMore } from '../components/TruncatedTextWithMore';
 import { PROFILE } from '../data/portfolioData';
 import { usePublicResources } from '../hooks/usePublicResources';
 import {
@@ -349,7 +350,7 @@ export function ResourcesPage({ onNavigate }: ResourcesPageProps) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.45, delay: idx * 0.05 }}
-                    className="flex flex-col justify-between rounded-[22px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-7"
+                    className="flex h-full flex-col justify-between rounded-[22px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-7"
                   >
                     <div>
                       <div className="flex items-center justify-between gap-3">
@@ -361,19 +362,25 @@ export function ResourcesPage({ onNavigate }: ResourcesPageProps) {
                           )}
                           {resource.sectionType}
                         </span>
-                        <span className="text-[13px] font-light text-[#5C5C5C] dark:text-white/65">
+                        <span className="text-[13px] font-light text-[#5C5C5C] dark:text-white/65 line-clamp-1">
                           {resource.domain}
                         </span>
                       </div>
 
-                      <h2 className="mt-4 font-display text-[28px] sm:text-[32px] font-bold leading-[1.15] uppercase text-[#303030] dark:text-white">
+                      <h2 className="mt-4 font-display text-[28px] sm:text-[32px] font-bold leading-[1.15] uppercase text-[#303030] dark:text-white line-clamp-2">
                         {resource.title}
                       </h2>
 
                       {resource.summary.trim() && (
-                        <p className="mt-3 text-[15px] font-light leading-[1.6] text-[#303030] dark:text-white/80">
-                          {resource.summary}
-                        </p>
+                        <div className="mt-3">
+                          <TruncatedTextWithMore
+                            lines={3}
+                            text={resource.summary}
+                            className="text-[15px] font-light leading-[1.6] text-[#303030] dark:text-white/80"
+                            ariaLabel={`Read full overview for ${resource.title}`}
+                            onMore={() => setPreviewTarget(resource)}
+                          />
+                        </div>
                       )}
 
                       {/* Study File Preview / Conditional Download Card */}

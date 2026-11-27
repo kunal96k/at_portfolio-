@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import {
   PROFILE,
@@ -14,12 +15,15 @@ import { FloatingContactToggler } from '../components/FloatingContactToggler';
 import { GalleryPreviewSection } from '../components/GalleryPreviewSection';
 import { OutlineButton } from '../components/OutlineButton';
 import { PortraitShowcaseSection } from '../components/PortraitShowcaseSection';
+import { PublicDetailModal } from '../components/PublicDetailModal';
 import { SafeImage } from '../components/SafeImage';
 import { TestimonialsSection } from '../components/TestimonialsSection';
+import { TruncatedTextWithMore } from '../components/TruncatedTextWithMore';
 import { usePublicBatches } from '../hooks/usePublicBatches';
 import { usePublicCourses } from '../hooks/usePublicCourses';
 import { useResponsiveReveal } from '../hooks/useResponsiveReveal';
-import { formatBatchDateDisplay } from '../services/batchesService';
+import { formatBatchDateDisplay, type ManagedBatch } from '../services/batchesService';
+import type { CourseDomain } from '../services/coursesService';
 
 interface HomePageProps {
   onNavigate: (path: string) => void;
@@ -32,6 +36,12 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
   const { batches } = usePublicBatches();
   const { courses } = usePublicCourses();
   const [batchModalOpen, setBatchModalOpen] = useState(false);
+  const [selectedDomain, setSelectedDomain] = useState<CourseDomain | null>(
+    null
+  );
+  const [selectedBatch, setSelectedBatch] = useState<ManagedBatch | null>(
+    null
+  );
 
   const visibleBatches = [...batches].sort(
     (a, b) => a.displayOrder - b.displayOrder
@@ -98,18 +108,24 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
                     duration: cardReveal.duration,
                     delay: cardReveal.isCompactViewport ? 0 : idx * 0.03,
                   }}
-                  className="rounded-[20px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-5 flex flex-col justify-between"
+                  className="rounded-[20px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-5 flex h-full flex-col justify-between"
                 >
                   <div>
                     <span className="font-display text-[26px] font-bold text-[#5E67E6] dark:text-[#D0FF71]">
                       {String(domain.displayOrder || idx + 1).padStart(2, '0')}
                     </span>
-                    <h3 className="mt-2 font-display text-[20px] font-bold uppercase leading-[1.2] text-[#303030] dark:text-white">
+                    <h3 className="mt-2 font-display text-[20px] font-bold uppercase leading-[1.2] text-[#303030] dark:text-white line-clamp-2">
                       {domain.title}
                     </h3>
-                    <p className="mt-2 text-[13.5px] font-light leading-[1.55] text-[#5C5C5C] dark:text-white/75">
-                      {domain.shortDescription}
-                    </p>
+                    <div className="mt-2">
+                      <TruncatedTextWithMore
+                        lines={3}
+                        text={domain.shortDescription}
+                        className="text-[13.5px] font-light leading-[1.55] text-[#5C5C5C] dark:text-white/75"
+                        ariaLabel={`Read more about ${domain.title}`}
+                        onMore={() => setSelectedDomain(domain)}
+                      />
+                    </div>
                   </div>
                 </motion.article>
               ))}
@@ -152,20 +168,24 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
                   }`}
               >
                 {homeBatches.map((batch) => (
-                  <button
+                  <article
                     key={batch.id}
-                    type="button"
-                    onClick={() => onNavigate('/upcoming-batches')}
-                    className="group text-left rounded-[22px] overflow-hidden bg-[#F5F5F5] dark:bg-[#2C2C2D] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E67E6] dark:focus-visible:ring-[#D0FF71]"
+                    className="group flex h-full flex-col text-left rounded-[22px] overflow-hidden bg-[#F5F5F5] dark:bg-[#2C2C2D]"
                   >
-                    <div className="aspect-[16/10] overflow-hidden bg-[#E2E2E5] dark:bg-[#1F1F21]">
-                      <SafeImage
-                        src={batch.coverImage}
-                        alt={batch.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-6">
+                    <button
+                      type="button"
+                      onClick={() => onNavigate('/upcoming-batches')}
+                      className="block w-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E67E6] dark:focus-visible:ring-[#D0FF71]"
+                    >
+                      <div className="aspect-[16/10] overflow-hidden bg-[#E2E2E5] dark:bg-[#1F1F21]">
+                        <SafeImage
+                          src={batch.coverImage}
+                          alt={batch.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                    </button>
+                    <div className="flex flex-1 flex-col p-6">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className="inline-block rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] px-3 py-0.5 text-[12px] font-medium text-white dark:text-[#1A1A1B]">
                           {batch.category}
@@ -174,18 +194,120 @@ export function HomePage({ onNavigate, onContactClick }: HomePageProps) {
                           {formatBatchDateDisplay(batch.batchDate)}
                         </span>
                       </div>
-                      <h3 className="mt-3 font-display text-[24px] font-bold uppercase leading-[1.18] text-[#303030] dark:text-white group-hover:text-[#5E67E6] dark:group-hover:text-[#D0FF71] transition-colors">
-                        {batch.title}
-                      </h3>
-                      <p className="mt-2 text-[14px] font-light leading-[1.55] text-[#5C5C5C] dark:text-white/75 line-clamp-3">
-                        {batch.shortDescription}
-                      </p>
+                      <button
+                        type="button"
+                        onClick={() => onNavigate('/upcoming-batches')}
+                        className="mt-3 block text-left cursor-pointer focus-visible:outline-none focus-visible:underline"
+                      >
+                        <h3 className="font-display text-[24px] font-bold uppercase leading-[1.18] text-[#303030] dark:text-white group-hover:text-[#5E67E6] dark:group-hover:text-[#D0FF71] transition-colors line-clamp-2">
+                          {batch.title}
+                        </h3>
+                      </button>
+                      <div className="mt-2">
+                        <TruncatedTextWithMore
+                          lines={3}
+                          text={batch.shortDescription}
+                          className="text-[14px] font-light leading-[1.55] text-[#5C5C5C] dark:text-white/75"
+                          ariaLabel={`Read more about ${batch.title}`}
+                          onMore={() => setSelectedBatch(batch)}
+                        />
+                      </div>
                     </div>
-                  </button>
+                  </article>
                 ))}
               </div>
             )}
           </div>
+
+          <PublicDetailModal
+            open={Boolean(selectedDomain)}
+            onClose={() => setSelectedDomain(null)}
+            titleId="home-domain-modal-title"
+            closeLabel="Close domain summary"
+            maxWidthClass="max-w-[580px]"
+          >
+            {selectedDomain && (
+              <div className="p-6 sm:p-8 pr-14">
+                <span className="font-display text-[26px] font-bold text-[#5E67E6] dark:text-[#D0FF71]">
+                  {selectedDomain.domainCode || selectedDomain.category}
+                </span>
+                <h3
+                  id="home-domain-modal-title"
+                  className="mt-2 font-display text-[26px] sm:text-[32px] font-bold uppercase leading-[1.15] text-[#303030] dark:text-white"
+                >
+                  {selectedDomain.title}
+                </h3>
+                <p className="mt-3 whitespace-pre-line text-[15px] font-light leading-[1.65] text-[#5C5C5C] dark:text-white/80">
+                  {selectedDomain.shortDescription}
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedDomain(null);
+                      onNavigate('/upcoming-batches');
+                    }}
+                    className="inline-flex items-center gap-2 rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] px-5 py-2.5 text-[14px] font-semibold text-white dark:text-[#1A1A1B] hover:opacity-90 cursor-pointer"
+                  >
+                    <span>Explore Upcoming Batches</span>
+                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </PublicDetailModal>
+
+          <PublicDetailModal
+            open={Boolean(selectedBatch)}
+            onClose={() => setSelectedBatch(null)}
+            titleId="home-batch-modal-title"
+            closeLabel="Close batch overview"
+            maxWidthClass="max-w-[680px]"
+          >
+            {selectedBatch && (
+              <div>
+                <div className="aspect-[16/10] w-full overflow-hidden bg-[#141415]">
+                  <SafeImage
+                    src={selectedBatch.coverImage}
+                    alt={selectedBatch.title}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="p-6 sm:p-8">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="inline-block rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] px-3 py-0.5 text-[12px] font-medium text-white dark:text-[#1A1A1B]">
+                      {selectedBatch.category}
+                    </span>
+                    <span className="text-[12.5px] font-medium text-[#5C5C5C] dark:text-white/70">
+                      {formatBatchDateDisplay(selectedBatch.batchDate)}
+                    </span>
+                  </div>
+                  <h3
+                    id="home-batch-modal-title"
+                    className="mt-3 font-display text-[26px] sm:text-[32px] font-bold uppercase leading-[1.15] text-[#303030] dark:text-white"
+                  >
+                    {selectedBatch.title}
+                  </h3>
+                  <p className="mt-3 whitespace-pre-line text-[15px] font-light leading-[1.65] text-[#5C5C5C] dark:text-white/80">
+                    {selectedBatch.shortDescription}
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedBatch(null);
+                        onNavigate('/upcoming-batches');
+                      }}
+                      className="inline-flex items-center gap-2 rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] px-5 py-2.5 text-[14px] font-semibold text-white dark:text-[#1A1A1B] hover:opacity-90 cursor-pointer"
+                    >
+                      <span>View All Batch Details</span>
+                      <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </PublicDetailModal>
 
           <BatchEmptyStateModal
             open={batchModalOpen}

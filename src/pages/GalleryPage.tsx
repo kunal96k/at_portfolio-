@@ -14,6 +14,7 @@ import {
 import { ContactSection } from '../components/ContactSection';
 import { OutlineButton } from '../components/OutlineButton';
 import { SafeImage } from '../components/SafeImage';
+import { TruncatedTextWithMore } from '../components/TruncatedTextWithMore';
 import { usePublicGallery } from '../hooks/usePublicGallery';
 import type { GalleryItem } from '../services/galleryService';
 
@@ -292,7 +293,7 @@ export function GalleryPage({ onNavigate }: GalleryPageProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.45, delay: idx * 0.04 }}
                   aria-label={`Open gallery image: ${item.title}`}
-                  className="group flex flex-col text-left rounded-[22px] overflow-hidden bg-[#F5F5F5] dark:bg-[#2C2C2D] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E67E6] dark:focus-visible:ring-[#D0FF71]"
+                  className="group flex h-full flex-col text-left rounded-[22px] overflow-hidden bg-[#F5F5F5] dark:bg-[#2C2C2D] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E67E6] dark:focus-visible:ring-[#D0FF71]"
                 >
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#E2E2E5] dark:bg-[#1F1F21]">
                     <SafeImage
@@ -316,13 +317,18 @@ export function GalleryPage({ onNavigate }: GalleryPageProps) {
                         </span>
                       )}
                     </div>
-                    <h2 className="mt-3 font-display text-[22px] font-bold uppercase leading-[1.2] text-[#303030] dark:text-white group-hover:text-[#5E67E6] dark:group-hover:text-[#D0FF71] transition-colors">
+                    <h2 className="mt-3 font-display text-[22px] font-bold uppercase leading-[1.2] text-[#303030] dark:text-white group-hover:text-[#5E67E6] dark:group-hover:text-[#D0FF71] transition-colors line-clamp-2">
                       {item.title}
                     </h2>
                     {item.caption && (
-                      <p className="mt-1.5 text-[14px] font-light leading-[1.55] text-[#5C5C5C] dark:text-white/70 line-clamp-3">
-                        {item.caption}
-                      </p>
+                      <div className="mt-1.5">
+                        <TruncatedTextWithMore
+                          lines={3}
+                          text={item.caption}
+                          asSpanTrigger
+                          className="text-[14px] font-light leading-[1.55] text-[#5C5C5C] dark:text-white/70"
+                        />
+                      </div>
                     )}
                     {item.tags.length > 0 && (
                       <div className="mt-auto pt-3.5 flex flex-wrap gap-1.5">
@@ -439,7 +445,7 @@ export function GalleryPage({ onNavigate }: GalleryPageProps) {
                   exit={{ opacity: 0, scale: 0.96, y: 12 }}
                   transition={{ duration: 0.22 }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-[880px] rounded-[24px] overflow-hidden bg-white dark:bg-[#1E1E1F] shadow-2xl"
+                  className="relative flex max-h-[88vh] w-full max-w-[880px] flex-col overflow-y-auto rounded-[24px] bg-white dark:bg-[#1E1E1F] shadow-2xl"
                 >
                   <button
                     type="button"

@@ -10,6 +10,7 @@ import {
   generateNextDomainCode,
   generateNextNoteCode,
   generateUniqueSlug,
+  MAX_DOCUMENT_UPLOAD_BYTES,
   MAX_UPLOAD_BYTES,
   paginateList,
   slugifyText,
@@ -311,14 +312,30 @@ test('paginateList clamps out-of-range page numbers safely', () => {
   assert.deepEqual(clamped.items, [5]);
 });
 
-test('validateUploadFile enforces 5 MB max limit and allowed extensions', () => {
+test('validateUploadFile enforces 5 MB image limit, 50 MB document limit, and allowed extensions', () => {
   assert.equal(MAX_UPLOAD_BYTES, 5 * 1024 * 1024);
+  assert.equal(MAX_DOCUMENT_UPLOAD_BYTES, 50 * 1024 * 1024);
 
   const okPdf = validateUploadFile(
     { name: 'rhel-notes.pdf', size: 2 * 1024 * 1024 },
     ['.pdf', '.docx']
   );
   assert.equal(okPdf.valid, true);
+
+  const okLargeDoc = validateUploadFile(
+    { name: 'full-ccna-workbook.pdf', size: 48 * 1024 * 1024 },
+    ['.pdf'],
+    MAX_DOCUMENT_UPLOAD_BYTES
+  );
+  assert.equal(okLargeDoc.valid, true);
+
+  const tooBigDoc = validateUploadFile(
+    { name: 'oversize-archive.zip', size: MAX_DOCUMENT_UPLOAD_BYTES + 1024 },
+    ['.zip'],
+    MAX_DOCUMENT_UPLOAD_BYTES
+  );
+  assert.equal(tooBigDoc.valid, false);
+  assert.match(tooBigDoc.error ?? '', /50\.0 MB/);
 
   const tooBig = validateUploadFile(
     { name: 'huge-video.pdf', size: MAX_UPLOAD_BYTES + 1024 },

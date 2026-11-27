@@ -427,16 +427,16 @@ export function BatchFormModal({
 
   const hasIdentityErrors = Boolean(
     errors.title ||
-      errors.slug ||
-      isDuplicateSlug ||
-      errors.relatedCourse ||
-      errors.displayOrder
+    errors.slug ||
+    isDuplicateSlug ||
+    errors.relatedCourse ||
+    errors.displayOrder
   );
   const hasScheduleErrors = Boolean(
     errors.batchDate ||
-      errors.batchTime ||
-      errors.shortDescription ||
-      errors.detailedContent
+    errors.batchTime ||
+    errors.shortDescription ||
+    errors.detailedContent
   );
 
   const tabs: Array<{
@@ -446,28 +446,28 @@ export function BatchFormModal({
     icon: typeof Layers;
     hasError: boolean;
   }> = [
-    {
-      id: 'identity',
-      stepNum: 1,
-      label: 'Identity & Course',
-      icon: Layers,
-      hasError: hasIdentityErrors,
-    },
-    {
-      id: 'schedule',
-      stepNum: 2,
-      label: 'Schedule & Syllabus',
-      icon: CalendarClock,
-      hasError: hasScheduleErrors,
-    },
-    {
-      id: 'media',
-      stepNum: 3,
-      label: 'Cover, Files & Publish',
-      icon: ImageIcon,
-      hasError: false,
-    },
-  ];
+      {
+        id: 'identity',
+        stepNum: 1,
+        label: 'Identity & Course',
+        icon: Layers,
+        hasError: hasIdentityErrors,
+      },
+      {
+        id: 'schedule',
+        stepNum: 2,
+        label: 'Schedule & Syllabus',
+        icon: CalendarClock,
+        hasError: hasScheduleErrors,
+      },
+      {
+        id: 'media',
+        stepNum: 3,
+        label: 'Cover, Files & Publish',
+        icon: ImageIcon,
+        hasError: false,
+      },
+    ];
 
   const currentTabIndex = tabs.findIndex((t) => t.id === activeTab);
 
@@ -575,13 +575,12 @@ export function BatchFormModal({
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center justify-between gap-2 rounded-xl px-3.5 py-2.5 text-left text-[13px] font-semibold transition-colors ${
-                  isActive
-                    ? 'bg-[#145BFF] text-white shadow-xs'
-                    : tab.hasError
-                      ? 'border border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]'
-                      : 'bg-white text-[#334155] hover:bg-[#EFF6FF] hover:text-[#145BFF]'
-                }`}
+                className={`flex items-center justify-between gap-2 rounded-xl px-3.5 py-2.5 text-left text-[13px] font-semibold transition-colors ${isActive
+                  ? 'bg-[#145BFF] text-white shadow-xs'
+                  : tab.hasError
+                    ? 'border border-[#FCA5A5] bg-[#FEF2F2] text-[#B91C1C]'
+                    : 'bg-white text-[#334155] hover:bg-[#EFF6FF] hover:text-[#145BFF]'
+                  }`}
               >
                 <span className="flex min-w-0 items-center gap-2">
                   <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -591,9 +590,8 @@ export function BatchFormModal({
                 </span>
                 {tab.hasError && (
                   <span
-                    className={`h-2.5 w-2.5 shrink-0 rounded-full ${
-                      isActive ? 'bg-[#FECACA]' : 'bg-[#DC2626]'
-                    }`}
+                    className={`h-2.5 w-2.5 shrink-0 rounded-full ${isActive ? 'bg-[#FECACA]' : 'bg-[#DC2626]'
+                      }`}
                     title="Needs attention"
                   />
                 )}
@@ -645,11 +643,10 @@ export function BatchFormModal({
                     value={values.title}
                     onChange={(e) => handleTitleChange(e.target.value)}
                     placeholder="e.g., Red Hat Linux (RHEL)"
-                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                      errors.title
-                        ? 'border-[#DC2626] focus:border-[#DC2626]'
-                        : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                    }`}
+                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.title
+                      ? 'border-[#DC2626] focus:border-[#DC2626]'
+                      : 'border-[#CBD5E1] focus:border-[#145BFF]'
+                      }`}
                   />
                   {errors.title && (
                     <p className="mt-1 text-xs font-medium text-[#DC2626]">
@@ -685,11 +682,10 @@ export function BatchFormModal({
                     value={values.slug}
                     onChange={(e) => handleManualSlugChange(e.target.value)}
                     placeholder="red-hat-linux-rhel-batch"
-                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 font-mono text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                      errors.slug || isDuplicateSlug
-                        ? 'border-[#DC2626] focus:border-[#DC2626]'
-                        : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                    }`}
+                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 font-mono text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.slug || isDuplicateSlug
+                      ? 'border-[#DC2626] focus:border-[#DC2626]'
+                      : 'border-[#CBD5E1] focus:border-[#145BFF]'
+                      }`}
                   />
                   <p className="mt-1 truncate font-mono text-[11px] text-[#64748B]">
                     URL: /upcoming-batches/{values.slug || 'auto-generated-slug'}
@@ -865,11 +861,10 @@ export function BatchFormModal({
                         Math.min(999, Math.max(0, Number(e.target.value) || 0))
                       )
                     }
-                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] tabular-nums transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                      errors.displayOrder
-                        ? 'border-[#DC2626]'
-                        : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                    }`}
+                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] tabular-nums transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.displayOrder
+                      ? 'border-[#DC2626]'
+                      : 'border-[#CBD5E1] focus:border-[#145BFF]'
+                      }`}
                   />
                   {errors.displayOrder && (
                     <p className="mt-1 text-xs font-medium text-[#DC2626]">
@@ -903,11 +898,10 @@ export function BatchFormModal({
                     type="date"
                     value={values.batchDate}
                     onChange={(e) => updateField('batchDate', e.target.value)}
-                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                      errors.batchDate
-                        ? 'border-[#DC2626]'
-                        : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                    }`}
+                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.batchDate
+                      ? 'border-[#DC2626]'
+                      : 'border-[#CBD5E1] focus:border-[#145BFF]'
+                      }`}
                   />
                   {errors.batchDate && (
                     <p className="mt-1 text-xs font-medium text-[#DC2626]">
@@ -928,11 +922,10 @@ export function BatchFormModal({
                     type="time"
                     value={values.batchTime}
                     onChange={(e) => updateField('batchTime', e.target.value)}
-                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                      errors.batchTime
-                        ? 'border-[#DC2626]'
-                        : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                    }`}
+                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.batchTime
+                      ? 'border-[#DC2626]'
+                      : 'border-[#CBD5E1] focus:border-[#145BFF]'
+                      }`}
                   />
                   {errors.batchTime && (
                     <p className="mt-1 text-xs font-medium text-[#DC2626]">
@@ -1064,11 +1057,10 @@ export function BatchFormModal({
                       )
                     }
                     placeholder="Brief 1–2 sentence overview displayed on website cards…"
-                    className={`mt-1 w-full rounded-lg border bg-white p-3 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                      errors.shortDescription
-                        ? 'border-[#DC2626]'
-                        : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                    }`}
+                    className={`mt-1 w-full rounded-lg border bg-white p-3 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.shortDescription
+                      ? 'border-[#DC2626]'
+                      : 'border-[#CBD5E1] focus:border-[#145BFF]'
+                      }`}
                   />
                   {errors.shortDescription && (
                     <p className="mt-1 text-xs font-medium text-[#DC2626]">
@@ -1112,11 +1104,10 @@ export function BatchFormModal({
                     placeholder={
                       '1. Installation & Core Administration\n2. Storage, Networking & Security Labs\n3. Live Troubleshooting & Certification Prep'
                     }
-                    className={`mt-1 w-full rounded-lg border bg-white p-3 text-[13px] leading-relaxed text-[#0F172A] placeholder:text-[#94A3B8] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                      errors.detailedContent
-                        ? 'border-[#DC2626]'
-                        : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                    }`}
+                    className={`mt-1 w-full rounded-lg border bg-white p-3 text-[13px] leading-relaxed text-[#0F172A] placeholder:text-[#94A3B8] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.detailedContent
+                      ? 'border-[#DC2626]'
+                      : 'border-[#CBD5E1] focus:border-[#145BFF]'
+                      }`}
                   />
                   {errors.detailedContent && (
                     <p className="mt-1 text-xs font-medium text-[#DC2626]">

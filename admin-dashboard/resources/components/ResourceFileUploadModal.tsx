@@ -273,7 +273,7 @@ export function ResourceFileUploadModal({
         )}
 
         <DocumentUploadList
-          label="Upload, Replace, or Remove File (saved in project folder · max 5 MB)"
+          label="Upload, Replace, or Remove File (saved in project folder · max 50 MB)"
           multiple={false}
           uploadFolder="resources"
           files={uploadedDocs}

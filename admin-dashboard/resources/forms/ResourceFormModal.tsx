@@ -1049,7 +1049,7 @@ export function ResourceFormModal({
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <DocumentUploadList
-                label="Upload Study Note / Workbook (max 5 MB)"
+                label="Upload Study Note / Workbook (max 50 MB)"
                 uploadFolder="resources"
                 multiple={false}
                 files={uploadedDocs}

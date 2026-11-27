@@ -215,7 +215,7 @@ export function filterAndSortCourses(
     if (
       query.category !== 'All' &&
       course.category.trim().toLowerCase() !==
-        query.category.trim().toLowerCase()
+      query.category.trim().toLowerCase()
     ) {
       return false;
     }
@@ -293,7 +293,8 @@ export function formatFileSize(bytes: number): string {
   return `${value.toFixed(decimals)} ${units[unitIdx]}`;
 }
 
-export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB (images)
+export const MAX_DOCUMENT_UPLOAD_BYTES = 50 * 1024 * 1024; // 50 MB (resources & study files)
 
 export interface FileValidationResult {
   valid: boolean;
@@ -535,7 +536,7 @@ export function filterAndSortBatches(
       query.relatedCourse &&
       query.relatedCourse !== 'All' &&
       batch.relatedCourse.trim().toLowerCase() !==
-        query.relatedCourse.trim().toLowerCase()
+      query.relatedCourse.trim().toLowerCase()
     ) {
       return false;
     }
@@ -672,15 +673,15 @@ export interface SidebarShellLayout {
 export function getSidebarShellLayout(collapsed: boolean): SidebarShellLayout {
   return collapsed
     ? {
-        asideWidthClass: 'lg:w-[76px]',
-        mainWidthClass: 'max-w-none lg:px-8',
-        showLabels: false,
-      }
+      asideWidthClass: 'lg:w-[76px]',
+      mainWidthClass: 'max-w-none lg:px-8',
+      showLabels: false,
+    }
     : {
-        asideWidthClass: 'lg:w-[244px]',
-        mainWidthClass: 'max-w-[1440px] lg:px-7',
-        showLabels: true,
-      };
+      asideWidthClass: 'lg:w-[244px]',
+      mainWidthClass: 'max-w-[1440px] lg:px-7',
+      showLabels: true,
+    };
 }
 
 export function filterSidebarGroups<T extends SidebarModuleRef>(

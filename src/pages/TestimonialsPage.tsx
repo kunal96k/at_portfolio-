@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import {
   ChevronLeft,
@@ -10,15 +11,21 @@ import {
 } from 'lucide-react';
 import { ContactSection } from '../components/ContactSection';
 import { OutlineButton } from '../components/OutlineButton';
-import { SafeImage } from '../components/SafeImage';
+import {
+  TestimonialCard,
+  TestimonialDetailModal,
+} from '../components/TestimonialCardAndModal';
 import { TestimonialsSection } from '../components/TestimonialsSection';
 import { usePublicTestimonials } from '../hooks/usePublicTestimonials';
+import type { StudentTestimonial } from '../services/testimonialsService';
 
 interface TestimonialsPageProps {
   onNavigate: (path: string) => void;
 }
 
 export function TestimonialsPage({ onNavigate }: TestimonialsPageProps) {
+  const [selectedTestimonial, setSelectedTestimonial] =
+    useState<StudentTestimonial | null>(null);
   const {
     query,
     pageData,
@@ -250,52 +257,21 @@ export function TestimonialsPage({ onNavigate }: TestimonialsPageProps) {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {visibleItems.map((item) => (
-                  <article
+                  <TestimonialCard
                     key={item.id}
-                    className="flex flex-col justify-between rounded-[22px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-7 border border-black/[0.04] dark:border-white/[0.06]"
-                  >
-                    <div>
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-3.5">
-                          <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 ring-2 ring-[#5E67E6]/25 dark:ring-[#D0FF71]/35 bg-[#5E67E6]/15 dark:bg-[#D0FF71]/15 flex items-center justify-center text-[#5E67E6] dark:text-[#D0FF71] font-display text-[22px] font-bold">
-                            {item.avatarUrl ? (
-                              <SafeImage
-                                src={item.avatarUrl}
-                                alt={item.studentName}
-                                className="w-full h-full object-cover object-top"
-                              />
-                            ) : (
-                              item.studentName.slice(0, 1).toUpperCase()
-                            )}
-                          </div>
-                          <div>
-                            <h2 className="text-[17px] font-semibold text-[#303030] dark:text-white leading-snug">
-                              {item.studentName}
-                            </h2>
-                            {(item.company || item.role) && (
-                              <p className="mt-0.5 text-[13px] font-medium text-[#5E67E6] dark:text-[#D0FF71] leading-snug">
-                                {[item.company, item.role].filter(Boolean).join(' | ')}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {item.courseTrack && (
-                        <p className="mt-4 text-[13px] font-medium uppercase tracking-wider text-[#5E67E6] dark:text-[#D0FF71]">
-                          {item.courseTrack}
-                        </p>
-                      )}
-
-                      <blockquote className="mt-3 text-[15px] font-light leading-[1.65] text-[#303030] dark:text-white/80">
-                        &ldquo;{item.quote}&rdquo;
-                      </blockquote>
-                    </div>
-                  </article>
+                    testimonial={item}
+                    onOpenModal={setSelectedTestimonial}
+                    avatarSizeClass="w-16 h-16"
+                  />
                 ))}
               </div>
             )}
           </div>
+
+          <TestimonialDetailModal
+            testimonial={selectedTestimonial}
+            onClose={() => setSelectedTestimonial(null)}
+          />
 
           {/* Server-Side Pagination UI (6 stories per page, matching Blogs & Gallery pages) */}
           {pageData.totalItems > 0 && pageData.totalPages > 1 && (

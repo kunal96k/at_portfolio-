@@ -17,7 +17,9 @@ import { BatchEmptyStateCard } from '../components/BatchEmptyStateCard';
 import { BatchEmptyStateModal } from '../components/BatchEmptyStateModal';
 import { ContactSection } from '../components/ContactSection';
 import { OutlineButton } from '../components/OutlineButton';
+import { PublicDetailModal } from '../components/PublicDetailModal';
 import { SafeImage } from '../components/SafeImage';
+import { TruncatedTextWithMore } from '../components/TruncatedTextWithMore';
 import {
   usePublicBatches,
   type PublicBatchSortBy,
@@ -25,6 +27,7 @@ import {
 import {
   formatBatchDateDisplay,
   formatBatchTimeDisplay,
+  type ManagedBatch,
 } from '../services/batchesService';
 import { sanitizeSafeHref } from '../utils/scrollMath';
 
@@ -37,6 +40,9 @@ export function UpcomingTrainingPage({
   onContactClick,
   onNavigate,
 }: UpcomingTrainingPageProps) {
+  const [selectedBatch, setSelectedBatch] = useState<ManagedBatch | null>(
+    null
+  );
   const {
     batches,
     query,
@@ -290,7 +296,7 @@ export function UpcomingTrainingPage({
                         delay: idx * 0.05,
                         ease: [0.16, 1, 0.3, 1],
                       }}
-                      className="group flex flex-col overflow-hidden rounded-[22px] bg-[#F5F5F5] dark:bg-[#2C2C2D]"
+                      className="group flex h-full flex-col overflow-hidden rounded-[22px] bg-[#F5F5F5] dark:bg-[#2C2C2D]"
                     >
                       <div className="aspect-[16/10] w-full overflow-hidden bg-[#E2E2E5] dark:bg-[#1F1F21]">
                         <SafeImage
@@ -317,19 +323,25 @@ export function UpcomingTrainingPage({
                           </span>
                         </div>
 
-                        <h2 className="mt-3 font-display text-[24px] sm:text-[26px] font-bold uppercase leading-[1.18] text-[#303030] dark:text-white group-hover:text-[#5E67E6] dark:group-hover:text-[#D0FF71] transition-colors">
+                        <h2 className="mt-3 font-display text-[24px] sm:text-[26px] font-bold uppercase leading-[1.18] text-[#303030] dark:text-white group-hover:text-[#5E67E6] dark:group-hover:text-[#D0FF71] transition-colors line-clamp-2">
                           {program.title}
                         </h2>
 
                         {program.relatedCourse && (
-                          <p className="mt-1 text-[12.5px] font-medium text-[#5E67E6] dark:text-[#D0FF71]">
+                          <p className="mt-1 text-[12.5px] font-medium text-[#5E67E6] dark:text-[#D0FF71] line-clamp-1">
                             {program.relatedCourse}
                           </p>
                         )}
 
-                        <p className="mt-2.5 text-[14.5px] font-light leading-[1.6] text-[#5C5C5C] dark:text-white/75">
-                          {program.shortDescription}
-                        </p>
+                        <div className="mt-2.5">
+                          <TruncatedTextWithMore
+                            lines={3}
+                            text={program.shortDescription}
+                            className="text-[14.5px] font-light leading-[1.6] text-[#5C5C5C] dark:text-white/75"
+                            ariaLabel={`Read full batch description for ${program.title}`}
+                            onMore={() => setSelectedBatch(program)}
+                          />
+                        </div>
 
                         {/* Schedule Metadata */}
                         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-light text-[#5C5C5C] dark:text-white/70">
@@ -426,6 +438,134 @@ export function UpcomingTrainingPage({
               </div>
             )}
           </div>
+
+          <PublicDetailModal
+            open={Boolean(selectedBatch)}
+            onClose={() => setSelectedBatch(null)}
+            titleId="upcoming-batch-modal-title"
+            closeLabel="Close batch details"
+            maxWidthClass="max-w-[700px]"
+          >
+            {selectedBatch && (() => {
+              const modalModules =
+                selectedBatch.modules.length > 0
+                  ? selectedBatch.modules
+                  : selectedBatch.detailedContent
+                      .split(/\r?\n/)
+                      .map((l) => l.trim())
+                      .filter(Boolean);
+              return (
+                <div>
+                  <div className="aspect-[16/9] w-full overflow-hidden bg-[#141415]">
+                    <SafeImage
+                      src={selectedBatch.coverImage}
+                      alt={selectedBatch.title}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="p-6 sm:p-8">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="inline-block rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] px-3 py-0.5 text-[12px] font-medium text-white dark:text-[#1A1A1B]">
+                          {selectedBatch.category}
+                        </span>
+                        {selectedBatch.learningLevel && (
+                          <span className="rounded-full bg-[#F5F5F5] dark:bg-[#2C2C2D] px-2.5 py-0.5 text-[12px] font-medium text-[#303030] dark:text-white/80">
+                            {selectedBatch.learningLevel}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[12.5px] font-medium text-[#5C5C5C] dark:text-white/70">
+                        {formatBatchDateDisplay(selectedBatch.batchDate)}
+                      </span>
+                    </div>
+
+                    <h3
+                      id="upcoming-batch-modal-title"
+                      className="mt-3 font-display text-[26px] sm:text-[32px] font-bold uppercase leading-[1.15] text-[#303030] dark:text-white"
+                    >
+                      {selectedBatch.title}
+                    </h3>
+
+                    {selectedBatch.relatedCourse && (
+                      <p className="mt-1 text-[13px] font-medium text-[#5E67E6] dark:text-[#D0FF71]">
+                        {selectedBatch.relatedCourse}
+                      </p>
+                    )}
+
+                    <p className="mt-3 whitespace-pre-line text-[15px] font-light leading-[1.65] text-[#303030] dark:text-white/80">
+                      {selectedBatch.shortDescription}
+                    </p>
+
+                    <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-light text-[#5C5C5C] dark:text-white/70">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-[#5E67E6] dark:text-[#D0FF71]" />
+                        {formatBatchDateDisplay(selectedBatch.batchDate)}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-[#5E67E6] dark:text-[#D0FF71]" />
+                        {formatBatchTimeDisplay(selectedBatch.batchTime)}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-[#5E67E6] dark:text-[#D0FF71]" />
+                        {selectedBatch.mode} · {selectedBatch.seatsTotal} seats
+                      </span>
+                      {selectedBatch.location && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-[#5E67E6] dark:text-[#D0FF71]" />
+                          {selectedBatch.location}
+                        </span>
+                      )}
+                    </div>
+
+                    {modalModules.length > 0 && (
+                      <div className="mt-5 border-t border-[#E2E2E4] dark:border-[#3A3A3D] pt-4">
+                        <h4 className="text-[14px] font-semibold text-[#303030] dark:text-white">
+                          Key Lab Modules ({modalModules.length})
+                        </h4>
+                        <ul className="mt-2.5 space-y-2">
+                          {modalModules.map((mod, mIdx) => (
+                            <li
+                              key={`${mod}-${mIdx}`}
+                              className="flex items-start gap-2 text-[13.5px] font-light text-[#303030] dark:text-white/80"
+                            >
+                              <span className="font-display text-[14px] font-bold text-[#5E67E6] dark:text-[#D0FF71] tabular-nums">
+                                {String(mIdx + 1).padStart(2, '0')}.
+                              </span>
+                              <span>{mod}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="mt-6 flex flex-wrap items-center gap-3">
+                      <OutlineButton
+                        onClick={() => {
+                          setSelectedBatch(null);
+                          onContactClick();
+                        }}
+                      >
+                        ENQUIRE FOR BATCH
+                      </OutlineButton>
+
+                      {selectedBatch.attachments.length > 0 &&
+                        sanitizeSafeHref(selectedBatch.attachments[0]?.url) && (
+                          <a
+                            href={sanitizeSafeHref(selectedBatch.attachments[0]?.url)!}
+                            download={selectedBatch.attachments[0].name}
+                            className="inline-flex items-center gap-2 rounded-full border border-[#303030]/20 dark:border-white/20 px-4 py-2.5 text-[13px] font-medium text-[#303030] dark:text-white/90 hover:bg-[#303030] hover:text-white dark:hover:bg-white dark:hover:text-[#1A1A1B] transition-colors"
+                          >
+                            <Download className="w-3.5 h-3.5" aria-hidden="true" />
+                            <span>Syllabus PDF</span>
+                          </a>
+                        )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </PublicDetailModal>
 
           {/* Server-Side Pagination UI (5 upcoming batches per page — matches BlogsPage UI) */}
           {pageData.totalItems > 0 && pageData.totalPages > 1 && (

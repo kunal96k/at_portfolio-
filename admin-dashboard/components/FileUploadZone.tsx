@@ -14,6 +14,7 @@ import {
 } from '../../src/services/resourcesService';
 import {
   formatFileSize,
+  MAX_DOCUMENT_UPLOAD_BYTES,
   MAX_UPLOAD_BYTES,
   validateUploadFile,
 } from '../utils/adminLogic';
@@ -232,6 +233,7 @@ interface DocumentUploadListProps {
   helperText?: string;
   files: UploadedDocItem[];
   multiple?: boolean;
+  maxBytes?: number;
   uploadFolder?: 'resources' | 'courses' | 'batches' | 'blogs' | 'media';
   onAddFiles: (newFiles: UploadedDocItem[]) => void;
   onRemoveFile: (id: string) => void;
@@ -240,9 +242,10 @@ interface DocumentUploadListProps {
 
 export function DocumentUploadList({
   label,
-  helperText = 'PDF, DOCX, PPTX, TXT, PKT, or ZIP · Max 5 MB per file',
+  helperText = 'PDF, DOCX, PPTX, TXT, PKT, or ZIP · Max 50 MB per file',
   files,
   multiple = true,
+  maxBytes = MAX_DOCUMENT_UPLOAD_BYTES,
   uploadFolder,
   onAddFiles,
   onRemoveFile,
@@ -270,7 +273,7 @@ export function DocumentUploadList({
         );
         return;
       }
-      const check = validateUploadFile(file, ALLOWED_DOC_EXTS, MAX_UPLOAD_BYTES);
+      const check = validateUploadFile(file, ALLOWED_DOC_EXTS, maxBytes);
       if (check.valid) {
         validFiles.push(file);
       } else if (check.error) {
@@ -362,7 +365,7 @@ export function DocumentUploadList({
           {label}
         </label>
         <span className="text-[11px] font-semibold text-[#145BFF] tabular-nums">
-          Max 5 MB · {files.length} {files.length === 1 ? 'file' : 'files'}
+          Max {Math.round(maxBytes / (1024 * 1024))} MB · {files.length} {files.length === 1 ? 'file' : 'files'}
         </span>
       </div>
 
@@ -488,7 +491,7 @@ export function DocumentUploadList({
       <p className="flex items-start gap-1.5 text-[11px] leading-relaxed text-[#64748B]">
         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#145BFF]" />
         <span>
-          Upload guideline: Keep each file under 5 MB. Use clear lowercase names
+          Upload guideline: Keep each file under {Math.round(maxBytes / (1024 * 1024))} MB. Use clear lowercase names
           like <span className="font-mono">rhel-lab-notes.pdf</span>.
         </span>
       </p>

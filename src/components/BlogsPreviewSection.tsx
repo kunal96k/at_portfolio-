@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BookOpen, FileText, MessageSquare } from 'lucide-react';
+import { ArrowRight, BookOpen, FileText, MessageSquare } from 'lucide-react';
 import { motion } from 'motion/react';
 import {
   BLOGS_STORAGE_KEY,
@@ -9,7 +9,9 @@ import {
 } from '../services/blogsService';
 import { useResponsiveReveal } from '../hooks/useResponsiveReveal';
 import { OutlineButton } from './OutlineButton';
+import { PublicDetailModal } from './PublicDetailModal';
 import { SafeImage } from './SafeImage';
+import { TruncatedTextWithMore } from './TruncatedTextWithMore';
 
 interface BlogsPreviewSectionProps {
   onNavigate: (path: string) => void;
@@ -22,6 +24,7 @@ export function BlogsPreviewSection({
 }: BlogsPreviewSectionProps) {
   const [posts, setPosts] = useState<BlogArticle[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectedPost, setSelectedPost] = useState<BlogArticle | null>(null);
   const headerReveal = useResponsiveReveal(0.25, 0.6);
   const cardReveal = useResponsiveReveal(0.15, 0.6);
 
@@ -171,13 +174,8 @@ export function BlogsPreviewSection({
           <>
             <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-8">
               {posts.slice(0, 3).map((post, idx) => (
-                <motion.a
+                <motion.article
                   key={post.id || post.slug}
-                  href={`/blogs/${post.slug}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onNavigate(`/blogs/${post.slug}`);
-                  }}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={cardReveal.viewport}
@@ -186,38 +184,109 @@ export function BlogsPreviewSection({
                     delay: cardReveal.isCompactViewport ? 0 : idx * 0.08,
                     ease: [0.16, 1, 0.3, 1],
                   }}
-                  className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E67E6] dark:focus-visible:ring-[#D0FF71] rounded-[20px]"
+                  className="group flex h-full flex-col rounded-[20px]"
                 >
-                  <div className="overflow-hidden rounded-[20px] aspect-[16/10] bg-[#ECECEE] dark:bg-[#2C2C2D]">
-                    <SafeImage
-                      src={
-                        post.coverImage ||
-                        '/assets/images/cisco_network_lab_1795164486189.jpg'
-                      }
-                      alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                  <a
+                    href={`/blogs/${post.slug}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onNavigate(`/blogs/${post.slug}`);
+                    }}
+                    className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E67E6] dark:focus-visible:ring-[#D0FF71] rounded-[20px]"
+                  >
+                    <div className="overflow-hidden rounded-[20px] aspect-[16/10] bg-[#ECECEE] dark:bg-[#2C2C2D]">
+                      <SafeImage
+                        src={
+                          post.coverImage ||
+                          '/assets/images/cisco_network_lab_1795164486189.jpg'
+                        }
+                        alt={post.title}
+                        className="w-full h-full object-cover transition-transform duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                      />
+                    </div>
+
+                    <div className="mt-5 flex flex-wrap items-center gap-3">
+                      <span className="inline-flex items-center rounded-full border border-[#5E67E6] dark:border-[#D0FF71] px-3.5 py-0.5 text-[13px] font-light text-[#5E67E6] dark:text-[#D0FF71]">
+                        {post.category}
+                      </span>
+                      <span className="text-[14px] font-light text-[#5C5C5C] dark:text-white/70 line-clamp-1">
+                        {post.guideLabel}
+                      </span>
+                    </div>
+
+                    <h3 className="mt-3.5 font-display text-[26px] sm:text-[28px] font-bold uppercase leading-[1.2] text-[#303030] dark:text-white group-hover:text-[#5E67E6] dark:group-hover:text-[#D0FF71] transition-colors line-clamp-2">
+                      {post.title}
+                    </h3>
+                  </a>
+
+                  <div className="mt-2.5 flex-1">
+                    <TruncatedTextWithMore
+                      lines={3}
+                      text={post.excerpt}
+                      className="text-[15px] sm:text-[16px] font-light leading-[1.6] text-[#303030] dark:text-white/75"
+                      ariaLabel={`Read full summary for ${post.title}`}
+                      onMore={() => setSelectedPost(post)}
                     />
                   </div>
-
-                  <div className="mt-5 flex items-center gap-3">
-                    <span className="inline-flex items-center rounded-full border border-[#5E67E6] dark:border-[#D0FF71] px-3.5 py-0.5 text-[13px] font-light text-[#5E67E6] dark:text-[#D0FF71]">
-                      {post.category}
-                    </span>
-                    <span className="text-[14px] font-light text-[#5C5C5C] dark:text-white/70">
-                      {post.guideLabel}
-                    </span>
-                  </div>
-
-                  <h3 className="mt-3.5 font-display text-[28px] sm:text-[32px] font-bold uppercase leading-[1.2] text-[#303030] dark:text-white group-hover:text-[#5E67E6] dark:group-hover:text-[#D0FF71] transition-colors">
-                    {post.title}
-                  </h3>
-
-                  <p className="mt-2.5 text-[15px] sm:text-[16px] font-light leading-[1.6] text-[#303030] dark:text-white/75">
-                    {post.excerpt}
-                  </p>
-                </motion.a>
+                </motion.article>
               ))}
             </div>
+
+            <PublicDetailModal
+              open={Boolean(selectedPost)}
+              onClose={() => setSelectedPost(null)}
+              titleId="home-blog-modal-title"
+              closeLabel="Close article summary"
+              maxWidthClass="max-w-[700px]"
+            >
+              {selectedPost && (
+                <div>
+                  <div className="aspect-[16/9] w-full overflow-hidden bg-[#141415]">
+                    <SafeImage
+                      src={
+                        selectedPost.coverImage ||
+                        '/assets/images/cisco_network_lab_1795164486189.jpg'
+                      }
+                      alt={selectedPost.title}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="p-6 sm:p-8">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <span className="inline-flex items-center rounded-full border border-[#5E67E6] dark:border-[#D0FF71] px-3.5 py-0.5 text-[12.5px] font-medium text-[#5E67E6] dark:text-[#D0FF71]">
+                        {selectedPost.category}
+                      </span>
+                      <span className="text-[13px] font-light text-[#5C5C5C] dark:text-white/70">
+                        {selectedPost.guideLabel}
+                      </span>
+                    </div>
+                    <h3
+                      id="home-blog-modal-title"
+                      className="mt-3 font-display text-[26px] sm:text-[32px] font-bold uppercase leading-[1.15] text-[#303030] dark:text-white"
+                    >
+                      {selectedPost.title}
+                    </h3>
+                    <p className="mt-3 whitespace-pre-line text-[15.5px] font-light leading-[1.65] text-[#303030] dark:text-white/80">
+                      {selectedPost.excerpt}
+                    </p>
+                    <div className="mt-6 flex flex-wrap gap-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const slug = selectedPost.slug;
+                          setSelectedPost(null);
+                          onNavigate(`/blogs/${slug}`);
+                        }}
+                        className="inline-flex items-center gap-2 rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] px-6 py-2.5 text-[14px] font-semibold text-white dark:text-[#1A1A1B] hover:opacity-90 cursor-pointer"
+                      >
+                        <span>Read Full Guide</span>
+                        <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </PublicDetailModal>
 
             <div className="mt-12 sm:mt-14 flex flex-wrap justify-center gap-4">
               <OutlineButton onClick={() => onNavigate('/blogs')}>
