@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   ChevronLeft,
   ChevronRight,
   Eye,
@@ -18,12 +19,15 @@ import type {
   TestimonialValidationErrors,
 } from '../types/testimonial';
 
+const MAX_FEATURED_HOMEPAGE = 10;
+
 interface TestimonialFormModalProps {
   open: boolean;
   editingItem: StudentTestimonial | null;
   existingCodes: string[];
   domainSuggestions: string[];
   defaultDisplayOrder: number;
+  featuredCount?: number;
   submitting: boolean;
   onClose: () => void;
   onSubmit: (values: TestimonialFormPayload) => Promise<void>;
@@ -99,7 +103,7 @@ function buildInitial(
     quote: '',
     avatarUrl: '',
     avatarName: '',
-    featured: true,
+    featured: false,
     displayOrder: defaultDisplayOrder,
     status: 'Published',
   };
@@ -111,6 +115,7 @@ export function TestimonialFormModal({
   existingCodes,
   domainSuggestions,
   defaultDisplayOrder,
+  featuredCount = 0,
   submitting,
   onClose,
   onSubmit,
@@ -136,7 +141,14 @@ export function TestimonialFormModal({
   const [customTrackMode, setCustomTrackMode] = useState(false);
   const [errors, setErrors] = useState<TestimonialValidationErrors>({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [featuredLimitWarning, setFeaturedLimitWarning] = useState(false);
   const activeSessionKeyRef = useRef<string | null>(null);
+
+  const otherFeaturedCount = editingItem?.featured
+    ? Math.max(0, featuredCount - 1)
+    : featuredCount;
+  const isMaxFeaturedReached = otherFeaturedCount >= MAX_FEATURED_HOMEPAGE;
+  const selectedFeaturedTotal = otherFeaturedCount + (values.featured ? 1 : 0);
 
   useEffect(() => {
     if (!open) {
@@ -159,6 +171,7 @@ export function TestimonialFormModal({
     setCustomTrackMode(false);
     setErrors({});
     setSubmitAttempted(false);
+    setFeaturedLimitWarning(false);
 
     if (!editingItem) {
       let active = true;
@@ -204,6 +217,12 @@ export function TestimonialFormModal({
       } else {
         setActiveTab('quoteMedia');
       }
+      return;
+    }
+
+    if (values.featured && isMaxFeaturedReached) {
+      setFeaturedLimitWarning(true);
+      setActiveTab('quoteMedia');
       return;
     }
 
@@ -619,22 +638,66 @@ export function TestimonialFormModal({
                   </select>
                 </div>
 
-                <div className="flex items-end">
-                  <label className="flex h-[42px] w-full cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#CBD5E1] bg-white px-3.5">
+                <div className="flex flex-col justify-end gap-2">
+                  <label
+                    className={`flex h-[42px] w-full cursor-pointer items-center justify-between gap-3 rounded-xl border bg-white px-3.5 transition-colors ${
+                      featuredLimitWarning
+                        ? 'border-amber-500 ring-1 ring-amber-400'
+                        : 'border-[#CBD5E1]'
+                    }`}
+                  >
                     <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0B1736]">
                       <Sparkles className="h-4 w-4 text-[#145BFF]" />
-                      Feature on Homepage
+                      <span>Feature on Homepage</span>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums ${
+                          isMaxFeaturedReached
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-[#EFF6FF] text-[#145BFF]'
+                        }`}
+                      >
+                        {selectedFeaturedTotal}/{MAX_FEATURED_HOMEPAGE}
+                      </span>
                     </span>
                     <input
                       type="checkbox"
                       checked={values.featured}
-                      onChange={(e) =>
-                        setValues((v) => ({ ...v, featured: e.target.checked }))
-                      }
+                      onChange={(e) => {
+                        const nextChecked = e.target.checked;
+                        if (nextChecked && isMaxFeaturedReached) {
+                          setFeaturedLimitWarning(true);
+                          return;
+                        }
+                        setFeaturedLimitWarning(false);
+                        setValues((v) => ({ ...v, featured: nextChecked }));
+                      }}
                       className="h-4 w-4 accent-[#145BFF]"
                     />
                   </label>
                 </div>
+
+                {(isMaxFeaturedReached || featuredLimitWarning) && (
+                  <div
+                    role="alert"
+                    className={`sm:col-span-2 flex items-start gap-2.5 rounded-xl border px-3.5 py-2.5 text-xs font-medium ${
+                      featuredLimitWarning
+                        ? 'border-[#F59E0B] bg-[#FEF3C7] text-[#92400E]'
+                        : 'border-amber-300 bg-amber-50 text-amber-900'
+                    }`}
+                  >
+                    <AlertTriangle
+                      className="mt-0.5 h-4 w-4 shrink-0 text-[#D97706]"
+                      aria-hidden="true"
+                    />
+                    <span>
+                      Maximum {MAX_FEATURED_HOMEPAGE}{' '}
+                      <strong>Feature on Homepage</strong> testimonials reached (
+                      {otherFeaturedCount}/{MAX_FEATURED_HOMEPAGE}). Unfeature
+                      an existing homepage testimonial first before enabling
+                      this one.
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           )}

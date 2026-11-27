@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { Building2 } from 'lucide-react';
+import { Building2, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   CORPORATE_PARTNERS,
   WHY_LEARN_ITEMS,
@@ -21,6 +21,9 @@ interface TestimonialsSectionProps {
   showStudentCards?: boolean;
 }
 
+const HOME_CAROUSEL_LIMIT = 10;
+const AUTO_SLIDE_MS = 4500;
+
 export function TestimonialsSection({
   onNavigate,
   showTestimonialsLink = true,
@@ -30,12 +33,68 @@ export function TestimonialsSection({
   const cardReveal = useResponsiveReveal(0.15, 0.55);
   const { pageData, loading } = usePublicTestimonials({
     featuredOnly: true,
-    size: 3,
+    size: HOME_CAROUSEL_LIMIT,
     enabled: showTestimonialsLink && showStudentCards,
   });
-  const featuredStories = pageData.items;
+  const featuredStories = pageData.items.slice(0, HOME_CAROUSEL_LIMIT);
   const [selectedTestimonial, setSelectedTestimonial] =
     useState<StudentTestimonial | null>(null);
+
+  const [itemsPerView, setItemsPerView] = useState<1 | 2 | 3>(3);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const touchStartXRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const syncViewport = () => {
+      if (window.innerWidth >= 1024) {
+        setItemsPerView(3);
+      } else if (window.innerWidth >= 768) {
+        setItemsPerView(2);
+      } else {
+        setItemsPerView(1);
+      }
+    };
+    syncViewport();
+    window.addEventListener('resize', syncViewport);
+    return () => window.removeEventListener('resize', syncViewport);
+  }, []);
+
+  const maxSlideIndex = Math.max(0, featuredStories.length - itemsPerView);
+  const safeSlideIndex = Math.min(activeIndex, maxSlideIndex);
+
+  useEffect(() => {
+    setActiveIndex((prev) => Math.min(prev, maxSlideIndex));
+  }, [maxSlideIndex]);
+
+  useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      maxSlideIndex <= 0 ||
+      isPaused ||
+      selectedTestimonial !== null
+    ) {
+      return;
+    }
+    const reducedMotion = window.matchMedia?.(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+    if (reducedMotion) return;
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((prev) => (prev >= maxSlideIndex ? 0 : prev + 1));
+    }, AUTO_SLIDE_MS);
+    return () => window.clearInterval(timer);
+  }, [maxSlideIndex, isPaused, selectedTestimonial]);
+
+  const goPrevSlide = () => {
+    setActiveIndex((prev) => (prev <= 0 ? maxSlideIndex : prev - 1));
+  };
+
+  const goNextSlide = () => {
+    setActiveIndex((prev) => (prev >= maxSlideIndex ? 0 : prev + 1));
+  };
 
   return (
     <section
@@ -195,13 +254,36 @@ export function TestimonialsSection({
 
           {showTestimonialsLink && showStudentCards && onNavigate && (
             <div className="mt-16 pt-14 border-t border-[#E5E5E5] dark:border-[#333335]">
-              <div className="max-w-[640px]">
-                <h3 className="font-display text-[36px] sm:text-[46px] font-bold uppercase leading-[1.12] text-[#303030] dark:text-white">
-                  STUDENT TESTIMONIALS
-                </h3>
-                <p className="mt-3 text-[16px] sm:text-[18px] font-light text-[#5E67E6] dark:text-[#D0FF71]">
-                  Placed learners sharing their hands-on lab training experience.
-                </p>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div className="max-w-[640px]">
+                  <h3 className="font-display text-[36px] sm:text-[46px] font-bold uppercase leading-[1.12] text-[#303030] dark:text-white">
+                    STUDENT TESTIMONIALS
+                  </h3>
+                  <p className="mt-3 text-[16px] sm:text-[18px] font-light text-[#5E67E6] dark:text-[#D0FF71]">
+                    Placed learners sharing their hands-on lab training experience.
+                  </p>
+                </div>
+
+                {featuredStories.length > itemsPerView && (
+                  <div className="flex items-center gap-2.5 self-start sm:self-end">
+                    <button
+                      type="button"
+                      onClick={goPrevSlide}
+                      aria-label="Previous featured testimonials"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#303030]/20 dark:border-white/20 bg-white dark:bg-[#2C2C2D] text-[#303030] dark:text-white transition-colors hover:bg-[#5E67E6] hover:text-white hover:border-[#5E67E6] dark:hover:bg-[#D0FF71] dark:hover:text-[#1A1A1B] dark:hover:border-[#D0FF71] cursor-pointer"
+                    >
+                      <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={goNextSlide}
+                      aria-label="Next featured testimonials"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#303030]/20 dark:border-white/20 bg-white dark:bg-[#2C2C2D] text-[#303030] dark:text-white transition-colors hover:bg-[#5E67E6] hover:text-white hover:border-[#5E67E6] dark:hover:bg-[#D0FF71] dark:hover:text-[#1A1A1B] dark:hover:border-[#D0FF71] cursor-pointer"
+                    >
+                      <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                  </div>
+                )}
               </div>
 
               {loading && featuredStories.length === 0 ? (
@@ -230,15 +312,77 @@ export function TestimonialsSection({
                   </p>
                 </div>
               ) : (
-                <div className="mt-9 grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {featuredStories.slice(0, 3).map((student) => (
-                    <TestimonialCard
-                      key={student.id}
-                      testimonial={student}
-                      onOpenModal={setSelectedTestimonial}
-                      avatarSizeClass="w-14 h-14"
-                    />
-                  ))}
+                <div
+                  role="region"
+                  aria-roledescription="carousel"
+                  aria-label="Featured student testimonials"
+                  onMouseEnter={() => setIsPaused(true)}
+                  onMouseLeave={() => setIsPaused(false)}
+                  onFocus={() => setIsPaused(true)}
+                  onBlur={() => setIsPaused(false)}
+                  onTouchStart={(e) => {
+                    touchStartXRef.current = e.touches[0]?.clientX ?? null;
+                  }}
+                  onTouchEnd={(e) => {
+                    if (touchStartXRef.current === null || maxSlideIndex <= 0) return;
+                    const deltaX =
+                      (e.changedTouches[0]?.clientX ?? touchStartXRef.current) -
+                      touchStartXRef.current;
+                    touchStartXRef.current = null;
+                    if (Math.abs(deltaX) >= 40) {
+                      if (deltaX < 0) goNextSlide();
+                      else goPrevSlide();
+                    }
+                  }}
+                  className="mt-9"
+                >
+                  <div className="-mx-3 overflow-hidden">
+                    <div
+                      style={{
+                        transform: `translate3d(-${(safeSlideIndex * 100) / itemsPerView}%, 0, 0)`,
+                      }}
+                      className="flex items-stretch transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                    >
+                      {featuredStories.map((student) => (
+                        <div
+                          key={student.id}
+                          style={{ width: `${100 / itemsPerView}%` }}
+                          className="shrink-0 px-3"
+                        >
+                          <TestimonialCard
+                            testimonial={student}
+                            onOpenModal={setSelectedTestimonial}
+                            avatarSizeClass="w-14 h-14"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {maxSlideIndex > 0 && (
+                    <div className="mt-6 flex items-center justify-center gap-2">
+                      {Array.from(
+                        { length: maxSlideIndex + 1 },
+                        (_, idx) => idx
+                      ).map((idx) => {
+                        const isActive = idx === safeSlideIndex;
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setActiveIndex(idx)}
+                            aria-label={`Show testimonial slide ${idx + 1}`}
+                            aria-current={isActive ? 'true' : undefined}
+                            className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                              isActive
+                                ? 'w-7 bg-[#5E67E6] dark:bg-[#D0FF71]'
+                                : 'w-2.5 bg-[#303030]/20 dark:bg-white/25 hover:bg-[#303030]/40 dark:hover:bg-white/45'
+                            }`}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
 

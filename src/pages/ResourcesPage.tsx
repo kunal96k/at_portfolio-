@@ -4,8 +4,6 @@ import {
   BookOpen,
   Check,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Download,
   Eye,
   FileText,
@@ -25,6 +23,7 @@ import {
 } from '../components/ContactSection';
 import { OutlineButton } from '../components/OutlineButton';
 import { ProtectedResourcePreviewModal } from '../components/ProtectedResourcePreviewModal';
+import { PublicPagination } from '../components/PublicPagination';
 import { TruncatedTextWithMore } from '../components/TruncatedTextWithMore';
 import { PROFILE } from '../data/portfolioData';
 import { usePublicResources } from '../hooks/usePublicResources';
@@ -552,67 +551,19 @@ export function ResourcesPage({ onNavigate }: ResourcesPageProps) {
             </div>
           )}
 
-          {/* Server-Side Pagination UI (6 study notes per page, matching Blogs page) */}
-          {pageData.totalItems > 0 && pageData.totalPages > 1 && (
-            <nav
-              aria-label="Study materials pagination"
-              className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-[18px] bg-[#F5F5F5] dark:bg-[#2C2C2D] px-5 py-3.5"
-            >
-              <p className="text-[13.5px] text-[#5C5C5C] dark:text-white/75 tabular-nums">
-                Showing{' '}
-                <strong className="text-[#303030] dark:text-white">
-                  {startItem}–{endItem}
-                </strong>{' '}
-                of{' '}
-                <strong className="text-[#303030] dark:text-white">
-                  {pageData.totalItems}
-                </strong>{' '}
-                study notes · Page {pageData.page + 1} of {pageData.totalPages}
-              </p>
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  disabled={!pageData.hasPrevious}
-                  onClick={() => setPage(pageData.page - 1)}
-                  className="inline-flex items-center gap-1 rounded-full border border-[#303030]/20 dark:border-white/20 px-4 py-1.5 text-[13px] text-[#303030] dark:text-white disabled:opacity-40 cursor-pointer"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  <span>Previous</span>
-                </button>
-
-                {Array.from(
-                  { length: pageData.totalPages },
-                  (_, idx) => idx
-                ).map((idx) => {
-                  const active = idx === pageData.page;
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setPage(idx)}
-                      aria-current={active ? 'page' : undefined}
-                      className={`h-8 min-w-[32px] rounded-full px-2.5 text-[13px] font-medium tabular-nums transition-colors cursor-pointer ${active
-                        ? 'bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B]'
-                        : 'border border-[#303030]/15 dark:border-white/15 text-[#303030] dark:text-white hover:bg-black/5 dark:hover:bg-white/10'
-                        }`}
-                    >
-                      {idx + 1}
-                    </button>
-                  );
-                })}
-
-                <button
-                  type="button"
-                  disabled={!pageData.hasNext}
-                  onClick={() => setPage(pageData.page + 1)}
-                  className="inline-flex items-center gap-1 rounded-full border border-[#303030]/20 dark:border-white/20 px-4 py-1.5 text-[13px] text-[#303030] dark:text-white disabled:opacity-40 cursor-pointer"
-                >
-                  <span>Next</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </nav>
-          )}
+          {/* Server-Side Pagination UI (6 study notes per page, compact ellipsis when > 10 pages) */}
+          <PublicPagination
+            ariaLabel="Study materials pagination"
+            itemLabel="study notes"
+            page={pageData.page}
+            totalPages={pageData.totalPages}
+            totalItems={pageData.totalItems}
+            startItem={startItem}
+            endItem={endItem}
+            hasPrevious={pageData.hasPrevious}
+            hasNext={pageData.hasNext}
+            onPageChange={setPage}
+          />
 
           <div className="mt-12 flex flex-wrap items-center gap-4">
             <OutlineButton onClick={() => onNavigate('/blogs')}>READ BLOGS</OutlineButton>

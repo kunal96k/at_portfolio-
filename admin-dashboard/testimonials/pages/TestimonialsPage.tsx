@@ -138,6 +138,15 @@ export function TestimonialsPage({
   };
 
   const handleToggleFeatured = async (item: StudentTestimonial) => {
+    if (!item.featured && stats.featured >= 10) {
+      onToast({
+        tone: 'error',
+        title: 'Homepage Featured Limit Reached (10/10)',
+        description:
+          'Maximum 10 testimonials can be featured on the Homepage. Remove one featured testimonial first.',
+      });
+      return;
+    }
     try {
       const updated = await toggleFeatured(item);
       if (previewItem?.id === updated.id) {
@@ -319,6 +328,7 @@ export function TestimonialsPage({
         existingCodes={existingCodes}
         domainSuggestions={combinedTracks}
         defaultDisplayOrder={nextDisplayOrder}
+        featuredCount={stats.featured}
         submitting={submitting}
         onClose={() => {
           setFormOpen(false);

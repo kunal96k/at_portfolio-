@@ -42,10 +42,16 @@ export function ProtectedResourcePreviewModal({
   );
   const [loading, setLoading] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
+  const [pageInput, setPageInput] = useState('1');
+  const [pageImageLoading, setPageImageLoading] = useState(false);
   const [zoomPercent, setZoomPercent] = useState(100);
   const [imageError, setImageError] = useState(false);
 
   const open = Boolean(resource);
+
+  useEffect(() => {
+    setPageInput(String(pageNumber));
+  }, [pageNumber]);
 
   useEffect(() => {
     if (!resource || typeof window === 'undefined') {
@@ -54,6 +60,8 @@ export function ProtectedResourcePreviewModal({
     }
 
     setPageNumber(1);
+    setPageInput('1');
+    setPageImageLoading(false);
     setZoomPercent(100);
     setImageError(false);
 
@@ -152,9 +160,11 @@ export function ProtectedResourcePreviewModal({
       if (previewInfo?.previewMode === 'PDF_PAGES' && previewInfo.pageCount > 1) {
         if (e.key === 'ArrowRight') {
           setImageError(false);
+          setPageImageLoading(true);
           setPageNumber((p) => Math.min(previewInfo.pageCount, p + 1));
         } else if (e.key === 'ArrowLeft') {
           setImageError(false);
+          setPageImageLoading(true);
           setPageNumber((p) => Math.max(1, p - 1));
         }
       }
@@ -290,6 +300,7 @@ export function ProtectedResourcePreviewModal({
                     disabled={pageNumber <= 1}
                     onClick={() => {
                       setImageError(false);
+                      setPageImageLoading(true);
                       setPageNumber((p) => Math.max(1, p - 1));
                     }}
                     className="inline-flex h-8 items-center gap-1 rounded-lg border border-black/10 dark:border-white/15 px-2.5 font-semibold text-[#334155] dark:text-white disabled:opacity-40 cursor-pointer"
@@ -297,14 +308,63 @@ export function ProtectedResourcePreviewModal({
                     <ChevronLeft className="h-3.5 w-3.5" />
                     <span>Prev</span>
                   </button>
-                  <span className="px-2 font-mono font-semibold text-[#1E293B] dark:text-white tabular-nums">
-                    Page {pageNumber} of {effective.pageCount}
-                  </span>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const parsed = Number.parseInt(pageInput, 10);
+                      if (!Number.isNaN(parsed)) {
+                        const clamped = Math.min(
+                          effective.pageCount,
+                          Math.max(1, parsed)
+                        );
+                        setImageError(false);
+                        if (clamped !== pageNumber) {
+                          setPageImageLoading(true);
+                          setPageNumber(clamped);
+                        } else {
+                          setPageInput(String(clamped));
+                        }
+                      } else {
+                        setPageInput(String(pageNumber));
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 px-1.5 font-mono font-semibold text-[#1E293B] dark:text-white tabular-nums"
+                  >
+                    <span>Page</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={effective.pageCount}
+                      aria-label="Go to page number"
+                      value={pageInput}
+                      onChange={(e) => setPageInput(e.target.value)}
+                      onBlur={() => {
+                        const parsed = Number.parseInt(pageInput, 10);
+                        if (!Number.isNaN(parsed)) {
+                          const clamped = Math.min(
+                            effective.pageCount,
+                            Math.max(1, parsed)
+                          );
+                          if (clamped !== pageNumber) {
+                            setImageError(false);
+                            setPageImageLoading(true);
+                            setPageNumber(clamped);
+                          }
+                          setPageInput(String(clamped));
+                        } else {
+                          setPageInput(String(pageNumber));
+                        }
+                      }}
+                      className="h-7 w-14 rounded-md border border-black/15 dark:border-white/20 bg-transparent px-1.5 text-center text-xs font-semibold focus:border-[#5E67E6] focus:outline-none"
+                    />
+                    <span>of {effective.pageCount}</span>
+                  </form>
                   <button
                     type="button"
                     disabled={pageNumber >= effective.pageCount}
                     onClick={() => {
                       setImageError(false);
+                      setPageImageLoading(true);
                       setPageNumber((p) =>
                         Math.min(effective.pageCount, p + 1)
                       );
@@ -348,14 +408,25 @@ export function ProtectedResourcePreviewModal({
               >
                 {!imageError ? (
                   <>
+                    {pageImageLoading && (
+                      <div className="flex items-center justify-center py-12 text-xs font-medium text-[#64748B]">
+                        Rendering page {pageNumber}…
+                      </div>
+                    )}
                     <img
                       src={pageImageUrl}
                       alt={`${effective.title} — Page ${pageNumber}`}
                       crossOrigin={!isPublic ? 'use-credentials' : undefined}
                       draggable={false}
                       onContextMenu={(e) => e.preventDefault()}
-                      onError={() => setImageError(true)}
-                      className="pointer-events-none block h-auto w-full select-none"
+                      onLoad={() => setPageImageLoading(false)}
+                      onError={() => {
+                        setPageImageLoading(false);
+                        setImageError(true);
+                      }}
+                      className={`pointer-events-none block h-auto w-full select-none ${
+                        pageImageLoading ? 'opacity-0' : 'opacity-100'
+                      }`}
                     />
                     {/* Transparent interaction shield so browsers cannot save/drag the PNG directly */}
                     <div
