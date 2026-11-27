@@ -2,18 +2,20 @@ import { X } from 'lucide-react';
 import { useEffect, type FormEvent, type ReactNode } from 'react';
 
 let openModalCount = 0;
+let prevHtmlOverflow = '';
 
 function lockBodyScroll() {
   openModalCount += 1;
   if (openModalCount === 1 && typeof document !== 'undefined') {
-    document.body.style.overflow = 'hidden';
+    prevHtmlOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
   }
 }
 
 function unlockBodyScroll() {
   openModalCount = Math.max(0, openModalCount - 1);
   if (openModalCount === 0 && typeof document !== 'undefined') {
-    document.body.style.overflow = '';
+    document.documentElement.style.overflow = prevHtmlOverflow;
   }
 }
 

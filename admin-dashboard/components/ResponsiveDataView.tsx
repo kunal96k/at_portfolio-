@@ -486,7 +486,7 @@ export function ResponsiveDataView<T extends { id: string }>({
       {/* Fixed Bottom Pagination Bar (Docked to bottom as per screens: sm, md, lg) */}
       <div
         data-testid="fixed-pagination-bar"
-        className="fixed right-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] left-0 z-20 border-t border-[#CBD5E1] bg-white/95 px-3 py-2 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] backdrop-blur-md sm:px-5 sm:py-2.5 lg:bottom-0 lg:left-[244px] lg:px-7 lg:py-3"
+        className="fixed right-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] left-0 z-20 border-t border-[#CBD5E1] bg-white/95 px-3 py-2 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] backdrop-blur-md sm:px-5 sm:py-2.5 lg:bottom-0 lg:left-[var(--admin-sidebar-width,244px)] lg:px-7 lg:py-3"
       >
         <div className="mx-auto flex max-w-[1360px] flex-col items-center justify-between gap-1.5 min-[420px]:flex-row min-[420px]:gap-3">
           <p className="text-center text-[12px] font-medium text-[#475569] tabular-nums min-[420px]:text-left">

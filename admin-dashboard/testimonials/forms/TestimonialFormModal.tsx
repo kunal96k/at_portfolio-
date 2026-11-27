@@ -245,8 +245,12 @@ export function TestimonialFormModal({
           <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
             {activeTab === 'quoteMedia' ? (
               <button
+                key="testimonial-prev-btn"
                 type="button"
-                onClick={() => setActiveTab('student')}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTab('student');
+                }}
                 className="inline-flex h-[42px] items-center justify-center gap-1 rounded-xl border border-[#CBD5E1] bg-white px-4 text-sm font-semibold text-[#475569] hover:bg-[#F8FAFC]"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -254,6 +258,7 @@ export function TestimonialFormModal({
               </button>
             ) : (
               <button
+                key="testimonial-cancel-btn"
                 type="button"
                 onClick={onClose}
                 className="h-[42px] rounded-xl border border-[#CBD5E1] bg-white px-4 text-sm font-semibold text-[#475569] hover:bg-[#F8FAFC]"
@@ -264,8 +269,13 @@ export function TestimonialFormModal({
 
             {activeTab === 'student' ? (
               <button
+                key="testimonial-next-btn"
                 type="button"
-                onClick={() => setActiveTab('quoteMedia')}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setActiveTab('quoteMedia');
+                }}
                 className="inline-flex h-[42px] items-center justify-center gap-1 rounded-xl bg-[#0B1736] px-5 text-sm font-semibold text-white hover:bg-[#1E293B]"
               >
                 <span>Next: Quote &amp; Photo</span>
@@ -273,6 +283,7 @@ export function TestimonialFormModal({
               </button>
             ) : (
               <button
+                key="testimonial-submit-btn"
                 type="submit"
                 form="testimonial-form"
                 disabled={submitting}

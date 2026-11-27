@@ -20,7 +20,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import { PROFILE } from '../../src/data/portfolioData';
 import type { AdminSectionId, NotificationItem } from '../types/admin';
 import {
@@ -486,11 +486,18 @@ export function AdminShell({
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FC] text-[#0B1736] lg:flex">
-      {/* Desktop Navy Sidebar (#0B1736) */}
+    <div
+      style={
+        {
+          '--admin-sidebar-width': sidebarCollapsed ? '76px' : '244px',
+        } as CSSProperties
+      }
+      className="min-h-screen bg-[#F5F7FC] text-[#0B1736]"
+    >
+      {/* Desktop Navy Sidebar (#0B1736) — viewport-fixed so modals or scroll never alter height */}
       <aside
         aria-label="Admin sidebar navigation"
-        className={`hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:shrink-0 lg:flex-col lg:border-r lg:border-white/[0.08] lg:bg-[#0B1736] lg:text-white transition-[width] duration-200 ease-out overflow-hidden ${shellLayout.asideWidthClass}`}
+        className={`hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:h-dvh lg:flex-col lg:border-r lg:border-white/[0.08] lg:bg-[#0B1736] lg:text-white transition-[width] duration-200 ease-out overflow-hidden ${shellLayout.asideWidthClass}`}
       >
         <div
           className={`flex h-14 shrink-0 items-center border-b border-white/[0.08] ${sidebarCollapsed ? 'justify-center px-2' : 'gap-2.5 px-3.5'
@@ -639,7 +646,11 @@ export function AdminShell({
       )}
 
       {/* Main Content Shell */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div
+        className={`flex min-h-screen min-w-0 flex-1 flex-col transition-[padding] duration-200 ease-out ${
+          sidebarCollapsed ? 'lg:pl-[76px]' : 'lg:pl-[244px]'
+        }`}
+      >
         {/* Compact Top App Bar (safe-area aware outer wrapper so controls never overflow bottom border) */}
         <header className="sticky top-0 z-30 border-b border-[#E2E8F0] bg-white pt-safe">
           <div className="flex min-h-[56px] w-full items-center justify-between gap-2 px-3 py-1.5 sm:px-5 lg:h-14 lg:min-h-0 lg:px-7 lg:py-0">
