@@ -370,9 +370,11 @@ export function ResourcesPage({ onNavigate }: ResourcesPageProps) {
                         {resource.title}
                       </h2>
 
-                      <p className="mt-3 text-[15px] font-light leading-[1.6] text-[#303030] dark:text-white/80">
-                        {resource.summary}
-                      </p>
+                      {resource.summary.trim() && (
+                        <p className="mt-3 text-[15px] font-light leading-[1.6] text-[#303030] dark:text-white/80">
+                          {resource.summary}
+                        </p>
+                      )}
 
                       {/* Study File Preview / Conditional Download Card */}
                       <div className="mt-5 rounded-[16px] bg-white dark:bg-[#1E1E1F] p-4 border border-black/[0.06] dark:border-white/[0.08]">
@@ -582,11 +584,10 @@ export function ResourcesPage({ onNavigate }: ResourcesPageProps) {
                       type="button"
                       onClick={() => setPage(idx)}
                       aria-current={active ? 'page' : undefined}
-                      className={`h-8 min-w-[32px] rounded-full px-2.5 text-[13px] font-medium tabular-nums transition-colors cursor-pointer ${
-                        active
-                          ? 'bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B]'
-                          : 'border border-[#303030]/15 dark:border-white/15 text-[#303030] dark:text-white hover:bg-black/5 dark:hover:bg-white/10'
-                      }`}
+                      className={`h-8 min-w-[32px] rounded-full px-2.5 text-[13px] font-medium tabular-nums transition-colors cursor-pointer ${active
+                        ? 'bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B]'
+                        : 'border border-[#303030]/15 dark:border-white/15 text-[#303030] dark:text-white hover:bg-black/5 dark:hover:bg-white/10'
+                        }`}
                     >
                       {idx + 1}
                     </button>

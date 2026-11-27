@@ -373,9 +373,7 @@ export function validateBatchForm(
   }
 
   const trimmedContent = values.detailedContent.trim();
-  if (!trimmedContent || trimmedContent.length < 20) {
-    errors.detailedContent = 'Add key lab modules or syllabus notes (at least 20 characters).';
-  } else if (countWords(trimmedContent) > BATCH_FIELD_LIMITS.detailedContentMaxWords) {
+  if (trimmedContent && countWords(trimmedContent) > BATCH_FIELD_LIMITS.detailedContentMaxWords) {
     errors.detailedContent = `Lab modules cannot exceed ${BATCH_FIELD_LIMITS.detailedContentMaxWords} words.`;
   }
 
@@ -469,9 +467,8 @@ export function validateResourceForm(
   }
 
   const trimmedSummary = values.summary.trim();
-  if (!trimmedSummary || trimmedSummary.length < 10) {
-    errors.summary = 'Add a summary description (at least 10 characters).';
-  } else if (
+  if (
+    trimmedSummary &&
     countWords(trimmedSummary) > RESOURCE_FIELD_LIMITS.summaryMaxWords
   ) {
     errors.summary = `Summary cannot exceed ${RESOURCE_FIELD_LIMITS.summaryMaxWords} words.`;

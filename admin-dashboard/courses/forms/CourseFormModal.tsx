@@ -1,4 +1,4 @@
-import { ChevronRight, Eye, Info, Lock, Plus, RefreshCw, X } from 'lucide-react';
+import { ChevronRight, Eye, Info, Plus, RefreshCw, X } from 'lucide-react';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import {
   DocumentUploadList,
@@ -264,7 +264,7 @@ export function CourseFormModal({
           <Info className="h-4 w-4 shrink-0 text-[#145BFF]" />
           <span>
             Fields marked <strong className="text-[#DC2626]">*</strong> are
-            required. All changes save directly to Spring Boot &amp; MySQL.
+            required.
           </span>
         </div>
 
@@ -383,10 +383,6 @@ export function CourseFormModal({
                   >
                     Domain Code
                   </label>
-                  <span className="inline-flex items-center gap-1 rounded bg-[#EFF6FF] px-1.5 py-0.5 text-[10px] font-bold text-[#145BFF]">
-                    <Lock className="h-2.5 w-2.5" aria-hidden="true" />
-                    Auto Unique
-                  </span>
                 </div>
                 <input
                   id="course-code"

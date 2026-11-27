@@ -131,11 +131,27 @@ test('validateBatchForm rejects empty fields and duplicate slugs', () => {
   assert.ok(errors.title);
   assert.ok(errors.slug);
   assert.ok(errors.shortDescription);
-  assert.ok(errors.detailedContent);
+  assert.equal(errors.detailedContent, undefined);
   assert.ok(errors.relatedCourse);
   assert.ok(errors.batchDate);
   assert.ok(errors.batchTime);
   assert.ok(errors.displayOrder);
+
+  const withoutModulesErrors = validateBatchForm(
+    {
+      ...emptyValues,
+      title: 'Valid Batch Title',
+      slug: 'new-unique-batch-slug',
+      shortDescription: 'This is a valid short description for the batch.',
+      detailedContent: '',
+      relatedCourse: 'AWS Cloud Infrastructure',
+      batchDate: '01 May 2026',
+      batchTime: 'Sat–Sun · 10:00 AM IST',
+      displayOrder: 1,
+    },
+    ['existing-slug']
+  );
+  assert.equal(Object.keys(withoutModulesErrors).length, 0);
 
   const duplicateErrors = validateBatchForm(
     {
@@ -568,8 +584,22 @@ test('generateNextNoteCode and validateResourceForm validate fields and 500-word
   const errs = validateResourceForm(invalidPayload, ['rhel-notes']);
   assert.ok(errs.title);
   assert.ok(errs.domain);
-  assert.ok(errs.summary);
+  assert.equal(errs.summary, undefined);
   assert.ok(errs.displayOrder);
+
+  const withoutSummaryOrTopicsErrs = validateResourceForm(
+    {
+      ...invalidPayload,
+      title: 'RHEL 9 Quick Reference',
+      slug: 'rhel-9-quick-reference',
+      domain: 'Linux & RHEL',
+      summary: '',
+      topicsText: '',
+      displayOrder: 1,
+    },
+    ['rhel-notes']
+  );
+  assert.equal(Object.keys(withoutSummaryOrTopicsErrs).length, 0);
 
   const duplicateErrs = validateResourceForm(
     {

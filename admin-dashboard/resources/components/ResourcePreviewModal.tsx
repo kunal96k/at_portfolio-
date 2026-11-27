@@ -144,7 +144,7 @@ export function ResourcePreviewModal({
               Study Note Summary
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-[#334155]">
-              {resource.summary}
+              {resource.summary.trim() || 'No summary description provided.'}
             </p>
           </div>
 

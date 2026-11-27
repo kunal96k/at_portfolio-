@@ -88,8 +88,8 @@ function buildInitialValues(
   if (editingResource) {
     const exists = Boolean(
       editingResource.hasFile ||
-        editingResource.hasUploadedFile ||
-        String(editingResource.fileUrl ?? '').trim() !== ''
+      editingResource.hasUploadedFile ||
+      String(editingResource.fileUrl ?? '').trim() !== ''
     );
     return {
       noteCode: editingResource.noteCode,
@@ -216,22 +216,22 @@ export function ResourceFormModal({
 
     const hasExistingAttachment = Boolean(
       editingResource &&
-        (editingResource.hasFile ||
-          editingResource.hasUploadedFile ||
-          String(editingResource.fileUrl ?? '').trim() !== '')
+      (editingResource.hasFile ||
+        editingResource.hasUploadedFile ||
+        String(editingResource.fileUrl ?? '').trim() !== '')
     );
     setUploadedDocs(
       editingResource && hasExistingAttachment
         ? [
-            {
-              id: `existing-${editingResource.id}`,
-              name: editingResource.fileName || 'attached-study-file',
-              type: editingResource.mimeType || 'application/pdf',
-              sizeBytes: editingResource.fileSizeBytes || 0,
-              url: editingResource.fileUrl,
-              uploadedAt: editingResource.updatedAt,
-            },
-          ]
+          {
+            id: `existing-${editingResource.id}`,
+            name: editingResource.fileName || 'attached-study-file',
+            type: editingResource.mimeType || 'application/pdf',
+            sizeBytes: editingResource.fileSizeBytes || 0,
+            url: editingResource.fileUrl,
+            uploadedAt: editingResource.updatedAt,
+          },
+        ]
         : []
     );
     setSlugManuallyEdited(Boolean(editingResource));
@@ -364,22 +364,22 @@ export function ResourceFormModal({
 
   const hasUploadedFile = Boolean(
     !values.removeFile &&
-      (Boolean(values.storedFilePath) ||
-        Boolean(values.fileData) ||
-        uploadedDocs.some(
-          (d) =>
-            Boolean(d.storedPath) ||
-            d.url?.startsWith('data:') ||
-            d.url?.includes('/api/resources/')
-        ))
+    (Boolean(values.storedFilePath) ||
+      Boolean(values.fileData) ||
+      uploadedDocs.some(
+        (d) =>
+          Boolean(d.storedPath) ||
+          d.url?.startsWith('data:') ||
+          d.url?.includes('/api/resources/')
+      ))
   );
 
   const hasIdentityErrors = Boolean(
     errors.title ||
-      errors.slug ||
-      isDuplicateSlug ||
-      errors.domain ||
-      errors.displayOrder
+    errors.slug ||
+    isDuplicateSlug ||
+    errors.domain ||
+    errors.displayOrder
   );
   const hasContentErrors = Boolean(errors.summary || errors.topicsText);
   const hasFileErrors = Boolean(errors.fileUrl);
@@ -391,28 +391,28 @@ export function ResourceFormModal({
     icon: typeof BookOpen;
     hasError: boolean;
   }> = [
-    {
-      id: 'identity',
-      stepNum: 1,
-      label: 'Identity & Domain',
-      icon: FileText,
-      hasError: hasIdentityErrors,
-    },
-    {
-      id: 'content',
-      stepNum: 2,
-      label: 'Content & Topics',
-      icon: BookOpen,
-      hasError: hasContentErrors,
-    },
-    {
-      id: 'files',
-      stepNum: 3,
-      label: 'Files & Access',
-      icon: ShieldCheck,
-      hasError: hasFileErrors,
-    },
-  ];
+      {
+        id: 'identity',
+        stepNum: 1,
+        label: 'Identity & Domain',
+        icon: FileText,
+        hasError: hasIdentityErrors,
+      },
+      {
+        id: 'content',
+        stepNum: 2,
+        label: 'Content & Topics',
+        icon: BookOpen,
+        hasError: hasContentErrors,
+      },
+      {
+        id: 'files',
+        stepNum: 3,
+        label: 'Files & Access',
+        icon: ShieldCheck,
+        hasError: hasFileErrors,
+      },
+    ];
 
   const currentTabIndex = tabs.findIndex((t) => t.id === activeTab);
 
@@ -520,11 +520,10 @@ export function ResourceFormModal({
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center justify-between gap-2 rounded-xl px-3.5 py-2.5 text-left text-[13px] font-semibold transition-colors ${
-                  isActive
-                    ? 'bg-[#145BFF] text-white shadow-xs'
-                    : 'bg-white text-[#334155] hover:bg-[#EFF6FF] hover:text-[#145BFF]'
-                }`}
+                className={`flex items-center justify-between gap-2 rounded-xl px-3.5 py-2.5 text-left text-[13px] font-semibold transition-colors ${isActive
+                  ? 'bg-[#145BFF] text-white shadow-xs'
+                  : 'bg-white text-[#334155] hover:bg-[#EFF6FF] hover:text-[#145BFF]'
+                  }`}
               >
                 <span className="flex min-w-0 items-center gap-2">
                   <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -534,9 +533,8 @@ export function ResourceFormModal({
                 </span>
                 {tab.hasError && (
                   <span
-                    className={`h-2.5 w-2.5 shrink-0 rounded-full ${
-                      isActive ? 'bg-[#FECACA]' : 'bg-[#DC2626]'
-                    }`}
+                    className={`h-2.5 w-2.5 shrink-0 rounded-full ${isActive ? 'bg-[#FECACA]' : 'bg-[#DC2626]'
+                      }`}
                     title="Needs attention"
                   />
                 )}
@@ -566,605 +564,594 @@ export function ResourceFormModal({
         {/* TAB 1: IDENTITY & DOMAIN */}
         {activeTab === 'identity' && (
           <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-2xs sm:p-5">
-          <h3 className="mb-3.5 text-xs font-bold uppercase tracking-wider text-[#64748B]">
-            Resource / Note Identity
-          </h3>
+            <h3 className="mb-3.5 text-xs font-bold uppercase tracking-wider text-[#64748B]">
+              Resource / Note Identity
+            </h3>
 
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-3.5 md:grid-cols-12">
-              <div className="md:col-span-5">
-                <div className="flex items-center justify-between gap-2">
-                  <label
-                    htmlFor="res-title"
-                    className="block text-[12.5px] font-semibold text-[#334155]"
-                  >
-                    Note / Resource Title <span className="text-[#DC2626]">*</span>
-                  </label>
-                  <span
-                    className={`text-[11px] tabular-nums ${getCounterTone(
-                      values.title.length,
-                      RESOURCE_FIELD_LIMITS.titleMaxChars
-                    )}`}
-                  >
-                    {values.title.length}/{RESOURCE_FIELD_LIMITS.titleMaxChars}
-                  </span>
-                </div>
-                <input
-                  id="res-title"
-                  type="text"
-                  required
-                  maxLength={RESOURCE_FIELD_LIMITS.titleMaxChars}
-                  value={values.title}
-                  onChange={(e) => handleTitleChange(e.target.value)}
-                  placeholder="e.g., Red Hat Enterprise Linux (RHEL) Administration Notes"
-                  className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                    errors.title
-                      ? 'border-[#DC2626]'
-                      : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                  }`}
-                />
-                {errors.title && (
-                  <p className="mt-1 text-xs font-medium text-[#DC2626]">
-                    {errors.title}
-                  </p>
-                )}
-              </div>
-
-              <div className="md:col-span-4">
-                <div className="flex items-center justify-between gap-2">
-                  <label
-                    htmlFor="res-slug"
-                    className="block text-[12.5px] font-semibold text-[#334155]"
-                  >
-                    Auto URL Slug <span className="text-[#DC2626]">*</span>
-                  </label>
-                  <div className="flex items-center gap-2">
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-3.5 md:grid-cols-12">
+                <div className="md:col-span-5">
+                  <div className="flex items-center justify-between gap-2">
+                    <label
+                      htmlFor="res-title"
+                      className="block text-[12.5px] font-semibold text-[#334155]"
+                    >
+                      Note / Resource Title <span className="text-[#DC2626]">*</span>
+                    </label>
                     <span
                       className={`text-[11px] tabular-nums ${getCounterTone(
-                        values.slug.length,
-                        RESOURCE_FIELD_LIMITS.slugMaxChars
+                        values.title.length,
+                        RESOURCE_FIELD_LIMITS.titleMaxChars
                       )}`}
                     >
-                      {values.slug.length}/{RESOURCE_FIELD_LIMITS.slugMaxChars}
+                      {values.title.length}/{RESOURCE_FIELD_LIMITS.titleMaxChars}
                     </span>
-                    <button
-                      type="button"
-                      onClick={handleRegenerateUniqueSlug}
-                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#145BFF] hover:underline"
-                    >
-                      <RefreshCw className="h-3 w-3" />
-                      <span>Unique</span>
-                    </button>
                   </div>
-                </div>
-                <input
-                  id="res-slug"
-                  type="text"
-                  required
-                  maxLength={RESOURCE_FIELD_LIMITS.slugMaxChars}
-                  inputMode="url"
-                  value={values.slug}
-                  onChange={(e) => handleManualSlugChange(e.target.value)}
-                  placeholder="rhel-administration-notes"
-                  className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 font-mono text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                    errors.slug || isDuplicateSlug
+                  <input
+                    id="res-title"
+                    type="text"
+                    required
+                    maxLength={RESOURCE_FIELD_LIMITS.titleMaxChars}
+                    value={values.title}
+                    onChange={(e) => handleTitleChange(e.target.value)}
+                    placeholder="e.g., Red Hat Enterprise Linux (RHEL) Administration Notes"
+                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.title
                       ? 'border-[#DC2626]'
                       : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                  }`}
-                />
-                <p className="mt-1 truncate font-mono text-[11px] text-[#64748B]">
-                  URL: /resources/{values.slug || 'auto-generated-slug'}
-                </p>
-                {(errors.slug || isDuplicateSlug) && (
-                  <p className="mt-0.5 text-xs font-medium text-[#DC2626]">
-                    {errors.slug || 'This slug already exists.'}
-                  </p>
-                )}
-              </div>
-
-              <div className="md:col-span-3">
-                <label
-                  htmlFor="res-code"
-                  className="block text-[12.5px] font-semibold text-[#334155]"
-                >
-                  Note Code
-                </label>
-                <input
-                  id="res-code"
-                  type="text"
-                  readOnly
-                  aria-readonly="true"
-                  value={values.noteCode}
-                  className="mt-1 h-[40px] w-full cursor-not-allowed rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 font-mono text-[13px] font-semibold text-[#475569] focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-12">
-              <div className="lg:col-span-3">
-                <label
-                  htmlFor="res-section-type"
-                  className="block text-[12.5px] font-semibold text-[#334155]"
-                >
-                  Section Type <span className="text-[#DC2626]">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    id="res-section-type"
-                    value={values.sectionType}
-                    onChange={(e) =>
-                      updateField(
-                        'sectionType',
-                        e.target.value as ResourceSectionType
-                      )
-                    }
-                    className={selectClass}
-                  >
-                    <option value="Notes">Notes</option>
-                    <option value="Lab Sections">Lab Sections</option>
-                  </select>
-                  <ChevronRight
-                    className="pointer-events-none absolute top-1/2 right-2.5 mt-0.5 h-3.5 w-3.5 -translate-y-1/2 rotate-90 text-[#64748B]"
-                    aria-hidden="true"
+                      }`}
                   />
+                  {errors.title && (
+                    <p className="mt-1 text-xs font-medium text-[#DC2626]">
+                      {errors.title}
+                    </p>
+                  )}
                 </div>
-              </div>
 
-              <div className="lg:col-span-4">
-                <div className="flex items-center justify-between gap-2">
+                <div className="md:col-span-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <label
+                      htmlFor="res-slug"
+                      className="block text-[12.5px] font-semibold text-[#334155]"
+                    >
+                      Auto URL Slug <span className="text-[#DC2626]">*</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-[11px] tabular-nums ${getCounterTone(
+                          values.slug.length,
+                          RESOURCE_FIELD_LIMITS.slugMaxChars
+                        )}`}
+                      >
+                        {values.slug.length}/{RESOURCE_FIELD_LIMITS.slugMaxChars}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleRegenerateUniqueSlug}
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#145BFF] hover:underline"
+                      >
+                        <RefreshCw className="h-3 w-3" />
+                        <span>Unique</span>
+                      </button>
+                    </div>
+                  </div>
+                  <input
+                    id="res-slug"
+                    type="text"
+                    required
+                    maxLength={RESOURCE_FIELD_LIMITS.slugMaxChars}
+                    inputMode="url"
+                    value={values.slug}
+                    onChange={(e) => handleManualSlugChange(e.target.value)}
+                    placeholder="rhel-administration-notes"
+                    className={`mt-1 h-[40px] w-full rounded-lg border bg-white px-3 font-mono text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.slug || isDuplicateSlug
+                      ? 'border-[#DC2626]'
+                      : 'border-[#CBD5E1] focus:border-[#145BFF]'
+                      }`}
+                  />
+                  <p className="mt-1 truncate font-mono text-[11px] text-[#64748B]">
+                    URL: /resources/{values.slug || 'auto-generated-slug'}
+                  </p>
+                  {(errors.slug || isDuplicateSlug) && (
+                    <p className="mt-0.5 text-xs font-medium text-[#DC2626]">
+                      {errors.slug || 'This slug already exists.'}
+                    </p>
+                  )}
+                </div>
+
+                <div className="md:col-span-3">
                   <label
-                    htmlFor="res-domain-select"
+                    htmlFor="res-code"
                     className="block text-[12.5px] font-semibold text-[#334155]"
                   >
-                    Course / Domain <span className="text-[#DC2626]">*</span>
+                    Note Code
                   </label>
-                  <span
-                    className={`text-[11px] tabular-nums ${getCounterTone(
-                      values.domain.length,
-                      RESOURCE_FIELD_LIMITS.domainMaxChars
-                    )}`}
-                  >
-                    {values.domain.length}/{RESOURCE_FIELD_LIMITS.domainMaxChars}
-                  </span>
+                  <input
+                    id="res-code"
+                    type="text"
+                    readOnly
+                    aria-readonly="true"
+                    value={values.noteCode}
+                    className="mt-1 h-[40px] w-full cursor-not-allowed rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 font-mono text-[13px] font-semibold text-[#475569] focus:outline-none"
+                  />
                 </div>
-                {(() => {
-                  const matchedOption = mergedDomainOptions.find(
-                    (d) => d.toLowerCase() === values.domain.trim().toLowerCase()
-                  );
-                  const selectValue = customDomainMode
-                    ? '__custom__'
-                    : matchedOption ?? (values.domain.trim() ? '__custom__' : '');
-                  return (
-                    <>
-                      <div className="relative">
-                        <select
-                          id="res-domain-select"
-                          value={selectValue}
-                          onChange={(e) => {
-                            const nextVal = e.target.value;
-                            if (nextVal === '__custom__') {
-                              setCustomDomainMode(true);
-                              if (matchedOption) {
-                                updateField('domain', '');
-                              }
-                            } else {
-                              setCustomDomainMode(false);
-                              updateField('domain', nextVal);
-                            }
-                          }}
-                          className={`${selectClass} ${
-                            errors.domain ? 'border-[#DC2626]' : ''
-                          }`}
-                        >
-                          <option value="" disabled>
-                            Select Course / Domain…
-                          </option>
-                          {mergedDomainOptions.map((d) => (
-                            <option key={d} value={d}>
-                              {d}
-                            </option>
-                          ))}
-                          <option value="__custom__">
-                            + Custom / Other Domain (Type manually)
-                          </option>
-                        </select>
-                        <ChevronRight
-                          className="pointer-events-none absolute top-1/2 right-2.5 mt-0.5 h-3.5 w-3.5 -translate-y-1/2 rotate-90 text-[#64748B]"
-                          aria-hidden="true"
-                        />
-                      </div>
+              </div>
 
-                      {(customDomainMode || selectValue === '__custom__') && (
-                        <input
-                          id="res-domain"
-                          type="text"
-                          required
-                          maxLength={RESOURCE_FIELD_LIMITS.domainMaxChars}
-                          value={values.domain}
-                          onChange={(e) => updateField('domain', e.target.value)}
-                          placeholder="Enter custom domain name (e.g., Linux & RHEL)"
-                          className={`mt-2 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                            errors.domain
+              <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-12">
+                <div className="lg:col-span-3">
+                  <label
+                    htmlFor="res-section-type"
+                    className="block text-[12.5px] font-semibold text-[#334155]"
+                  >
+                    Section Type <span className="text-[#DC2626]">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="res-section-type"
+                      value={values.sectionType}
+                      onChange={(e) =>
+                        updateField(
+                          'sectionType',
+                          e.target.value as ResourceSectionType
+                        )
+                      }
+                      className={selectClass}
+                    >
+                      <option value="Notes">Notes</option>
+                      <option value="Lab Sections">Lab Sections</option>
+                    </select>
+                    <ChevronRight
+                      className="pointer-events-none absolute top-1/2 right-2.5 mt-0.5 h-3.5 w-3.5 -translate-y-1/2 rotate-90 text-[#64748B]"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </div>
+
+                <div className="lg:col-span-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <label
+                      htmlFor="res-domain-select"
+                      className="block text-[12.5px] font-semibold text-[#334155]"
+                    >
+                      Course / Domain <span className="text-[#DC2626]">*</span>
+                    </label>
+                    <span
+                      className={`text-[11px] tabular-nums ${getCounterTone(
+                        values.domain.length,
+                        RESOURCE_FIELD_LIMITS.domainMaxChars
+                      )}`}
+                    >
+                      {values.domain.length}/{RESOURCE_FIELD_LIMITS.domainMaxChars}
+                    </span>
+                  </div>
+                  {(() => {
+                    const matchedOption = mergedDomainOptions.find(
+                      (d) => d.toLowerCase() === values.domain.trim().toLowerCase()
+                    );
+                    const selectValue = customDomainMode
+                      ? '__custom__'
+                      : matchedOption ?? (values.domain.trim() ? '__custom__' : '');
+                    return (
+                      <>
+                        <div className="relative">
+                          <select
+                            id="res-domain-select"
+                            value={selectValue}
+                            onChange={(e) => {
+                              const nextVal = e.target.value;
+                              if (nextVal === '__custom__') {
+                                setCustomDomainMode(true);
+                                if (matchedOption) {
+                                  updateField('domain', '');
+                                }
+                              } else {
+                                setCustomDomainMode(false);
+                                updateField('domain', nextVal);
+                              }
+                            }}
+                            className={`${selectClass} ${errors.domain ? 'border-[#DC2626]' : ''
+                              }`}
+                          >
+                            <option value="" disabled>
+                              Select Course / Domain…
+                            </option>
+                            {mergedDomainOptions.map((d) => (
+                              <option key={d} value={d}>
+                                {d}
+                              </option>
+                            ))}
+                            <option value="__custom__">
+                              + Custom / Other Domain (Type manually)
+                            </option>
+                          </select>
+                          <ChevronRight
+                            className="pointer-events-none absolute top-1/2 right-2.5 mt-0.5 h-3.5 w-3.5 -translate-y-1/2 rotate-90 text-[#64748B]"
+                            aria-hidden="true"
+                          />
+                        </div>
+
+                        {(customDomainMode || selectValue === '__custom__') && (
+                          <input
+                            id="res-domain"
+                            type="text"
+                            required
+                            maxLength={RESOURCE_FIELD_LIMITS.domainMaxChars}
+                            value={values.domain}
+                            onChange={(e) => updateField('domain', e.target.value)}
+                            placeholder="Enter custom domain name (e.g., Linux & RHEL)"
+                            className={`mt-2 h-[40px] w-full rounded-lg border bg-white px-3 text-[13px] text-[#0F172A] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.domain
                               ? 'border-[#DC2626]'
                               : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                          }`}
-                        />
-                      )}
-                    </>
-                  );
-                })()}
-                {errors.domain && (
-                  <p className="mt-1 text-xs font-medium text-[#DC2626]">
-                    {errors.domain}
-                  </p>
-                )}
-              </div>
+                              }`}
+                          />
+                        )}
+                      </>
+                    );
+                  })()}
+                  {errors.domain && (
+                    <p className="mt-1 text-xs font-medium text-[#DC2626]">
+                      {errors.domain}
+                    </p>
+                  )}
+                </div>
 
-              <div className="lg:col-span-2">
-                <label
-                  htmlFor="res-filetype"
-                  className="block text-[12.5px] font-semibold text-[#334155]"
-                >
-                  File Type
-                </label>
-                <div className="relative">
-                  <select
-                    id="res-filetype"
-                    value={values.fileType}
-                    onChange={(e) => updateField('fileType', e.target.value)}
-                    className={selectClass}
+                <div className="lg:col-span-2">
+                  <label
+                    htmlFor="res-filetype"
+                    className="block text-[12.5px] font-semibold text-[#334155]"
                   >
-                    {FILE_TYPE_OPTIONS.map((ft) => (
-                      <option key={ft} value={ft}>
-                        {ft}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronRight
-                    className="pointer-events-none absolute top-1/2 right-2.5 mt-0.5 h-3.5 w-3.5 -translate-y-1/2 rotate-90 text-[#64748B]"
-                    aria-hidden="true"
+                    File Type
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="res-filetype"
+                      value={values.fileType}
+                      onChange={(e) => updateField('fileType', e.target.value)}
+                      className={selectClass}
+                    >
+                      {FILE_TYPE_OPTIONS.map((ft) => (
+                        <option key={ft} value={ft}>
+                          {ft}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronRight
+                      className="pointer-events-none absolute top-1/2 right-2.5 mt-0.5 h-3.5 w-3.5 -translate-y-1/2 rotate-90 text-[#64748B]"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </div>
+
+                <div className="lg:col-span-1">
+                  <label
+                    htmlFor="res-order"
+                    className="block text-[12.5px] font-semibold text-[#334155]"
+                  >
+                    Order
+                  </label>
+                  <input
+                    id="res-order"
+                    type="number"
+                    min={1}
+                    max={999}
+                    value={values.displayOrder}
+                    onChange={(e) =>
+                      updateField(
+                        'displayOrder',
+                        Math.min(999, Math.max(0, Number(e.target.value) || 0))
+                      )
+                    }
+                    className="mt-1 h-[40px] w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 text-[13px] text-[#0F172A] tabular-nums focus:border-[#145BFF] focus:outline-none"
                   />
                 </div>
-              </div>
 
-              <div className="lg:col-span-1">
-                <label
-                  htmlFor="res-order"
-                  className="block text-[12.5px] font-semibold text-[#334155]"
-                >
-                  Order
-                </label>
-                <input
-                  id="res-order"
-                  type="number"
-                  min={1}
-                  max={999}
-                  value={values.displayOrder}
-                  onChange={(e) =>
-                    updateField(
-                      'displayOrder',
-                      Math.min(999, Math.max(0, Number(e.target.value) || 0))
-                    )
-                  }
-                  className="mt-1 h-[40px] w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 text-[13px] text-[#0F172A] tabular-nums focus:border-[#145BFF] focus:outline-none"
-                />
-              </div>
-
-              <div className="lg:col-span-2">
-                <label
-                  htmlFor="res-status"
-                  className="block text-[12.5px] font-semibold text-[#334155]"
-                >
-                  Status
-                </label>
-                <div className="relative">
-                  <select
-                    id="res-status"
-                    value={values.status}
-                    onChange={(e) =>
-                      updateField('status', e.target.value as ResourceStatus)
-                    }
-                    className={selectClass}
+                <div className="lg:col-span-2">
+                  <label
+                    htmlFor="res-status"
+                    className="block text-[12.5px] font-semibold text-[#334155]"
                   >
-                    <option value="Published">Published</option>
-                    <option value="Draft">Draft</option>
-                  </select>
-                  <ChevronRight
-                    className="pointer-events-none absolute top-1/2 right-2.5 mt-0.5 h-3.5 w-3.5 -translate-y-1/2 rotate-90 text-[#64748B]"
-                    aria-hidden="true"
-                  />
+                    Status
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="res-status"
+                      value={values.status}
+                      onChange={(e) =>
+                        updateField('status', e.target.value as ResourceStatus)
+                      }
+                      className={selectClass}
+                    >
+                      <option value="Published">Published</option>
+                      <option value="Draft">Draft</option>
+                    </select>
+                    <ChevronRight
+                      className="pointer-events-none absolute top-1/2 right-2.5 mt-0.5 h-3.5 w-3.5 -translate-y-1/2 rotate-90 text-[#64748B]"
+                      aria-hidden="true"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
         )}
 
         {/* TAB 2: NOTES SUMMARY & TOPICS */}
         {activeTab === 'content' && (
           <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-2xs sm:p-5">
-          <h3 className="mb-3.5 text-xs font-bold uppercase tracking-wider text-[#64748B]">
-            Notes Summary &amp; Topics Outline
-          </h3>
+            <h3 className="mb-3.5 text-xs font-bold uppercase tracking-wider text-[#64748B]">
+              Notes Summary &amp; Topics Outline
+            </h3>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <div className="flex items-center justify-between gap-2">
-                <label
-                  htmlFor="res-summary"
-                  className="block text-[12.5px] font-semibold text-[#334155]"
-                >
-                  Summary / Description <span className="text-[#DC2626]">*</span>
-                </label>
-                <span
-                  className={`text-[11px] tabular-nums ${getCounterTone(
-                    summaryWords,
-                    RESOURCE_FIELD_LIMITS.summaryMaxWords
-                  )}`}
-                >
-                  {summaryWords} / {RESOURCE_FIELD_LIMITS.summaryMaxWords} words
-                </span>
-              </div>
-              <textarea
-                id="res-summary"
-                rows={4}
-                maxLength={RESOURCE_FIELD_LIMITS.summaryMaxChars}
-                value={values.summary}
-                onChange={(e) =>
-                  updateField(
-                    'summary',
-                    clampToMaxWords(
-                      e.target.value,
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <label
+                    htmlFor="res-summary"
+                    className="block text-[12.5px] font-semibold text-[#334155]"
+                  >
+                    Summary / Description (optional)
+                  </label>
+                  <span
+                    className={`text-[11px] tabular-nums ${getCounterTone(
+                      summaryWords,
                       RESOURCE_FIELD_LIMITS.summaryMaxWords
+                    )}`}
+                  >
+                    {summaryWords} / {RESOURCE_FIELD_LIMITS.summaryMaxWords} words
+                  </span>
+                </div>
+                <textarea
+                  id="res-summary"
+                  rows={4}
+                  maxLength={RESOURCE_FIELD_LIMITS.summaryMaxChars}
+                  value={values.summary}
+                  onChange={(e) =>
+                    updateField(
+                      'summary',
+                      clampToMaxWords(
+                        e.target.value,
+                        RESOURCE_FIELD_LIMITS.summaryMaxWords
+                      )
                     )
-                  )
-                }
-                placeholder="Concise description of commands, labs, and exam prep covered…"
-                className={`mt-1 w-full rounded-lg border bg-white p-3 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                  errors.summary
-                    ? 'border-[#DC2626]'
-                    : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                }`}
-              />
-              {errors.summary && (
-                <p className="mt-1 text-xs font-medium text-[#DC2626]">
-                  {errors.summary}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between gap-2">
-                <label
-                  htmlFor="res-topics"
-                  className="block text-[12.5px] font-semibold text-[#334155]"
-                >
-                  Topics / Lab Outline (optional, one per line)
-                </label>
-                <span
-                  className={`text-[11px] tabular-nums ${getCounterTone(
-                    topicsWords,
-                    RESOURCE_FIELD_LIMITS.topicsMaxWords
-                  )}`}
-                >
-                  {topicsWords} / {RESOURCE_FIELD_LIMITS.topicsMaxWords} words
-                </span>
-              </div>
-              <textarea
-                id="res-topics"
-                rows={4}
-                maxLength={RESOURCE_FIELD_LIMITS.topicsMaxChars}
-                value={values.topicsText}
-                onChange={(e) =>
-                  updateField(
-                    'topicsText',
-                    clampToMaxWords(
-                      e.target.value,
-                      RESOURCE_FIELD_LIMITS.topicsMaxWords
-                    )
-                  )
-                }
-                placeholder={
-                  'File system permissions & ACLs\nStorage partitioning & LVM\nManaging systemd units'
-                }
-                className={`mt-1 w-full rounded-lg border bg-white p-3 text-[13px] leading-relaxed text-[#0F172A] placeholder:text-[#94A3B8] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${
-                  errors.topicsText
-                    ? 'border-[#DC2626]'
-                    : 'border-[#CBD5E1] focus:border-[#145BFF]'
-                }`}
-              />
-              {errors.topicsText && (
-                <p className="mt-1 text-xs font-medium text-[#DC2626]">
-                  {errors.topicsText}
-                </p>
-              )}
-            </div>
-          </div>
-        </section>
-        )}
-
-        {/* TAB 3: FILES & DOWNLOAD PROTECTION */}
-        {activeTab === 'files' && (
-          <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-2xs sm:p-5">
-          <h3 className="mb-3.5 text-xs font-bold uppercase tracking-wider text-[#64748B]">
-            Study File &amp; Download Protection
-          </h3>
-
-          {/* Public Download Access Toggle Card */}
-          <div
-            className={`mb-4 flex flex-col justify-between gap-3 rounded-xl border p-3.5 sm:flex-row sm:items-center ${
-              values.downloadEnabled
-                ? 'border-emerald-200 bg-emerald-50/70'
-                : 'border-amber-200 bg-amber-50/70'
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <span
-                className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${
-                  values.downloadEnabled
-                    ? 'border-emerald-200 bg-white text-emerald-600'
-                    : 'border-amber-200 bg-white text-amber-600'
-                }`}
-              >
-                {values.downloadEnabled ? (
-                  <Unlock className="h-4.5 w-4.5" />
-                ) : (
-                  <Lock className="h-4.5 w-4.5" />
-                )}
-              </span>
-              <div>
-                <p className="text-[13px] font-bold text-[#0F172A]">
-                  {values.downloadEnabled
-                    ? 'Public Download Enabled'
-                    : 'Preview Only — Download Disabled'}
-                </p>
-                <p className="mt-0.5 text-xs text-[#475569]">
-                  {values.downloadEnabled
-                    ? 'Anyone visiting your website Notes page can download the study file directly.'
-                    : 'Visitors can preview pages online with watermark & save protection, and see a "Contact to Download" notice.'}
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              role="switch"
-              aria-checked={values.downloadEnabled}
-              onClick={() =>
-                updateField('downloadEnabled', !values.downloadEnabled)
-              }
-              className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border px-4 text-xs font-bold transition-colors whitespace-nowrap ${
-                values.downloadEnabled
-                  ? 'border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700'
-                  : 'border-amber-400 bg-white text-amber-800 hover:bg-amber-100'
-              }`}
-            >
-              <span
-                className={`inline-block h-2.5 w-2.5 rounded-full ${
-                  values.downloadEnabled ? 'bg-white' : 'bg-amber-500'
-                }`}
-              />
-              <span>
-                {values.downloadEnabled
-                  ? 'Download: ON (Click to Lock)'
-                  : 'Download: OFF (Click to Enable)'}
-              </span>
-            </button>
-          </div>
-
-          {!values.downloadEnabled &&
-            values.fileUrl.trim().toLowerCase().startsWith('http') && (
-              <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-xs text-amber-800">
-                External web links cannot display watermarked pages inside the website preview. Upload the PDF on the left if you want students to view pages online without downloading.
-              </div>
-            )}
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <DocumentUploadList
-              label="Upload Study Note / Workbook (max 5 MB)"
-              uploadFolder="resources"
-              multiple={false}
-              files={uploadedDocs}
-              onAddFiles={handleAttachFile}
-              onRemoveFile={handleRemoveFile}
-              onReplaceFile={(_, rep) => handleAttachFile([rep])}
-            />
-
-            <div className="space-y-3">
-              <div>
-                <label
-                  htmlFor="res-file-url"
-                  className="block text-[12.5px] font-semibold text-[#334155]"
-                >
-                  Static / External File URL (optional if uploading file)
-                </label>
-                <input
-                  id="res-file-url"
-                  type="text"
-                  maxLength={500}
-                  disabled={hasUploadedFile}
-                  value={hasUploadedFile ? '' : values.fileUrl}
-                  onChange={(e) => {
-                    const nextUrl = e.target.value;
-                    setValues((prev) => ({
-                      ...prev,
-                      fileUrl: nextUrl,
-                      removeFile: false,
-                    }));
-                    if ('fileUrl' in errors) {
-                      setErrors((prev) => ({ ...prev, fileUrl: undefined }));
-                    }
-                  }}
-                  placeholder={
-                    hasUploadedFile
-                      ? 'Uploaded file active (click Remove on the left to use a link instead)'
-                      : '/seed-materials/rhel-administration-notes.pdf or https://...'
                   }
-                  className={`mt-1 h-[40px] w-full rounded-lg border px-3 font-mono text-[13px] focus:outline-none ${
-                    hasUploadedFile
-                      ? 'cursor-not-allowed border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B]'
-                      : errors.fileUrl
-                        ? 'border-[#DC2626] bg-white text-[#0F172A] focus:ring-1 focus:ring-[#145BFF]'
-                        : 'border-[#CBD5E1] bg-white text-[#0F172A] focus:border-[#145BFF] focus:ring-1 focus:ring-[#145BFF]'
-                  }`}
+                  placeholder="Concise description of commands, labs, and exam prep covered…"
+                  className={`mt-1 w-full rounded-lg border bg-white p-3 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.summary
+                    ? 'border-[#DC2626]'
+                    : 'border-[#CBD5E1] focus:border-[#145BFF]'
+                    }`}
                 />
-                {errors.fileUrl && (
+                {errors.summary && (
                   <p className="mt-1 text-xs font-medium text-[#DC2626]">
-                    {errors.fileUrl}
+                    {errors.summary}
                   </p>
                 )}
               </div>
 
               <div>
-                <label
-                  htmlFor="res-file-name"
-                  className="block text-[12.5px] font-semibold text-[#334155]"
-                >
-                  Display File Name
-                </label>
-                <input
-                  id="res-file-name"
-                  type="text"
-                  maxLength={255}
-                  value={values.fileName}
-                  onChange={(e) => updateField('fileName', e.target.value)}
-                  placeholder="rhel-administration-notes.pdf"
-                  className="mt-1 h-[40px] w-full rounded-lg border border-[#CBD5E1] bg-white px-3 font-mono text-[13px] text-[#0F172A] focus:border-[#145BFF] focus:outline-none"
+                <div className="flex items-center justify-between gap-2">
+                  <label
+                    htmlFor="res-topics"
+                    className="block text-[12.5px] font-semibold text-[#334155]"
+                  >
+                    Topics / Lab Outline (optional, one per line)
+                  </label>
+                  <span
+                    className={`text-[11px] tabular-nums ${getCounterTone(
+                      topicsWords,
+                      RESOURCE_FIELD_LIMITS.topicsMaxWords
+                    )}`}
+                  >
+                    {topicsWords} / {RESOURCE_FIELD_LIMITS.topicsMaxWords} words
+                  </span>
+                </div>
+                <textarea
+                  id="res-topics"
+                  rows={4}
+                  maxLength={RESOURCE_FIELD_LIMITS.topicsMaxChars}
+                  value={values.topicsText}
+                  onChange={(e) =>
+                    updateField(
+                      'topicsText',
+                      clampToMaxWords(
+                        e.target.value,
+                        RESOURCE_FIELD_LIMITS.topicsMaxWords
+                      )
+                    )
+                  }
+                  placeholder={
+                    'File system permissions & ACLs\nStorage partitioning & LVM\nManaging systemd units'
+                  }
+                  className={`mt-1 w-full rounded-lg border bg-white p-3 text-[13px] leading-relaxed text-[#0F172A] placeholder:text-[#94A3B8] transition-colors focus:ring-1 focus:ring-[#145BFF] focus:outline-none ${errors.topicsText
+                    ? 'border-[#DC2626]'
+                    : 'border-[#CBD5E1] focus:border-[#145BFF]'
+                    }`}
                 />
-              </div>
-
-              <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3.5 text-xs text-[#334155]">
-                <p className="font-bold text-[#0B1736]">Study Material Summary</p>
-                <ul className="mt-2 space-y-1 text-[#475569]">
-                  <li>
-                    Title:{' '}
-                    <strong className="text-[#0B1736]">
-                      {values.title.trim() || 'Not set yet'}
-                    </strong>
-                  </li>
-                  <li>
-                    Domain:{' '}
-                    <strong className="text-[#0B1736]">
-                      {values.domain.trim() || 'Not selected'} ({values.sectionType})
-                    </strong>
-                  </li>
-                  <li>
-                    Access:{' '}
-                    <strong className="text-[#145BFF]">
-                      {values.downloadEnabled
-                        ? 'Download Open'
-                        : 'Preview Only (Protected)'}{' '}
-                      · {values.status}
-                    </strong>
-                  </li>
-                  <li>
-                    File: {values.fileName.trim() || values.fileUrl.trim() || 'No file attached yet'}
-                  </li>
-                </ul>
+                {errors.topicsText && (
+                  <p className="mt-1 text-xs font-medium text-[#DC2626]">
+                    {errors.topicsText}
+                  </p>
+                )}
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
+
+        {/* TAB 3: FILES & DOWNLOAD PROTECTION */}
+        {activeTab === 'files' && (
+          <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-2xs sm:p-5">
+            <h3 className="mb-3.5 text-xs font-bold uppercase tracking-wider text-[#64748B]">
+              Study File &amp; Download Protection
+            </h3>
+
+            {/* Public Download Access Toggle Card */}
+            <div
+              className={`mb-4 flex flex-col justify-between gap-3 rounded-xl border p-3.5 sm:flex-row sm:items-center ${values.downloadEnabled
+                ? 'border-emerald-200 bg-emerald-50/70'
+                : 'border-amber-200 bg-amber-50/70'
+                }`}
+            >
+              <div className="flex items-start gap-3">
+                <span
+                  className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${values.downloadEnabled
+                    ? 'border-emerald-200 bg-white text-emerald-600'
+                    : 'border-amber-200 bg-white text-amber-600'
+                    }`}
+                >
+                  {values.downloadEnabled ? (
+                    <Unlock className="h-4.5 w-4.5" />
+                  ) : (
+                    <Lock className="h-4.5 w-4.5" />
+                  )}
+                </span>
+                <div>
+                  <p className="text-[13px] font-bold text-[#0F172A]">
+                    {values.downloadEnabled
+                      ? 'Public Download Enabled'
+                      : 'Preview Only — Download Disabled'}
+                  </p>
+                  <p className="mt-0.5 text-xs text-[#475569]">
+                    {values.downloadEnabled
+                      ? 'Anyone visiting your website Notes page can download the study file directly.'
+                      : 'Visitors can preview pages online with watermark & save protection, and see a "Contact to Download" notice.'}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                role="switch"
+                aria-checked={values.downloadEnabled}
+                onClick={() =>
+                  updateField('downloadEnabled', !values.downloadEnabled)
+                }
+                className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border px-4 text-xs font-bold transition-colors whitespace-nowrap ${values.downloadEnabled
+                  ? 'border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700'
+                  : 'border-amber-400 bg-white text-amber-800 hover:bg-amber-100'
+                  }`}
+              >
+                <span
+                  className={`inline-block h-2.5 w-2.5 rounded-full ${values.downloadEnabled ? 'bg-white' : 'bg-amber-500'
+                    }`}
+                />
+                <span>
+                  {values.downloadEnabled
+                    ? 'Download: ON (Click to Lock)'
+                    : 'Download: OFF (Click to Enable)'}
+                </span>
+              </button>
+            </div>
+
+            {!values.downloadEnabled &&
+              values.fileUrl.trim().toLowerCase().startsWith('http') && (
+                <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-xs text-amber-800">
+                  External web links cannot display watermarked pages inside the website preview. Upload the PDF on the left if you want students to view pages online without downloading.
+                </div>
+              )}
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <DocumentUploadList
+                label="Upload Study Note / Workbook (max 5 MB)"
+                uploadFolder="resources"
+                multiple={false}
+                files={uploadedDocs}
+                onAddFiles={handleAttachFile}
+                onRemoveFile={handleRemoveFile}
+                onReplaceFile={(_, rep) => handleAttachFile([rep])}
+              />
+
+              <div className="space-y-3">
+                <div>
+                  <label
+                    htmlFor="res-file-url"
+                    className="block text-[12.5px] font-semibold text-[#334155]"
+                  >
+                    Static / External File URL (optional if uploading file)
+                  </label>
+                  <input
+                    id="res-file-url"
+                    type="text"
+                    maxLength={500}
+                    disabled={hasUploadedFile}
+                    value={hasUploadedFile ? '' : values.fileUrl}
+                    onChange={(e) => {
+                      const nextUrl = e.target.value;
+                      setValues((prev) => ({
+                        ...prev,
+                        fileUrl: nextUrl,
+                        removeFile: false,
+                      }));
+                      if ('fileUrl' in errors) {
+                        setErrors((prev) => ({ ...prev, fileUrl: undefined }));
+                      }
+                    }}
+                    placeholder={
+                      hasUploadedFile
+                        ? 'Uploaded file active (click Remove on the left to use a link instead)'
+                        : '/seed-materials/rhel-administration-notes.pdf or https://...'
+                    }
+                    className={`mt-1 h-[40px] w-full rounded-lg border px-3 font-mono text-[13px] focus:outline-none ${hasUploadedFile
+                      ? 'cursor-not-allowed border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B]'
+                      : errors.fileUrl
+                        ? 'border-[#DC2626] bg-white text-[#0F172A] focus:ring-1 focus:ring-[#145BFF]'
+                        : 'border-[#CBD5E1] bg-white text-[#0F172A] focus:border-[#145BFF] focus:ring-1 focus:ring-[#145BFF]'
+                      }`}
+                  />
+                  {errors.fileUrl && (
+                    <p className="mt-1 text-xs font-medium text-[#DC2626]">
+                      {errors.fileUrl}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="res-file-name"
+                    className="block text-[12.5px] font-semibold text-[#334155]"
+                  >
+                    Display File Name
+                  </label>
+                  <input
+                    id="res-file-name"
+                    type="text"
+                    maxLength={255}
+                    value={values.fileName}
+                    onChange={(e) => updateField('fileName', e.target.value)}
+                    placeholder="rhel-administration-notes.pdf"
+                    className="mt-1 h-[40px] w-full rounded-lg border border-[#CBD5E1] bg-white px-3 font-mono text-[13px] text-[#0F172A] focus:border-[#145BFF] focus:outline-none"
+                  />
+                </div>
+
+                <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3.5 text-xs text-[#334155]">
+                  <p className="font-bold text-[#0B1736]">Study Material Summary</p>
+                  <ul className="mt-2 space-y-1 text-[#475569]">
+                    <li>
+                      Title:{' '}
+                      <strong className="text-[#0B1736]">
+                        {values.title.trim() || 'Not set yet'}
+                      </strong>
+                    </li>
+                    <li>
+                      Domain:{' '}
+                      <strong className="text-[#0B1736]">
+                        {values.domain.trim() || 'Not selected'} ({values.sectionType})
+                      </strong>
+                    </li>
+                    <li>
+                      Access:{' '}
+                      <strong className="text-[#145BFF]">
+                        {values.downloadEnabled
+                          ? 'Download Open'
+                          : 'Preview Only (Protected)'}{' '}
+                        · {values.status}
+                      </strong>
+                    </li>
+                    <li>
+                      File: {values.fileName.trim() || values.fileUrl.trim() || 'No file attached yet'}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
         )}
       </div>
     </MobileModalShell>

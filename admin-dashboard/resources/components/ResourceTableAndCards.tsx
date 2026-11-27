@@ -119,8 +119,8 @@ export function ResourceTableAndCards({
       render: (note) => {
         const hasAttachedFile = Boolean(
           note.hasFile ||
-            note.hasUploadedFile ||
-            String(note.fileUrl ?? '').trim() !== ''
+          note.hasUploadedFile ||
+          String(note.fileUrl ?? '').trim() !== ''
         );
         if (!hasAttachedFile) {
           return (
@@ -170,11 +170,10 @@ export function ResourceTableAndCards({
               ? 'Click to lock as Preview-Only (disable public download)'
               : 'Click to enable public file download'
           }
-          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11.5px] font-semibold transition-colors whitespace-nowrap ${
-            note.downloadEnabled
-              ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-              : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
-          }`}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11.5px] font-semibold transition-colors whitespace-nowrap ${note.downloadEnabled
+            ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+            : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
+            }`}
         >
           {note.downloadEnabled ? (
             <>
@@ -235,11 +234,10 @@ export function ResourceTableAndCards({
         <button
           type="button"
           onClick={() => onToggleDownloadAccess(note)}
-          className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${
-            note.downloadEnabled
-              ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-              : 'border-amber-200 bg-amber-50 text-amber-700'
-          }`}
+          className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${note.downloadEnabled
+            ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+            : 'border-amber-200 bg-amber-50 text-amber-700'
+            }`}
         >
           {note.downloadEnabled ? 'Download On' : 'Preview Only'}
         </button>
@@ -258,8 +256,8 @@ export function ResourceTableAndCards({
   const hasAttachedFile = (note: StudyResourceNote) =>
     Boolean(
       note.hasFile ||
-        note.hasUploadedFile ||
-        String(note.fileUrl ?? '').trim() !== ''
+      note.hasUploadedFile ||
+      String(note.fileUrl ?? '').trim() !== ''
     );
 
   const cardExpandedFields: CardField<StudyResourceNote>[] = [
@@ -276,7 +274,7 @@ export function ResourceTableAndCards({
     },
     {
       label: 'Summary',
-      render: (note) => note.summary,
+      render: (note) => note.summary.trim() || '—',
     },
   ];
 

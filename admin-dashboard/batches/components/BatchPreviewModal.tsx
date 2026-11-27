@@ -125,8 +125,8 @@ export function BatchPreviewModal({
                 ))}
               </ul>
             ) : (
-              <div className="mt-2 whitespace-pre-line text-sm leading-relaxed text-[#334155]">
-                {batch.detailedContent}
+              <div className="mt-2 whitespace-pre-line text-sm leading-relaxed text-[#64748B]">
+                {batch.detailedContent.trim() || 'No lab modules listed.'}
               </div>
             )}
           </div>

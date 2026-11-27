@@ -399,7 +399,7 @@ export function ProtectedResourcePreviewModal({
                   Study Resource Overview
                 </h3>
                 <p className="mt-2.5 text-sm leading-relaxed text-[#334155] dark:text-white/85">
-                  {effective.summary}
+                  {effective.summary.trim() || 'No summary overview provided for this note.'}
                 </p>
 
                 {!canDownload && (

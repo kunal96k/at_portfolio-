@@ -1083,8 +1083,7 @@ export function BatchFormModal({
                       htmlFor="batch-content"
                       className="block text-[12.5px] font-semibold text-[#334155]"
                     >
-                      Key Lab Modules (one per line){' '}
-                      <span className="text-[#DC2626]">*</span>
+                      Key Lab Modules (optional, one per line)
                     </label>
                     <span
                       className={`text-[11px] tabular-nums ${getCounterTone(

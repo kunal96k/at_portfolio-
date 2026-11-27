@@ -216,19 +216,22 @@ export function UpcomingTrainingPage({
             </div>
           )}
 
-          {/* Loading Skeleton, Empty State UI, or 5-Per-Page Upcoming Batch Cards */}
-          <div className="mt-10 space-y-7">
+          {/* Loading Skeleton, Empty State UI, or Upcoming Batch Cards matching Home Layout */}
+          <div className="mt-10">
             {loading && batches.length === 0 ? (
-              <div className="space-y-6">
-                {[0, 1].map((skeleton) => (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {[0, 1, 2].map((skeleton) => (
                   <div
                     key={skeleton}
-                    className="grid grid-cols-1 lg:grid-cols-[0.88fr_1.12fr] gap-6 sm:gap-8 animate-pulse rounded-[24px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-5 sm:p-7"
+                    className="flex flex-col overflow-hidden rounded-[22px] bg-[#F5F5F5] dark:bg-[#2C2C2D] animate-pulse"
                   >
-                    <div className="aspect-[16/10] rounded-[18px] bg-[#E2E2E6] dark:bg-[#3A3A3D]" />
-                    <div className="space-y-4 py-2">
-                      <div className="h-5 w-28 rounded-full bg-[#E2E2E6] dark:bg-[#3A3A3D]" />
-                      <div className="h-9 w-3/4 rounded bg-[#E2E2E6] dark:bg-[#3A3A3D]" />
+                    <div className="aspect-[16/10] w-full bg-[#E2E2E6] dark:bg-[#3A3A3D]" />
+                    <div className="space-y-3 p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="h-5 w-24 rounded-full bg-[#E2E2E6] dark:bg-[#3A3A3D]" />
+                        <div className="h-4 w-20 rounded bg-[#E2E2E6] dark:bg-[#3A3A3D]" />
+                      </div>
+                      <div className="h-7 w-3/4 rounded bg-[#E2E2E6] dark:bg-[#3A3A3D]" />
                       <div className="h-4 w-full rounded bg-[#E2E2E6] dark:bg-[#3A3A3D]" />
                       <div className="h-4 w-2/3 rounded bg-[#E2E2E6] dark:bg-[#3A3A3D]" />
                     </div>
@@ -259,156 +262,168 @@ export function UpcomingTrainingPage({
                 />
               )
             ) : (
-              batches.map((program, idx) => {
-                const isOpen = expandedId === program.id;
-                const modules =
-                  program.modules.length > 0
-                    ? program.modules
-                    : program.detailedContent
-                        .split(/\r?\n/)
-                        .map((l) => l.trim())
-                        .filter(Boolean);
-                return (
-                  <motion.article
-                    key={program.id}
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.5,
-                      delay: idx * 0.05,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                    className="grid grid-cols-1 lg:grid-cols-[0.88fr_1.12fr] gap-6 sm:gap-8 rounded-[24px] bg-[#F5F5F5] dark:bg-[#2C2C2D] p-5 sm:p-7 overflow-hidden"
-                  >
-                    <div className="rounded-[18px] overflow-hidden aspect-[16/10] lg:aspect-auto lg:h-full bg-[#E2E2E5] dark:bg-[#1F1F21]">
-                      <SafeImage
-                        src={program.coverImage}
-                        alt={program.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+              <div
+                className={`grid grid-cols-1 gap-6 ${
+                  batches.length === 1
+                    ? 'max-w-xl'
+                    : batches.length === 2
+                      ? 'md:grid-cols-2'
+                      : 'md:grid-cols-2 lg:grid-cols-3'
+                }`}
+              >
+                {batches.map((program, idx) => {
+                  const isOpen = expandedId === program.id;
+                  const modules =
+                    program.modules.length > 0
+                      ? program.modules
+                      : program.detailedContent
+                          .split(/\r?\n/)
+                          .map((l) => l.trim())
+                          .filter(Boolean);
+                  return (
+                    <motion.article
+                      key={program.id}
+                      initial={{ opacity: 0, y: 24 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.5,
+                        delay: idx * 0.05,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                      className="group flex flex-col overflow-hidden rounded-[22px] bg-[#F5F5F5] dark:bg-[#2C2C2D]"
+                    >
+                      <div className="aspect-[16/10] w-full overflow-hidden bg-[#E2E2E5] dark:bg-[#1F1F21]">
+                        <SafeImage
+                          src={program.coverImage}
+                          alt={program.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
 
-                    <div className="flex flex-col justify-between">
-                      <div>
-                        <div className="flex flex-wrap items-center justify-between gap-2.5">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="inline-block rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] text-white dark:text-[#1A1A1B] px-3.5 py-1 text-[12px] font-medium">
+                      <div className="flex flex-1 flex-col p-6">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="inline-block rounded-full bg-[#5E67E6] dark:bg-[#D0FF71] px-3 py-0.5 text-[12px] font-medium text-white dark:text-[#1A1A1B]">
                               {program.category}
                             </span>
-                            {program.relatedCourse && (
-                              <span className="rounded-full bg-white/80 dark:bg-[#1F1F21] px-3 py-1 text-[12px] font-medium text-[#303030] dark:text-white/80">
-                                {program.relatedCourse}
+                            {program.learningLevel && (
+                              <span className="rounded-full bg-white/80 dark:bg-[#1F1F21] px-2.5 py-0.5 text-[11.5px] font-medium text-[#303030] dark:text-white/80">
+                                {program.learningLevel}
                               </span>
                             )}
                           </div>
-                          {program.learningLevel && (
-                            <div className="flex flex-wrap items-center gap-2 text-[12px] font-medium text-[#5C5C5C] dark:text-white/70">
-                              <span className="rounded-full bg-white/80 dark:bg-[#1F1F21] px-2.5 py-0.5">
-                                {program.learningLevel}
-                              </span>
-                            </div>
-                          )}
+                          <span className="text-[12px] font-medium text-[#5C5C5C] dark:text-white/65">
+                            {formatBatchDateDisplay(program.batchDate)}
+                          </span>
                         </div>
 
-                        <h2 className="mt-4 font-display text-[32px] sm:text-[40px] font-bold leading-[1.1] uppercase text-[#303030] dark:text-white">
+                        <h2 className="mt-3 font-display text-[24px] sm:text-[26px] font-bold uppercase leading-[1.18] text-[#303030] dark:text-white group-hover:text-[#5E67E6] dark:group-hover:text-[#D0FF71] transition-colors">
                           {program.title}
                         </h2>
 
-                        <p className="mt-3 text-[15px] sm:text-[16px] font-light leading-[1.6] text-[#303030] dark:text-white/80">
+                        {program.relatedCourse && (
+                          <p className="mt-1 text-[12.5px] font-medium text-[#5E67E6] dark:text-[#D0FF71]">
+                            {program.relatedCourse}
+                          </p>
+                        )}
+
+                        <p className="mt-2.5 text-[14.5px] font-light leading-[1.6] text-[#5C5C5C] dark:text-white/75">
                           {program.shortDescription}
                         </p>
 
                         {/* Schedule Metadata */}
-                        <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-[14px] font-light text-[#5C5C5C] dark:text-white/70">
-                          <span className="inline-flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-[#5E67E6] dark:text-[#D0FF71]" />
+                        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-light text-[#5C5C5C] dark:text-white/70">
+                          <span className="inline-flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-[#5E67E6] dark:text-[#D0FF71]" />
                             {formatBatchDateDisplay(program.batchDate)}
                           </span>
-                          <span className="inline-flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-[#5E67E6] dark:text-[#D0FF71]" />
+                          <span className="inline-flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 text-[#5E67E6] dark:text-[#D0FF71]" />
                             {formatBatchTimeDisplay(program.batchTime)}
                           </span>
-                          <span className="inline-flex items-center gap-2">
-                            <Users className="w-4 h-4 text-[#5E67E6] dark:text-[#D0FF71]" />
+                          <span className="inline-flex items-center gap-1.5">
+                            <Users className="w-3.5 h-3.5 text-[#5E67E6] dark:text-[#D0FF71]" />
                             {program.mode} · {program.seatsTotal} seats
                           </span>
                           {program.location && (
-                            <span className="inline-flex items-center gap-2">
-                              <MapPin className="w-4 h-4 text-[#5E67E6] dark:text-[#D0FF71]" />
+                            <span className="inline-flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5 text-[#5E67E6] dark:text-[#D0FF71]" />
                               {program.location}
                             </span>
                           )}
                         </div>
 
-                        {/* Expandable Syllabus */}
-                        <div className="mt-6 border-t border-[#E2E2E4] dark:border-[#3A3A3D] pt-4">
-                          <button
-                            type="button"
-                            aria-expanded={isOpen}
-                            onClick={() =>
-                              setExpandedId(isOpen ? null : program.id)
-                            }
-                            className="w-full flex items-center justify-between text-left py-1 text-[15px] font-medium text-[#303030] dark:text-white cursor-pointer"
-                          >
-                            <span>Key Lab Modules ({modules.length})</span>
-                            <ChevronDown
-                              className={`w-4 h-4 transition-transform duration-200 ${
-                                isOpen ? 'rotate-180' : ''
-                              }`}
-                              aria-hidden="true"
-                            />
-                          </button>
+                        {/* Optional Expandable Syllabus */}
+                        {modules.length > 0 && (
+                          <div className="mt-4 border-t border-[#E2E2E4] dark:border-[#3A3A3D] pt-3">
+                            <button
+                              type="button"
+                              aria-expanded={isOpen}
+                              onClick={() =>
+                                setExpandedId(isOpen ? null : program.id)
+                              }
+                              className="w-full flex items-center justify-between text-left py-1 text-[14px] font-medium text-[#303030] dark:text-white cursor-pointer"
+                            >
+                              <span>Key Lab Modules ({modules.length})</span>
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform duration-200 ${
+                                  isOpen ? 'rotate-180' : ''
+                                }`}
+                                aria-hidden="true"
+                              />
+                            </button>
 
-                          <AnimatePresence initial={false}>
-                            {isOpen && (
-                              <motion.ul
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                                transition={{
-                                  duration: 0.24,
-                                  ease: [0.16, 1, 0.3, 1],
-                                }}
-                                className="overflow-hidden mt-3 space-y-2"
+                            <AnimatePresence initial={false}>
+                              {isOpen && (
+                                <motion.ul
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: 'auto' }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{
+                                    duration: 0.24,
+                                    ease: [0.16, 1, 0.3, 1],
+                                  }}
+                                  className="overflow-hidden mt-2.5 space-y-2"
+                                >
+                                  {modules.map((mod, mIdx) => (
+                                    <li
+                                      key={`${mod}-${mIdx}`}
+                                      className="flex items-start gap-2 text-[13.5px] font-light text-[#303030] dark:text-white/80"
+                                    >
+                                      <span className="font-display text-[14px] font-bold text-[#5E67E6] dark:text-[#D0FF71] tabular-nums">
+                                        {String(mIdx + 1).padStart(2, '0')}.
+                                      </span>
+                                      <span>{mod}</span>
+                                    </li>
+                                  ))}
+                                </motion.ul>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        )}
+
+                        <div className="mt-auto flex flex-wrap items-center gap-3 pt-5">
+                          <OutlineButton onClick={onContactClick}>
+                            ENQUIRE FOR BATCH
+                          </OutlineButton>
+
+                          {program.attachments.length > 0 &&
+                            sanitizeSafeHref(program.attachments[0]?.url) && (
+                              <a
+                                href={sanitizeSafeHref(program.attachments[0]?.url)!}
+                                download={program.attachments[0].name}
+                                className="inline-flex items-center gap-2 rounded-full border border-[#303030]/20 dark:border-white/20 px-4 py-2.5 text-[13px] font-medium text-[#303030] dark:text-white/90 hover:bg-[#303030] hover:text-white dark:hover:bg-white dark:hover:text-[#1A1A1B] transition-colors"
                               >
-                                {modules.map((mod, mIdx) => (
-                                  <li
-                                    key={`${mod}-${mIdx}`}
-                                    className="flex items-start gap-2.5 text-[14px] sm:text-[15px] font-light text-[#303030] dark:text-white/80"
-                                  >
-                                    <span className="font-display text-[15px] font-bold text-[#5E67E6] dark:text-[#D0FF71] tabular-nums">
-                                      {String(mIdx + 1).padStart(2, '0')}.
-                                    </span>
-                                    <span>{mod}</span>
-                                  </li>
-                                ))}
-                              </motion.ul>
+                                <Download className="w-3.5 h-3.5" aria-hidden="true" />
+                                <span>Syllabus PDF</span>
+                              </a>
                             )}
-                          </AnimatePresence>
                         </div>
                       </div>
-
-                      <div className="mt-6 flex flex-wrap items-center gap-3 pt-2">
-                        <OutlineButton onClick={onContactClick}>
-                          ENQUIRE FOR BATCH
-                        </OutlineButton>
-
-                        {program.attachments.length > 0 &&
-                          sanitizeSafeHref(program.attachments[0]?.url) && (
-                            <a
-                              href={sanitizeSafeHref(program.attachments[0]?.url)!}
-                              download={program.attachments[0].name}
-                              className="inline-flex items-center gap-2 rounded-full border border-[#303030]/20 dark:border-white/20 px-4 py-2.5 text-[13px] font-medium text-[#303030] dark:text-white/90 hover:bg-[#303030] hover:text-white dark:hover:bg-white dark:hover:text-[#1A1A1B] transition-colors"
-                            >
-                              <Download className="w-3.5 h-3.5" aria-hidden="true" />
-                              <span>Syllabus PDF</span>
-                            </a>
-                          )}
-                      </div>
-                    </div>
-                  </motion.article>
-                );
-              })
+                    </motion.article>
+                  );
+                })}
+              </div>
             )}
           </div>
 
